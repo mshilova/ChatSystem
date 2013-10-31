@@ -7,4 +7,11 @@
   <name>CSE110 Chat Client</name>
   <description>Client part of UCSD CSE110 Chat System Project</description>
 
+  <dependencies>
+  	<dependency>
+  		<groupId>org.apache.activemq</groupId>
+  		<artifactId>activemq-client</artifactId>
+  		<version>5.8.0</version>
+  	</dependency>
+  </dependencies>
 </project>
