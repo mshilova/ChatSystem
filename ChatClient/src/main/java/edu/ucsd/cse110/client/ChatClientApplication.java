@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.client;
 
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -72,12 +73,37 @@ public class ChatClientApplication {
 			 */
 			ChatClient client = wireClient();
 	        System.out.println("ChatClient wired.");
+	        // TODO add a buttons to display options, such as
+	        // Broadcast: YES, NO
+	        // Make Chat Rooms: YES/NO, Public / Private
+	        System.out.println("Broadcast message? 'Yes' or 'No'");
+	        Scanner input = new Scanner(System.in);
+	        String messageType = input.nextLine();
+	        
+	        // TODO if its not a broadcast
+	        if(messageType.equalsIgnoreCase("No")) {
+	        	// TODO get where to send the message
+	        	
+	        	input.close();
+	        }
+	        else if(messageType.equalsIgnoreCase("Yes")) {
+	        	//System.out.println("enter the message: ");
+	        	// TODO input of messages from the key-board
+	        	client.send("Broadcast","Hello World");
+				System.out.println("Message Sent!");
+				input.close();
+		        System.exit(0);
+	        }else {
+	        	System.out.println("Invalid option, please try again later");
+	        	input.close();
+	        	System.exit(-1);
+	        }
 			/* 
 			 * Now we can happily send messages around
 			 */
-			client.send("Hello World");
-			System.out.println("Message Sent!");	
-	        System.exit(0);
+//			client.send("Hello World");
+//			System.out.println("Message Sent!");	
+//	        System.exit(0);
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -6,6 +6,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 public class ChatClient implements MessageListener {
 	private MessageConsumer consumer;
@@ -26,10 +27,23 @@ public class ChatClient implements MessageListener {
 		}
 	} 
 	
-	public void send(String msg) throws JMSException {
-		producer.send(session.createTextMessage(msg));
+	
+	public void send(String TypeofMessage,String msg) throws JMSException {
+		
+		Message myMessage = session.createObjectMessage(msg);
+		myMessage.setJMSType(TypeofMessage);
+		// TODO fix this later
+		// need to have a way to specify the reply address...
+		//myMessage.setJMSReplyTo(Constants.QUEUENAME);
+		producer.send(myMessage);
 	}
 	
+	// send message to server's queue directly
+	// server must then forward that message to all online users/wired clients
+/*	public void broadcast(String msg) throws JMSException {
+		producer.send(session.createTextMessage(msg));
+	}
+	*/
 	public void onMessage(Message message) {
 		System.out.println(message.toString());
 	}
