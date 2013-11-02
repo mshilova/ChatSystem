@@ -3,6 +3,7 @@ package edu.ucsd.cse110.client;
 import java.net.URISyntaxException;
 
 import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -52,9 +53,14 @@ public class ChatClientApplication {
         connection.start();
         CloseHook.registerCloseHook(connection);
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Queue destQueue = session.createQueue(Constants.QUEUENAME);
+        // queue for client to receive messages from server
+        Queue incomingQueue = session.createQueue(Constants.QUEUENAME);
+        // queue for client to send messages to server
+        Queue destQueue = session.createQueue(Constants.SERVERQUEUE);
+        // creating MessageConsumer to consumer messages from incomingQueue
+        MessageConsumer consumer = session.createConsumer(incomingQueue);
         MessageProducer producer = session.createProducer(destQueue);
-        return new ChatClient(producer,session);
+        return new ChatClient(consumer,producer,session);
 	}
 	
 	public static void main(String[] args) {

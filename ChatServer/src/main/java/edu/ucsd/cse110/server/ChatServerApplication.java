@@ -41,7 +41,7 @@ public class ChatServerApplication {
         return new SimpleMessageListenerContainer() {{
             setMessageListener(messageListener);
             setConnectionFactory(connectionFactory);
-            setDestinationName(Constants.QUEUENAME);
+            setDestinationName(Constants.SERVERQUEUE);
         }};
     }
 
@@ -67,7 +67,7 @@ public class ChatServerApplication {
         
         JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
         System.out.println("Sending a new message:");
-        jmsTemplate.send(Constants.QUEUENAME, messageCreator);
+        jmsTemplate.send(Constants.SERVERQUEUE, messageCreator);
 
         //context.close();
 	}
