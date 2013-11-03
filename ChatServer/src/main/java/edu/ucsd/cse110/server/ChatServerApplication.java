@@ -32,6 +32,7 @@ public class ChatServerApplication {
     MessageListenerAdapter receiver() {
         return new MessageListenerAdapter(new Server()) {{
             setDefaultListenerMethod("receive");
+            setMessageConverter(null);
         }};
     }
     
@@ -50,7 +51,7 @@ public class ChatServerApplication {
         return new JmsTemplate(connectionFactory);
     }
     
-
+    
 	public static void main(String[] args) throws Throwable {
 		BrokerService broker = new BrokerService();
 		broker.addConnector(Constants.ACTIVEMQ_URL);
@@ -64,10 +65,9 @@ public class ChatServerApplication {
 				return session.createTextMessage("ping!");
 			}
         }; 
-        
         JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
         System.out.println("Sending a new message:");
-        jmsTemplate.send(Constants.SERVERQUEUE, messageCreator);
+//        jmsTemplate.send(Constants.SERVERQUEUE, messageCreator);
 
         //context.close();
 	}

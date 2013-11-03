@@ -55,13 +55,13 @@ public class ChatClientApplication {
         CloseHook.registerCloseHook(connection);
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         // queue for client to receive messages from server
-        Queue incomingQueue = session.createQueue(Constants.QUEUENAME);
+//        Queue incomingQueue = session.createQueue(Constants.QUEUENAME);
         // queue for client to send messages to server
         Queue destQueue = session.createQueue(Constants.SERVERQUEUE);
         // creating MessageConsumer to consumer messages from incomingQueue
-        MessageConsumer consumer = session.createConsumer(incomingQueue);
+       // MessageConsumer consumer = session.createConsumer(incomingQueue);
         MessageProducer producer = session.createProducer(destQueue);
-        return new ChatClient(consumer,producer,session);
+        return new ChatClient(producer,session);
 	}
 	
 	public static void main(String[] args) {
@@ -77,26 +77,26 @@ public class ChatClientApplication {
 	        // Broadcast: YES, NO
 	        // Make Chat Rooms: YES/NO, Public / Private
 	        System.out.println("Broadcast message? 'Yes' or 'No'");
-	        Scanner input = new Scanner(System.in);
-	        String messageType = input.nextLine();
+//	        Scanner input = new Scanner(System.in);
+//	        String messageType = input.nextLine();
+	        String messageType = "Yes";
 	        
 	        // TODO if its not a broadcast
 	        if(messageType.equalsIgnoreCase("No")) {
-	        	// TODO get where to send the message
-	        	
-	        	input.close();
+	        	// TODO get where to send the message	
+//	        	input.close();
 	        }
 	        else if(messageType.equalsIgnoreCase("Yes")) {
 	        	//System.out.println("enter the message: ");
 	        	// TODO input of messages from the key-board
 	        	client.send("Broadcast","Hello World");
 				System.out.println("Message Sent!");
-				input.close();
-		        System.exit(0);
+//				input.close();
+//		        System.exit(0);
 	        }else {
 	        	System.out.println("Invalid option, please try again later");
-	        	input.close();
-	        	System.exit(-1);
+//	        	input.close();
+//	        	System.exit(-1);
 	        }
 			/* 
 			 * Now we can happily send messages around
