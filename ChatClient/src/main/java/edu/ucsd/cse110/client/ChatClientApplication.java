@@ -8,6 +8,11 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
+import javax.jms.Topic;
+import javax.jms.TopicPublisher;
+import javax.jms.TopicSession;
+import javax.jms.TopicSubscriber;
+import javax.naming.Context;
 
 import org.apache.activemq.ActiveMQConnection;
 
@@ -50,45 +55,49 @@ public class ChatClientApplication {
 	private static ChatClient wireClient() throws JMSException, URISyntaxException {
 		ActiveMQConnection connection = 
 				ActiveMQConnection.makeConnection(
-				/*Constants.USERNAME, Constants.PASSWORD,*/ Constants.ACTIVEMQ_URL);
+//						Constants.USERNAME,
+//						Constants.PASSWORD,
+						Constants.ACTIVEMQ_URL);
         connection.start();
         CloseHook.registerCloseHook(connection);
+        
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         // queue for client to receive messages from server
-//        Queue incomingQueue = session.createQueue(Constants.QUEUENAME);
+        Queue incomingQueue = session.createTemporaryQueue();
         // queue for client to send messages to server
         Queue destQueue = session.createQueue(Constants.SERVERQUEUE);
-        // creating MessageConsumer to consumer messages from incomingQueue
-       // MessageConsumer consumer = session.createConsumer(incomingQueue);
-        MessageProducer producer = session.createProducer(destQueue);
-        return new ChatClient(producer,session);
+        MessageProducer producer =  session.createProducer(destQueue);
+        MessageConsumer consumer = session.createConsumer(incomingQueue);
+        
+        TopicSession topicSession = connection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+        Topic broadcastTopic = topicSession.createTopic(Constants.BROADCAST);
+        TopicPublisher publisher = topicSession.createPublisher(broadcastTopic);
+        TopicSubscriber subscriber = topicSession.createSubscriber(broadcastTopic);
+        
+        return new ChatClient(session,producer,consumer,incomingQueue,destQueue,topicSession,publisher,subscriber,broadcastTopic);
 	}
 	
 	public static void main(String[] args) {
 		try {
-			
-			/* 
-			 * We have some other function wire the ChatClient 
-			 * to the communication platform
-			 */
 			ChatClient client = wireClient();
 	        System.out.println("ChatClient wired.");
-	        // TODO add a buttons to display options, such as
+	        // TODO GUI: add buttons to display options, such as
 	        // Broadcast: YES, NO
 	        // Make Chat Rooms: YES/NO, Public / Private
-	        System.out.println("Broadcast message? 'Yes' or 'No'");
+	        System.out.println("Broadcast message? 'Yes' or 'No':");
 //	        Scanner input = new Scanner(System.in);
-//	        String messageType = input.nextLine();
-	        String messageType = "Yes";
+	        System.out.println("Yes");
+	        String messageType = "Yes";//input.nextLine();
 	        
 	        // TODO if its not a broadcast
 	        if(messageType.equalsIgnoreCase("No")) {
-	        	// TODO get where to send the message	
+	        	// TODO set where to send the message	
 //	        	input.close();
 	        }
 	        else if(messageType.equalsIgnoreCase("Yes")) {
-	        	//System.out.println("enter the message: ");
+	        	//System.out.println("Enter the message:");
 	        	// TODO input of messages from the key-board
+//	        	client.send("Hello World");
 	        	client.send("Broadcast","Hello World");
 				System.out.println("Message Sent!");
 //				input.close();
@@ -98,12 +107,6 @@ public class ChatClientApplication {
 //	        	input.close();
 //	        	System.exit(-1);
 	        }
-			/* 
-			 * Now we can happily send messages around
-			 */
-//			client.send("Hello World");
-//			System.out.println("Message Sent!");	
-//	        System.exit(0);
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

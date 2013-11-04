@@ -7,4 +7,5 @@ public interface Constants {
 	public static String QUEUENAME = "test";
 	// adding a server queue from which the server reads its received messages
 	public static String SERVERQUEUE = "server";
+	public static String BROADCAST = "broadcastTopic";
 }
