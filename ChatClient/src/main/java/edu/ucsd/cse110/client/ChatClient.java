@@ -59,12 +59,13 @@ public class ChatClient implements MessageListener {
 	public void send(String usr, String msg) throws JMSException {
 		Message message = session.createTextMessage(msg);
 		message.setJMSType(usr);
+		
 		message.setJMSReplyTo(incomingQueue);
 		if(usr.equalsIgnoreCase("broadcast")) {
 			publisher.publish(message);
 			System.out.println("Publisher published message.");
 		} else {
-			producer.send(message);
+			producer.send(session.createQueue(usr), message);
 			System.out.println("Producer sent message.");
 		}
 	}
