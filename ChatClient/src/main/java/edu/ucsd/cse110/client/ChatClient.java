@@ -53,25 +53,25 @@ public class ChatClient implements MessageListener {
 	
 	/**
 	 * Send to specific user or publish to all users
-	 * @param	usr	username of the message recipient, or "Broadcast" for all users
-	 * @param	msg	the message the send
+	 * @param usr	user-name of the message recipient, or "Broadcast" for all users
+	 * @param msg	the message the send
 	 */
 	public void send(String usr, String msg) throws JMSException {
 		Message message = session.createTextMessage(msg);
 		message.setJMSType(usr);
 		message.setJMSReplyTo(incomingQueue);
 		if(usr.equalsIgnoreCase("broadcast")) {
-			System.out.println("publisher publishing");
 			publisher.publish(message);
+			System.out.println("Publisher published message.");
 		} else {
-			System.out.println("producer sending");
 			producer.send(message);
+			System.out.println("Producer sent message.");
 		}
 	}
 	
 	/**
 	 * What to do when this chat client receives a message
-	 * @param	message	the message received
+	 * @param message	the message received
 	 */
 	public void onMessage(Message message) {
 		try {

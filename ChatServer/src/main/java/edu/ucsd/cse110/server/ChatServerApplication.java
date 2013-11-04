@@ -26,6 +26,7 @@ public class ChatServerApplication {
     MessageListenerAdapter receiver() {
         return new MessageListenerAdapter(new Server()) {{
             setDefaultListenerMethod("receive");
+            // allow sending of Message objects instead of the default stringS
             setMessageConverter(null);
         }};
     }
@@ -51,9 +52,12 @@ public class ChatServerApplication {
 		broker.addConnector(Constants.ACTIVEMQ_URL);
 		broker.setPersistent(false);
 		broker.start();
-//		AnnotationConfigApplicationContext context = 
-//		          new AnnotationConfigApplicationContext(ChatServerApplication.class);
-//		
+		
+		System.out.println("Server ready.");
+		
+		AnnotationConfigApplicationContext context = 
+		          new AnnotationConfigApplicationContext(ChatServerApplication.class);
+		
 //		MessageCreator messageCreator = new MessageCreator() {
 //			public Message createMessage(Session session) throws JMSException {
 //				return session.createTextMessage("ping!");
@@ -62,7 +66,7 @@ public class ChatServerApplication {
 //		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 //		System.out.println("Sending a new message:");
 //		jmsTemplate.send(Constants.SERVERQUEUE, messageCreator);
-		System.out.println("Server ready.");
+		
         //context.close();
 	}
 

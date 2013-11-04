@@ -1,8 +1,6 @@
 package edu.ucsd.cse110.client;
 
 import java.net.URISyntaxException;
-import java.util.Scanner;
-
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -12,8 +10,6 @@ import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
-import javax.naming.Context;
-
 import org.apache.activemq.ActiveMQConnection;
 
 public class ChatClientApplication {
@@ -70,6 +66,7 @@ public class ChatClientApplication {
         MessageConsumer consumer = session.createConsumer(incomingQueue);
         
         TopicSession topicSession = connection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+        // topic for client to publish broadcast messages
         Topic broadcastTopic = topicSession.createTopic(Constants.BROADCAST);
         TopicPublisher publisher = topicSession.createPublisher(broadcastTopic);
         TopicSubscriber subscriber = topicSession.createSubscriber(broadcastTopic);
@@ -97,9 +94,9 @@ public class ChatClientApplication {
 	        else if(messageType.equalsIgnoreCase("Yes")) {
 	        	//System.out.println("Enter the message:");
 	        	// TODO input of messages from the key-board
-//	        	client.send("Hello World");
-	        	client.send("Broadcast","Hello World");
-				System.out.println("Message Sent!");
+//	        	client.send("user-name", "Hello World");	// send message
+	        	client.send("Broadcast","Hello World");		// broadcast message
+//				System.out.println("Message Sent!");
 //				input.close();
 //		        System.exit(0);
 	        }else {
