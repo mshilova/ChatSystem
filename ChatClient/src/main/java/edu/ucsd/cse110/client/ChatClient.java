@@ -24,6 +24,7 @@ public class ChatClient implements MessageListener {
 	private TopicPublisher publisher;
 	private TopicSubscriber subscriber;
 	private Topic broadcastTopic;
+	private String msg;
 	
 	public ChatClient(Session session,
 			MessageProducer producer,
@@ -63,6 +64,7 @@ public class ChatClient implements MessageListener {
 		message.setJMSType(usr);
 		message.setJMSReplyTo(incomingQueue);
 		
+		this.msg = ((TextMessage) message).getText();
 		if(usr.equalsIgnoreCase("broadcast")) {
 			publisher.publish(message);
 			System.out.println("Message broadcasted.");
@@ -79,6 +81,7 @@ public class ChatClient implements MessageListener {
 	 */
 	public void onMessage(Message message) {
 		try {
+			this.msg = ((TextMessage) message).getText();
 			System.out.println("Message from "
 					+ message.getJMSReplyTo().toString().substring("queue://".length()) + ": "
 					+ ((TextMessage) message).getText());
@@ -87,6 +90,11 @@ public class ChatClient implements MessageListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public String getMsg ()
+	{
+		return this.msg;
 	}
 
 }
