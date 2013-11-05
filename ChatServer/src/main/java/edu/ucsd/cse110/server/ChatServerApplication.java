@@ -1,6 +1,9 @@
 package edu.ucsd.cse110.server;
 
+import java.util.HashMap;
+
 import javax.jms.ConnectionFactory;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -11,11 +14,21 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
+import org.apache.activemq.security.SimpleAuthenticationPlugin;
 
 @Configuration
 @ComponentScan
 public class ChatServerApplication {
 
+	private static HashMap<String,String> userList;
+	
+	public static void createUserList() {
+		userList = new HashMap<String,String>();
+		userList.put("user1","password");
+		userList.put("user2","password");
+		userList.put("user3","password");
+	}
+	
     @Bean
     ConnectionFactory connectionFactory() {
         return new CachingConnectionFactory(

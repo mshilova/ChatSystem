@@ -21,6 +21,7 @@ import org.apache.activemq.command.ActiveMQQueue;
 public class ChatClientApplication {
 
 	private static ActiveMQConnection connection;
+	private static User user = new User();
 	/*
 	 * This inner class is used to make sure we clean up when the client closes
 	 */
@@ -58,8 +59,8 @@ public class ChatClientApplication {
 	private static ChatClient wireClient() throws JMSException, URISyntaxException {
 		connection = 
 				ActiveMQConnection.makeConnection(
-//						Constants.USERNAME,
-//						Constants.PASSWORD,
+						user.userName,//Constants.USERNAME,
+						user.password,//Constants.PASSWORD,
 						Constants.ACTIVEMQ_URL);
         connection.start();
         CloseHook.registerCloseHook(connection);
@@ -78,11 +79,13 @@ public class ChatClientApplication {
         Topic broadcastTopic = topicSession.createTopic(Constants.BROADCAST);
         TopicPublisher publisher = topicSession.createPublisher(broadcastTopic);
         TopicSubscriber subscriber = topicSession.createSubscriber(broadcastTopic);
+        
         return new ChatClient(session,producer,consumer,incomingQueue,destQueue,topicSession,publisher,subscriber,broadcastTopic);
 	}
 	
 	public static void main(String[] args) {
 		try {
+			user.setInfo();
 			ChatClient client = wireClient();
 	        System.out.println("ChatClient wired.");
 	        // TODO GUI: add buttons to display options, such as
@@ -91,27 +94,47 @@ public class ChatClientApplication {
 	        // e.g. type "Broadcast Hello" to send "Hello" to all online users.
 	        System.out.println("Begin your message with 'Broadcast' to send it to all online users.");
 	        System.out.println("Otherwise, send a message to a specific user by"
-	        		+ " entering the recipient's username followed by the message");
-	        System.out.println("Enter your message:");
-	        Scanner input = new Scanner(System.in);
-	        String inputMessage = input.nextLine();
-	        input.close();
+	        		+ " entering the recipient's user name followed by the message");
+	        System.out.println("Type 'exit' to exit.");
 	        
-	        if(inputMessage.startsWith("Broadcast") || inputMessage.startsWith("broadcast")) {
-	        	// broadcast message
-	        	client.send("Broadcast", inputMessage.substring(inputMessage.indexOf(" ")+1));
-				System.out.println("Message Sent!");
-//		        System.exit(0);
+	        Scanner input = new Scanner(System.in);
+	        String inputMessage;
+	        System.out.println("Enter a message:");
+	        while(true) {
+	        	
+	        	inputMessage = input.nextLine();
+	        
+	        	if(inputMessage.equalsIgnoreCase("exit")) {
+	        		input.close();
+	        		System.exit(0);
+	        	} else if(inputMessage.startsWith("Broadcast") || inputMessage.startsWith("broadcast")) {
+	        		// broadcast message
+	        		client.send("Broadcast", inputMessage.substring(inputMessage.indexOf(" ")+1));
+//	        		System.exit(0);
 
-	        } else {
-	        	// TODO get all online users
-//	        	DestinationSource destSource;
-//	     		destSource = connection.getDestinationSource();
-//	     		Set<ActiveMQQueue> queueList = destSource.getQueues();
-	     		client.send(inputMessage.substring(0, inputMessage.indexOf(" ")),
-	     		    		inputMessage.substring(inputMessage.indexOf(" ")+1));
-				System.out.println("Message Sent!");
-//		        System.exit(0);
+	        	} else {
+	        		// TODO get all online users
+	        	
+	        		String toUser = inputMessage.substring(0, inputMessage.indexOf(" "));
+	        		// check that the user you want to send to is a valid user
+	        		DestinationSource destSource = connection.getDestinationSource();
+	        		Set<ActiveMQQueue> queueList = destSource.getQueues();
+	        		boolean validUser = false;
+	        		for(ActiveMQQueue queue : queueList) {
+	        			if(queue.getQueueName().equals(toUser)) {
+	        				validUser = true;
+	        				client.send(toUser,
+	        						inputMessage.substring(inputMessage.indexOf(" ")+1));
+	        				break;
+		        		}
+		     		}
+	        		if(!validUser) {
+	        			System.out.println("User " + toUser + " is not online or does not exist.");
+	        		}
+ 	     			
+//		        	System.exit(0);
+	        	}
+	        	
 	        }
 	    } catch (JMSException e) {
 	    	// TODO Auto-generated catch block

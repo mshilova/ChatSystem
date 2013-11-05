@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.client;
 
+import java.util.Scanner;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -59,14 +61,15 @@ public class ChatClient implements MessageListener {
 	public void send(String usr, String msg) throws JMSException {
 		Message message = session.createTextMessage(msg);
 		message.setJMSType(usr);
-		
 		message.setJMSReplyTo(incomingQueue);
+		
 		if(usr.equalsIgnoreCase("broadcast")) {
 			publisher.publish(message);
-			System.out.println("Publisher published message.");
+			System.out.println("Message broadcasted.");
 		} else {
+			// TODO make a check from trying to send to unidentified user names
 			producer.send(session.createQueue(usr), message);
-			System.out.println("Producer sent message.");
+			System.out.println("Message sent.");
 		}
 	}
 	
@@ -76,7 +79,10 @@ public class ChatClient implements MessageListener {
 	 */
 	public void onMessage(Message message) {
 		try {
-			System.out.println("Client received: " + ((TextMessage) message).getText());
+			System.out.println("Message from "
+					+ message.getJMSReplyTo().toString().substring("queue://".length()) + ": "
+					+ ((TextMessage) message).getText());
+			System.out.println("Enter a message:");
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
