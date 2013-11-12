@@ -131,10 +131,6 @@ public class ChatClientApplication {
 	            } while(!client.verified);
 	      
 	            System.out.println("Log in successful. " + "Welcome " + currentUser + ".");
-	            /*
-	             * TODO add the user to list of online users
-	             */
-	            
 	            client.setUser(currentUser);
 	        	
 	        } else if(answered = existingReply.equalsIgnoreCase("no")) {
@@ -161,9 +157,6 @@ public class ChatClientApplication {
 	        	} while(!client.registered);
 	        	
 	        	System.out.println("Registration successful. " + "Welcome " + currentUser + ".");
-	        	/*
-	        	 * TODO add the user to list of online users
-	        	 */
 	            client.setUser(currentUser);
 	            
 	        } else {
@@ -184,11 +177,8 @@ public class ChatClientApplication {
 				
 			} else if(inputMessage.startsWith("exit")) {
 				// go off-line
+				client.sendServer(Constants.LOGOFF, client.getUser());
 				input.close();
-				/*
-				 *  TODO tell server this user is going off-line
-				 */
-				System.exit(0);
 				
 			} else if(inputMessage.startsWith("listOnlineUsers")) {
 				// list all online users

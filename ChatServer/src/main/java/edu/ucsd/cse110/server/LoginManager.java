@@ -32,25 +32,25 @@ public class LoginManager{
 	    
 	    return retMap;
 	}  
-
-	protected Destination getClientID(String usr){
-		return onlineClients.get(usr); 
-	}
 	
 	protected boolean logOffUser(Message msg){
-	    if( !(msg instanceof TextMessage))
-		return false;
+	    if( !(msg instanceof TextMessage)){
+	    	return false;
+	    }
 	    
 	    TextMessage temp = (TextMessage) msg;
 	    String user;
 	    try {
-		user = temp.getText();
-		if(onlineClients.containsKey(user)){
-		    onlineClients.remove(user);
-		    return true;
-		}
-	    } catch (JMSException e) { e.printStackTrace(); }
-	    
+	    	user = temp.getText().trim();
+	    	System.out.println(user);
+	    	
+	    	if(onlineClients.containsKey(user)){
+	    		onlineClients.remove(user);
+	    		System.out.println("returning true");
+	    		return true;
+	    	}
+	    } catch (JMSException e) { e.printStackTrace();}
+	    System.out.println("returning false");
 	    return false;
 	}
 	    
@@ -63,27 +63,27 @@ public class LoginManager{
 	    String[] userInfo; 
 	    
 	    try{
-		userInfo = temp.getText().split(" ");
+	    	userInfo = temp.getText().split(" ");
 	
-		if( null != userData.get(userInfo[0]) )
-		    return false;
+	    	if( null != userData.get(userInfo[0]) )
+	    		return false;
 		
-		if(userInfo[0].length() < Constants.MINFIELDLENGTH || 
-		   userInfo[1].length() < Constants.MINFIELDLENGTH   )
-		    return false;
+	    	if(userInfo[0].length() < Constants.MINFIELDLENGTH || 
+	    	   userInfo[1].length() < Constants.MINFIELDLENGTH   )
+	    		return false;
 		
-		writer = new BufferedWriter(new FileWriter(filepath,true));
-		writer.append(userInfo[0] + " " + userInfo[1]);
-		writer.close();
-		userData.put(userInfo[0], userInfo[1]);
-		onlineClients.put(userInfo[0], msg.getJMSReplyTo());
-		return true;
+	    	writer = new BufferedWriter(new FileWriter(filepath,true));
+	    	writer.append("\n" + userInfo[0] + " " + userInfo[1]);
+	    	writer.close();
+	    	userData.put(userInfo[0], userInfo[1]);
+	    	onlineClients.put(userInfo[0], msg.getJMSReplyTo());
+	    	return true;
 		    
 	    }catch(IOException e){
-		System.out.println(e.getMessage());
+	    	System.out.println(e.getMessage());
 	    }
 	    catch(JMSException e){
-		System.out.println(e.getMessage());
+	    	System.out.println(e.getMessage());
 	    }    
 	   return false; 
 	}
@@ -95,23 +95,23 @@ public class LoginManager{
 	protected boolean validateUser(Message msg){
 		
 	    if( !(msg instanceof TextMessage) ) 
-		return false;
+	    	return false;
 		
 	    TextMessage temp = (TextMessage) msg;
 	    String[] userInfo;
 	    
 	    try{
-		userInfo = temp.getText().split(" ");
+	    	userInfo = temp.getText().split(" ");
 		
-		if(this.checkUserOnline(userInfo[0]))
-		    return false;
+	    	if(this.checkUserOnline(userInfo[0]))
+	    		return false;
 		
-		if( userData.containsKey(userInfo[0]) ){
-		    if( userData.get(userInfo[0]).equals(userInfo[1]) ){
-			onlineClients.put(userInfo[0], msg.getJMSReplyTo());
-			return true;
-		    }
-		}	
+	    	if( userData.containsKey(userInfo[0]) ){
+	    		if( userData.get(userInfo[0]).equals(userInfo[1]) ){
+	    			onlineClients.put(userInfo[0], msg.getJMSReplyTo());
+	    			return true;
+	    		}
+	    	}	
 	    }catch(JMSException e){
 		System.out.println(e.getMessage());
 	    }
@@ -125,7 +125,7 @@ public class LoginManager{
 	  * and add to Hashmap	
 	  * @throws IOException
       */
-  	protected void createUserData() throws IOException {
+  	private synchronized void createUserData() throws IOException {
   		int space=0;
   		String userName;
   		String password;

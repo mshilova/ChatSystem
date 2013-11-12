@@ -53,7 +53,6 @@ public class ChatClient implements MessageListener {
 		try {
 			this.consumer.setMessageListener(this);
 			this.subscriber.setMessageListener(this);
-			onlineUsers.put("server", session.createQueue(Constants.SERVERQUEUE));
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,6 +67,9 @@ public class ChatClient implements MessageListener {
 		currentUser = username;
 	}
 	
+	public String getUser(){
+		return this.currentUser;
+	}
 	
 	/**
 	 * Broadcast a message to all users
@@ -95,7 +97,7 @@ public class ChatClient implements MessageListener {
 			Message message = session.createTextMessage(inputMessage);
 			message.setJMSType(jmsType);
 			message.setJMSReplyTo(incomingQueue);
-			producer.send(onlineUsers.get("server"), message);
+			producer.send(session.createQueue(Constants.SERVERQUEUE), message);
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,6 +114,7 @@ public class ChatClient implements MessageListener {
 	    try {
 		// retrieve the address associated with the recipient's user-name
 		if(onlineUsers.containsKey(username)) {
+			// TODO Auto-generated catch block
 		    Message message = session.createTextMessage(inputMessage);
 		    message.setJMSType(currentUser);
 		    Destination dest = onlineUsers.get(username);
@@ -202,12 +205,16 @@ public class ChatClient implements MessageListener {
 		    onlineUsers = (HashMap<String, Destination>) (( (ObjectMessage) message ).getObject());
 
 		}else if (type.equals(Constants.VERIFYUSER)){
-		    verified = message.getBooleanProperty(Constants.RESP);
+		    verified = message.getBooleanProperty(Constants.RESPONSE);
 		    
 		}else if (type.equals(Constants.REGISTERUSER)){
-		    registered = message.getBooleanProperty(Constants.RESP);
+		    registered = message.getBooleanProperty(Constants.RESPONSE);
 		    
-		}else{
+		}else if (type.equals(Constants.LOGOFF)){
+			if(message.getBooleanProperty(Constants.RESPONSE)){
+				System.exit(0);
+			}
+	    }else{
 		    System.out.println("\nFrom " + type + ": " + 
 			    		((TextMessage)message).getText());
 		    System.out.print("Input: ");

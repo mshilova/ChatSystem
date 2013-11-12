@@ -11,7 +11,9 @@ import javax.jms.Queue;
 import javax.jms.Session;
 
 
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -24,6 +26,7 @@ public class Server {
 	 * Constructor
 	 */
 	public Server() {
+		System.out.println( " Kyle's right " );
 		manager = new LoginManager();
 		messageType = null;
 	}
@@ -45,8 +48,9 @@ public class Server {
 		
 		if(messageType.equals(Constants.VERIFYUSER)) {
 		    update = manager.validateUser(message);
-	            send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
-				
+		    System.out.println( "kyle broke it here");
+	         send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
+			System.out.println( "Kyle definitely broke it here");
 		} else if(messageType.equals(Constants.REGISTERUSER)) {
 		    update = manager.registerUser(message);
 		    send(message.getJMSReplyTo(), update,Constants.REGISTERUSER); 
@@ -57,17 +61,20 @@ public class Server {
 		} else if(messageType.equals(Constants.CREATECHATROOM)) {
 			// TODO parse message for chat room name
 
-		} else if(messageType.equals(Constants.SETUSEROFFLINE)) {
+		} else if(messageType.equals(Constants.LOGOFF)) {
 		    update = manager.logOffUser(message);
-		    send(message.getJMSReplyTo(), update, Constants.SETUSEROFFLINE);
+		    System.out.println(update);
+		    send(message.getJMSReplyTo(), update, Constants.LOGOFF);
 		} else {
 			throw new Exception("Server received a message with unrecognized jms type.");
 		}
+		System.out.println(this.toString());
+		System.out.println(manager.toString());
 		
 		if(update){
 		    Map<String, Destination> userMap = manager.getAllOnlineUsers();
-		    for(String key : userMap.keySet()){
-			send(userMap.get(key), userMap, Constants.ONLINEUSERS);
+		    for(String key : manager.getAllOnlineUsers().keySet()){
+		    	send(userMap.get(key), manager.getAllOnlineUsers(), Constants.ONLINEUSERS);
 		    }
 		}
 	}
@@ -78,11 +85,10 @@ public class Server {
 	 * @param jmsType
 	 * @param message
 	 */
+
 	public void send(Destination recipient, final String message, final String type) {
-		AnnotationConfigApplicationContext context = 
-		new AnnotationConfigApplicationContext(ChatServerApplication.class);
 		
-		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
 		
 		MessageCreator messageCreator = new MessageCreator() {
 			public Message createMessage(Session session) throws JMSException {
@@ -101,7 +107,6 @@ public class Server {
 			e.printStackTrace();
 		}
 		
-		context.close();
 	}
 	
 	/**
@@ -109,10 +114,10 @@ public class Server {
 	 * @param jmsType
 	 * @param message
 	 */
+
 	public void send(Destination recipient, final boolean success, final String type) {
-		AnnotationConfigApplicationContext context = 
-				new AnnotationConfigApplicationContext(ChatServerApplication.class);				
-		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+			
+		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
 		
 		MessageCreator messageCreator = new MessageCreator() {
 				public Message createMessage(Session session) throws JMSException {
@@ -136,9 +141,8 @@ public class Server {
 	
 	
 	public void send(Destination recipient, final Map<String, Destination> onlineUsers, final String type) {
-		AnnotationConfigApplicationContext context = 
-				new AnnotationConfigApplicationContext(ChatServerApplication.class);				
-		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+		
+		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
 		
 		MessageCreator messageCreator = new MessageCreator() {
 				public Message createMessage(Session session) throws JMSException {
@@ -157,7 +161,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		
-		context.close();
+
 	}
 	
 	

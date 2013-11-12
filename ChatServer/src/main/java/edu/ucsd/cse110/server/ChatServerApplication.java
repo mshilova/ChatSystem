@@ -17,6 +17,8 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 @ComponentScan
 public class ChatServerApplication {
 	
+	protected static AnnotationConfigApplicationContext context;
+			
     @Bean
     ConnectionFactory connectionFactory() {
         return new CachingConnectionFactory(
@@ -56,8 +58,7 @@ public class ChatServerApplication {
 		broker.start();
 		
 
-		AnnotationConfigApplicationContext context = 
-		          new AnnotationConfigApplicationContext(
+		context = new AnnotationConfigApplicationContext(
 		        		  ChatServerApplication.class);
 		
 		System.out.println("Server ready.");
