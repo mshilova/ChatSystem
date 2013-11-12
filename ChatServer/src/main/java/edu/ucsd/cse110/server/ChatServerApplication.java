@@ -1,7 +1,5 @@
 package edu.ucsd.cse110.server;
 
-import java.util.HashMap;
-
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -14,20 +12,10 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
-import org.apache.activemq.security.SimpleAuthenticationPlugin;
 
 @Configuration
 @ComponentScan
 public class ChatServerApplication {
-
-	private static HashMap<String,String> userList;
-	
-	public static void createUserList() {
-		userList = new HashMap<String,String>();
-		userList.put("user1","password");
-		userList.put("user2","password");
-		userList.put("user3","password");
-	}
 	
     @Bean
     ConnectionFactory connectionFactory() {
@@ -39,13 +27,14 @@ public class ChatServerApplication {
     MessageListenerAdapter receiver() {
         return new MessageListenerAdapter(new Server()) {{
             setDefaultListenerMethod("receive");
-            // allow sending of Message objects instead of the default stringS
+            // allow sending of Message objects instead of the default strings
             setMessageConverter(null);
         }};
     }
     
     @Bean
-    SimpleMessageListenerContainer container(final MessageListenerAdapter messageListener,
+    SimpleMessageListenerContainer container(
+    		final MessageListenerAdapter messageListener,
             final ConnectionFactory connectionFactory) {
         return new SimpleMessageListenerContainer() {{
             setMessageListener(messageListener);
@@ -66,21 +55,14 @@ public class ChatServerApplication {
 		broker.setPersistent(false);
 		broker.start();
 		
+
+		AnnotationConfigApplicationContext context = 
+		          new AnnotationConfigApplicationContext(
+		        		  ChatServerApplication.class);
+		
 		System.out.println("Server ready.");
 		
-		AnnotationConfigApplicationContext context = 
-		          new AnnotationConfigApplicationContext(ChatServerApplication.class);
-		
-//		MessageCreator messageCreator = new MessageCreator() {
-//			public Message createMessage(Session session) throws JMSException {
-//				return session.createTextMessage("ping!");
-//			}
-//		};
-//		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-//		System.out.println("Sending a new message:");
-//		jmsTemplate.send(Constants.SERVERQUEUE, messageCreator);
-		
-        //context.close();
+		//context.close();
 	}
 
 }

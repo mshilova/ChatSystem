@@ -1,8 +1,15 @@
 package edu.ucsd.cse110.server;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TextMessage;
+
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
@@ -10,42 +17,148 @@ import org.springframework.jms.core.MessageCreator;
 
 public class Server {
 
+	private LoginManager manager;
+	private String messageType;
+	
+	/**
+	 * Constructor
+	 */
+	public Server() {
+		manager = new LoginManager();
+		messageType = null;
+	}
+	
+	
 	/**
 	 * This method is called when the server receives a message from a client
 	 * producer
-	 * @param msg	the message received
+	 * @param message	the message received
+	 * @throws Exception if the JMSType of the message is unknown
 	 */
-	public void receive(TextMessage msg) {
-		System.out.println("Server received a message:");
+	public void receive(Message message) throws Exception {
+		System.out.println("Server received a message.");
+		boolean update = false;
 		
 		try {
-			System.out.println("Text: " + msg.getText());
-			System.out.println("Type: " + msg.getJMSType());
-			System.out.println("ReplyTo: " + msg.getJMSReplyTo());
-		} catch (JMSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			messageType = message.getJMSType();
+		} catch (JMSException e) { e.printStackTrace(); }
+		
+		if(messageType.equals(Constants.VERIFYUSER)) {
+		    update = manager.validateUser(message);
+	            send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
+				
+		} else if(messageType.equals(Constants.REGISTERUSER)) {
+		    update = manager.registerUser(message);
+		    send(message.getJMSReplyTo(), update,Constants.REGISTERUSER); 
+			
+		} else if(messageType.equals(Constants.LISTCHATROOMS)) {
+			// TODO send a list of chat rooms back to the client
+			
+		} else if(messageType.equals(Constants.CREATECHATROOM)) {
+			// TODO parse message for chat room name
 
+		} else if(messageType.equals(Constants.SETUSEROFFLINE)) {
+		    update = manager.logOffUser(message);
+		    send(message.getJMSReplyTo(), update, Constants.SETUSEROFFLINE);
+		} else {
+			throw new Exception("Server received a message with unrecognized jms type.");
+		}
+		
+		if(update){
+		    Map<String, Destination> userMap = manager.getAllOnlineUsers();
+		    for(String key : userMap.keySet()){
+			send(userMap.get(key), userMap, Constants.ONLINEUSERS);
+		    }
+		}
+	}
+	
+	
+	/**
+	 * Sends to the client a reply to a previously received request
+	 * @param jmsType
+	 * @param message
+	 */
+	public void send(Destination recipient, final String message, final String type) {
 		AnnotationConfigApplicationContext context = 
-		          new AnnotationConfigApplicationContext(ChatServerApplication.class);
+		new AnnotationConfigApplicationContext(ChatServerApplication.class);
+		
+		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+		
 		MessageCreator messageCreator = new MessageCreator() {
-			public TextMessage createMessage(Session session) throws JMSException {
-				return session.createTextMessage("ping! from server.java");
+			public Message createMessage(Session session) throws JMSException {
+				Message ret = session.createTextMessage(message);
+				ret.setJMSType(type);
+				return ret;
 			}
-        };
-        JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-        
-        try {
-        	// get the queue to reply to from the message
-			jmsTemplate.send(msg.getJMSReplyTo(), messageCreator);
-			System.out.println("Message sent to " + msg.getJMSType());
+		};
+		
+		try {
+			
+			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
+			System.out.println("Server sent a response.");
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        context.close();
+		
+		context.close();
 	}
+	
+	/**
+	 * Sends to the client a reply to a previously received request
+	 * @param jmsType
+	 * @param message
+	 */
+	public void send(Destination recipient, final boolean success, final String type) {
+		AnnotationConfigApplicationContext context = 
+				new AnnotationConfigApplicationContext(ChatServerApplication.class);				
+		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+		
+		MessageCreator messageCreator = new MessageCreator() {
+				public Message createMessage(Session session) throws JMSException {
+					Message ret = session.createTextMessage();
+					ret.setJMSType(type);
+					ret.setBooleanProperty("success", success);
+					return ret;
+				}
+		};
+		
+		try {
+			
+			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
+			System.out.println("Server sent a response.");
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
+	public void send(Destination recipient, final Map<String, Destination> onlineUsers, final String type) {
+		AnnotationConfigApplicationContext context = 
+				new AnnotationConfigApplicationContext(ChatServerApplication.class);				
+		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+		
+		MessageCreator messageCreator = new MessageCreator() {
+				public Message createMessage(Session session) throws JMSException {
+					ObjectMessage objectMessage = session.createObjectMessage((Serializable) onlineUsers );
+					objectMessage.setJMSType(type);
+					return objectMessage;
+				}
+		};
+		
+		try {
+			
+			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
+			System.out.println("Server sent a response.");
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		context.close();
+	}
+	
 	
 }
