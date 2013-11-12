@@ -26,7 +26,6 @@ public class Server {
 	 * Constructor
 	 */
 	public Server() {
-		System.out.println( " Kyle's right " );
 		manager = new LoginManager();
 		messageType = null;
 	}
@@ -48,9 +47,7 @@ public class Server {
 		
 		if(messageType.equals(Constants.VERIFYUSER)) {
 		    update = manager.validateUser(message);
-		    System.out.println( "kyle broke it here");
 	         send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
-			System.out.println( "Kyle definitely broke it here");
 		} else if(messageType.equals(Constants.REGISTERUSER)) {
 		    update = manager.registerUser(message);
 		    send(message.getJMSReplyTo(), update,Constants.REGISTERUSER); 
@@ -68,8 +65,6 @@ public class Server {
 		} else {
 			throw new Exception("Server received a message with unrecognized jms type.");
 		}
-		System.out.println(this.toString());
-		System.out.println(manager.toString());
 		
 		if(update){
 		    Map<String, Destination> userMap = manager.getAllOnlineUsers();

@@ -46,11 +46,10 @@ public class LoginManager{
 	    	
 	    	if(onlineClients.containsKey(user)){
 	    		onlineClients.remove(user);
-	    		System.out.println("returning true");
 	    		return true;
 	    	}
 	    } catch (JMSException e) { e.printStackTrace();}
-	    System.out.println("returning false");
+	    
 	    return false;
 	}
 	    
