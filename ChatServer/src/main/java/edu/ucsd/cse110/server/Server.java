@@ -20,13 +20,15 @@ import org.springframework.jms.core.MessageCreator;
 public class Server {
 
 	private LoginManager manager;
+	private Authenticator authenticator;
 	private String messageType;
 	
 	/**
 	 * Constructor
 	 */
 	public Server() {
-		manager = new LoginManager();
+	    	manager = LoginManager.getInstance();
+	    	authenticator = Authenticator.getInstance();
 		messageType = null;
 	}
 	
@@ -42,34 +44,40 @@ public class Server {
 		boolean update = false;
 		
 		try {
-			messageType = message.getJMSType();
-		} catch (JMSException e) { e.printStackTrace(); }
+		    messageType = message.getJMSType();
 		
-		if(messageType.equals(Constants.VERIFYUSER)) {
-		    update = manager.validateUser(message);
-	         send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
-		} else if(messageType.equals(Constants.REGISTERUSER)) {
-		    update = manager.registerUser(message);
-		    send(message.getJMSReplyTo(), update,Constants.REGISTERUSER); 
+		    if(messageType.equals(Constants.VERIFYUSER)) {
+			update = manager.logInUser(message);
+			send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
+	         
+		    } else if(messageType.equals(Constants.REGISTERUSER)) {
+			update = authenticator.registerUser(message);
+			send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
+			update = manager.logInUser(message);
+			send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
 			
-		} else if(messageType.equals(Constants.LISTCHATROOMS)) {
+		    } else if(messageType.equals(Constants.LISTCHATROOMS)) {
 			// TODO send a list of chat rooms back to the client
 			
-		} else if(messageType.equals(Constants.CREATECHATROOM)) {
+		    } else if(messageType.equals(Constants.CREATECHATROOM)) {
 			// TODO parse message for chat room name
 
-		} else if(messageType.equals(Constants.LOGOFF)) {
-		    update = manager.logOffUser(message);
-		    System.out.println(update);
-		    send(message.getJMSReplyTo(), update, Constants.LOGOFF);
-		} else {
-			throw new Exception("Server received a message with unrecognized jms type.");
-		}
+		    } else if(messageType.equals(Constants.LOGOFF)) {
+			update = manager.logOffUser(message);
+			System.out.println(update);
+			send(message.getJMSReplyTo(), update, Constants.LOGOFF);
+		    } else {
+			throw new Exception("Server received a message " 
+					   +"with unrecognized jms type.");
+		    }
+		}catch(JMSException e){ e.printStackTrace(); }
 		
 		if(update){
 		    Map<String, Destination> userMap = manager.getAllOnlineUsers();
+		    
 		    for(String key : manager.getAllOnlineUsers().keySet()){
-		    	send(userMap.get(key), manager.getAllOnlineUsers(), Constants.ONLINEUSERS);
+		    	send(userMap.get(key), manager.getAllOnlineUsers(), 
+		    	     Constants.ONLINEUSERS);
 		    }
 		}
 	}
@@ -92,9 +100,7 @@ public class Server {
 				return ret;
 			}
 		};
-		
-		try {
-			
+		try {		
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
 			System.out.println("Server sent a response.");
 		} catch (JMSException e) {
@@ -113,18 +119,15 @@ public class Server {
 	public void send(Destination recipient, final boolean success, final String type) {
 			
 		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
-		
 		MessageCreator messageCreator = new MessageCreator() {
 				public Message createMessage(Session session) throws JMSException {
 					Message ret = session.createTextMessage();
 					ret.setJMSType(type);
-					ret.setBooleanProperty("success", success);
+					ret.setBooleanProperty(Constants.RESPONSE, success);
 					return ret;
 				}
 		};
-		
 		try {
-			
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
 			System.out.println("Server sent a response.");
 		} catch (JMSException e) {
@@ -137,8 +140,7 @@ public class Server {
 	
 	public void send(Destination recipient, final Map<String, Destination> onlineUsers, final String type) {
 		
-		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
-		
+		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);	
 		MessageCreator messageCreator = new MessageCreator() {
 				public Message createMessage(Session session) throws JMSException {
 					ObjectMessage objectMessage = session.createObjectMessage((Serializable) onlineUsers );
@@ -146,9 +148,7 @@ public class Server {
 					return objectMessage;
 				}
 		};
-		
 		try {
-			
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
 			System.out.println("Server sent a response.");
 		} catch (JMSException e) {

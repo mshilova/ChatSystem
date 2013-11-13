@@ -22,6 +22,7 @@ public interface Constants {
 	public static final String REGISTERUSER = "registerUser";
 
 	public static final String LOGOFF = "setUserOffline";
+	public static final String RESPONSE = "success";
 	
 	public static final int MINFIELDLENGTH = 4;
 }
