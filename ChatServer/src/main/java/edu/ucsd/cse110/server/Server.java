@@ -65,7 +65,7 @@ public class Server {
 		    } else if(messageType.equals(Constants.LOGOFF)) {
 			update = manager.logOffUser(message);
 			System.out.println(update);
-			send(message.getJMSReplyTo(), update, Constants.LOGOFF);
+			//send(message.getJMSReplyTo(), update, Constants.LOGOFF);
 		    } else {
 			throw new Exception("Server received a message " 
 					   +"with unrecognized jms type.");

@@ -210,10 +210,10 @@ public class ChatClient implements MessageListener {
 		}else if (type.equals(Constants.REGISTERUSER)){
 		    registered = message.getBooleanProperty(Constants.RESPONSE);
 		    
-		}else if (type.equals(Constants.LOGOFF)){
-			if(message.getBooleanProperty(Constants.RESPONSE)){
-				System.exit(0);
-			}
+		//}else if (type.equals(Constants.LOGOFF)){
+			//if(message.getBooleanProperty(Constants.RESPONSE)){
+				//System.exit(0);
+			//}
 	    }else{
 		    System.out.println("\nFrom " + type + ": " + 
 			    		((TextMessage)message).getText());

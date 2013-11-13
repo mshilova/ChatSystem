@@ -12,6 +12,7 @@ import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
+
 import org.apache.activemq.ActiveMQConnection;
 
 public class ChatClientApplication {
@@ -170,7 +171,6 @@ public class ChatClientApplication {
 		while(true) {
 			System.out.print("Input: ");
 			inputMessage = input.nextLine();
-			
 			if(inputMessage.startsWith("help")) {
 				// display the help message
 				printHelp();
@@ -179,6 +179,7 @@ public class ChatClientApplication {
 				// go off-line
 				client.sendServer(Constants.LOGOFF, client.getUser());
 				input.close();
+				System.exit(0);
 				
 			} else if(inputMessage.startsWith("listOnlineUsers")) {
 				// list all online users
