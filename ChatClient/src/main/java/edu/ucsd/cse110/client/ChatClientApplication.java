@@ -79,146 +79,6 @@ public class ChatClientApplication {
         		topicSession,publisher,subscriber);
 	}
 	
-	
-	public static void main(String[] args) {
-		try {
-			client = wireClient();
-			System.out.println("ChatClient wired.");
-		} catch (JMSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Scanner input = new Scanner(System.in);
-		
-		System.out.println("Would you like to use the GUI? (yes/no)");
-		if(input.nextLine().equalsIgnoreCase("yes")) {
-			/*
-			 * TODO GUI stuff
-			 */
-		}
-		
-        String currentUser = null;
-        String currentPassword = null;
-        
-        boolean answered = false;
-        do {
-	        System.out.println("Existing user? (yes/no)");
-	        String existingReply = input.nextLine();
-	        if(answered = existingReply.equalsIgnoreCase("yes")) {
-	        	 // verify what the user input as user-name and password
-	            do {
-	            	
-	    			System.out.print("User-name: ");
-	    			currentUser = input.nextLine();
-	    			System.out.print("Password: ");
-	    			currentPassword = input.nextLine();
-	    			
-	    			client.verifyUser(currentUser, currentPassword);
-	    			
-	    			// wait for a response from the server
-	    			try{
-	    				Thread.sleep(1000);
-	            	} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            	
-	            	if(client.verified) continue;
-	            	System.out.println("Log in error. Please try again.");
-	            	
-	            } while(!client.verified);
-	      
-	            System.out.println("Log in successful. " + "Welcome " + currentUser + ".");
-	            client.setUser(currentUser);
-	        	
-	        } else if(answered = existingReply.equalsIgnoreCase("no")) {
-	        	do {
-		        	System.out.println("Registering a new user.");
-		        	System.out.print ("Please provide a user-name: ");
-		        	currentUser = input.nextLine();
-		        	System.out.print("Please provide a password: ");
-		        	currentPassword = input.nextLine();
-		        	
-		        	client.registerUser(currentUser, currentPassword);
-	        	
-	    			// wait for a response from the server
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					if(client.registered) continue;
-					System.out.println("Registration error. Please try again.");
-					
-	        	} while(!client.registered);
-	        	
-	        	System.out.println("Registration successful. " + "Welcome " + currentUser + ".");
-	            client.setUser(currentUser);
-	            
-	        } else {
-	        	System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-	        }
-        } while(!answered);
-		
-		System.out.println("# Type 'help' for the list of available commands.");
-		String inputMessage;
-		
-		while(true) {
-			System.out.print("Input: ");
-			inputMessage = input.nextLine();
-			if(inputMessage.startsWith("help")) {
-				// display the help message
-				printHelp();
-				
-			} else if(inputMessage.startsWith("exit")) {
-				// go off-line
-				client.sendServer(Constants.LOGOFF, client.getUser());
-				input.close();
-				System.exit(0);
-				
-			} else if(inputMessage.startsWith("listOnlineUsers")) {
-				// list all online users
-				client.listOnlineUsers();
-				
-			} else if(inputMessage.startsWith("listChatRooms")) {
-				// list all chat rooms
-				client.listChatRooms();
-				
-			} else if(inputMessage.startsWith("broadcast")) {
-				// broadcast the message
-				inputMessage = inputMessage.substring("broadcast".length()+1);
-				client.broadcast(inputMessage);
-				
-			} else if(inputMessage.startsWith("createChatRoom")) {
-				// create a chat-room
-				inputMessage = inputMessage.substring("chatRoom".length()+1);
-				inputMessage = inputMessage.substring(0,inputMessage.indexOf(" "));
-				client.createChatRoom(inputMessage);
-			
-			} else if(inputMessage.startsWith("send")) {
-				// send a message to a specific user
-				inputMessage = inputMessage.substring("send".length()+1);
-				String userList = inputMessage.substring(0,inputMessage.indexOf(" "));
-				String[] mailingList = userList.split(",");
-				for(String recipient : mailingList) {
-					client.send(recipient,
-							inputMessage.substring(inputMessage.indexOf(" ")+1));
-				}
-				
-			} else {
-				// invalid input, display input instructions again
-				System.out.println("Client did not recognize your input. Please try again.");
-				System.out.println("# Type 'help' for the list of commands");
-			}
-		}
-	}
-	
-	
 	/**
 	 * Terminal output instructions on how to format input commands
 	 */
@@ -233,5 +93,26 @@ public class ChatClientApplication {
 				+ "message, to send your message to multiple users.");
 		System.out.println("# Type 'exit' to close the program.");
 	}
+	
+	
+	public static void main(String[] args) {
+		
+		try {
+			client = wireClient();
+			System.out.println("ChatClient wired.");
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		client.processUserInput();	
+	
+	}
+	
+	
+	
 	
 }

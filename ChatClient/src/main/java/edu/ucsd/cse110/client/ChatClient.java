@@ -2,6 +2,7 @@ package edu.ucsd.cse110.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -224,6 +225,168 @@ public class ChatClient implements MessageListener {
 		e.printStackTrace();
 	    }
 	}
+	
+	  public void processUserInput() {
+		    
+		  
+	       String currentUser = null;
+	         String currentPassword = null;
+	          
+	         Scanner input = new Scanner(System.in);
+	         boolean answered = false;
+	         
+	         do {
+	            System.out.println("Existing user? (yes/no)");
+	            String existingReply = input.nextLine();
+	            if( answered = existingReply.equalsIgnoreCase("yes") ) {
+	               // verify what the user input as user-name and password
+	                do {
+	                  
+	              System.out.print("User-name: ");
+	              currentUser = input.nextLine();
+	              System.out.print("Password: ");
+	              currentPassword = input.nextLine();
+	              
+	              this.verifyUser(currentUser, currentPassword);
+	              
+	              // wait for a response from the server
+	              try{
+	                Thread.sleep(1000);
+	                  } catch (InterruptedException e) {
+	              // TODO Auto-generated catch block
+	              e.printStackTrace();
+	            }
+	                  
+	                  if( this.verified ) 
+	                    continue;
+	                  
+	                  System.out.println("Log in error. Please try again.");
+	                  
+	                } while( !this.verified );
+	                
+	          
+	                System.out.println("Log in successful. " + "Welcome " + currentUser + ".");
+	                this.setUser( currentUser );
+	            }
+	            else if ( answered = existingReply.equalsIgnoreCase( "no" ) )
+	              this.registerUser( input, existingReply, currentPassword );
+	            else
+	              System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+	        
+	         } while ( ! answered );
+	            
+	        this.processUserCommands( input );
+	           
+	  }
+	         
+	  public void processUserCommands( Scanner input ) {
+		  
+	    System.out.println("# Type 'help' for the list of available commands.");
+	    String inputMessage;
+
+	    while(true) {
+	      System.out.print("Input: ");
+	      inputMessage = input.nextLine();
+	      
+	      if(inputMessage.startsWith("help")) {
+	        // display the help message
+	        ChatClientApplication.printHelp();
+	        
+	      } else if(inputMessage.startsWith("exit")) {
+	        // go off-line
+				this.sendServer(Constants.LOGOFF, this.getUser());
+				input.close();
+				System.exit(0);
+	        
+	      } else if(inputMessage.startsWith("listOnlineUsers")) {
+	        // list all online users
+	        this.listOnlineUsers();
+	        
+	      } else if(inputMessage.startsWith("listChatRooms")) {
+	        // list all chat rooms
+	        this.listChatRooms();
+	        
+	      } else if(inputMessage.startsWith("broadcast")) {
+	        // broadcast the message
+	        inputMessage = inputMessage.substring("broadcast".length()+1);
+	        this.broadcast(inputMessage);
+	        
+	      } else if(inputMessage.startsWith("createChatRoom")) {
+	        // create a chat-room
+	        inputMessage = inputMessage.substring("chatRoom".length()+1);
+	        inputMessage = inputMessage.substring(0,inputMessage.indexOf(" "));
+	        this.createChatRoom(inputMessage);
+	      
+	      } else if(inputMessage.startsWith("send")) {
+	        // send a message to a specific user
+	        inputMessage = inputMessage.substring("send".length()+1);
+	        String userList = inputMessage.substring(0,inputMessage.indexOf(" "));
+	        String[] mailingList = userList.split(",");
+	        for(String recipient : mailingList) {
+	          this.send(recipient,
+	              inputMessage.substring(inputMessage.indexOf(" ")+1));
+	        }
+	        
+	      } else {
+	        // invalid input, display input instructions again
+	        System.out.println("Client did not recognize your input. Please try again.");
+	        System.out.println("# Type 'help' for the list of commands");
+	      }
+	    }
+	  }
+	  
+	  public void registerUser( Scanner input, String existingReply, String currentPassword ) {
+	    
+	            do {
+	              System.out.println( "Registering a new user." );
+	              System.out.print ("Please provide a user-name: ");
+	              currentUser = input.nextLine();
+	              System.out.print("Please provide a password: ");
+	              currentPassword = input.nextLine();
+	              
+	              this.registerUser(currentUser, currentPassword);
+	            
+	            // wait for a response from the server
+	          try {
+	            Thread.sleep(1000);
+	          } catch (InterruptedException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	          }
+	          
+	          if( this.registered ) 
+	            continue;
+	          
+	          System.out.println("Registration error. Please try again.");
+	          
+	            } while( ! this.registered );
+	            
+	            System.out.println("Registration successful. " + "Welcome " + currentUser + ".");
+	              this.setUser(currentUser);
+	              
+	  }
+	  
+
+	  public boolean useGui( Scanner input ) {
+	    
+	    String answer = "";
+	    
+	    System.out.println("Would you like to use the GUI? (yes/no)");
+	    
+	    while ( true )
+	      if( ( answer = input.nextLine() ).equalsIgnoreCase("yes") ) {
+	        /*
+	         * TODO GUI stuff
+	         */
+	        return true;
+	      } 
+	      else if ( answer.equalsIgnoreCase( "no" ) ) 
+	        return false;
+	      
+	        
+	    
+	  
+	  }
 	
 }
 
