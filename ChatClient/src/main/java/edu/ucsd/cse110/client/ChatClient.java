@@ -386,6 +386,8 @@ public class ChatClient implements MessageListener {
 	         String currentPassword = null;
 	          
 	         Scanner input = new Scanner(System.in);
+	         
+	         if(!useGui(input)) {
 	         boolean answered = false;
 	         
 	         do {
@@ -405,7 +407,7 @@ public class ChatClient implements MessageListener {
 	              // wait for a response from the server
 	              try{
 	                Thread.sleep(1000);
-	                  } catch (InterruptedException e) {
+	              } catch (InterruptedException e) {
 	              // TODO Auto-generated catch block
 	              e.printStackTrace();
 	            }
@@ -428,7 +430,8 @@ public class ChatClient implements MessageListener {
 	        
 	         } while ( ! answered );
 	            
-	        this.processUserCommands( input );
+	         this.processUserCommands( input );
+	     }
 	           
 	  }
 	  
@@ -570,9 +573,9 @@ public class ChatClient implements MessageListener {
 	    
 	    while ( true )
 	      if( ( answer = input.nextLine() ).equalsIgnoreCase("yes") ) {
-	        /*
-	         * TODO GUI stuff
-	         */
+	        
+	    	ChatClientGUI gui = new ChatClientGUI(this);
+	    
 	        return true;
 	      } 
 	      else if ( answer.equalsIgnoreCase( "no" ) ) 
