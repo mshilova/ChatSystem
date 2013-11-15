@@ -1,7 +1,6 @@
 package edu.ucsd.cse110.client;
 
 import java.net.URISyntaxException;
-import java.util.Scanner;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -108,7 +107,14 @@ public class ChatClientApplication {
 			e.printStackTrace();
 		}
 		
-		client.processUserInput();	
+		
+		try {
+			client.processUserInput();	
+		} catch ( Exception e ) {
+			System.out.println( "An internal error occurred and the system has crashed. Please log in again." );
+			client.sendServer( Constants.LOGOFF, client.getUser() );
+			System.exit(0);
+		}
 	
 	}
 	

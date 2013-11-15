@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -14,9 +15,12 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
+
+
 
 public class ChatClient implements MessageListener {
 	
@@ -30,8 +34,9 @@ public class ChatClient implements MessageListener {
 	private MessageConsumer consumer;
 	private MessageProducer producer;
 	private TopicSession topicSession;
-	private TopicPublisher publisher;
-	private TopicSubscriber subscriber;
+	private ArrayList<TopicPublisher> publisherList = new ArrayList<TopicPublisher>();
+	private ArrayList<TopicSubscriber> subscriberList = new ArrayList<TopicSubscriber>();
+	private ArrayList<String> chatRooms = new ArrayList<String>();
 	
 	public ChatClient(
 			Queue incomingQueue, 
@@ -47,13 +52,13 @@ public class ChatClient implements MessageListener {
 		this.producer = producer;
 		this.consumer = consumer;
 		this.topicSession = topicSession;
-		this.publisher = publisher;
-		this.subscriber = subscriber;
+		this.publisherList.add( publisher );
+		this.subscriberList.add( subscriber );
 		onlineUsers = new HashMap<String,Destination>();
 		currentUser = null;
 		try {
 			this.consumer.setMessageListener(this);
-			this.subscriber.setMessageListener(this);
+			this.subscriberList.get( 0 ).setMessageListener(this); //setting broadcast's subscriber
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,7 +86,7 @@ public class ChatClient implements MessageListener {
 		Message message = topicSession.createTextMessage(inputMessage);
 		message.setJMSType(currentUser);
 		message.setJMSReplyTo(incomingQueue);
-		publisher.publish(message);
+		publisherList.get( 0 ).publish(message);  // using broadcast's publisher 
 		System.out.println("Message broadcasted.");
 	    } catch (JMSException e) {
 		// TODO Auto-generated catch block
@@ -94,6 +99,10 @@ public class ChatClient implements MessageListener {
 	 * 
 	 */
 	public void sendServer(String jmsType, String inputMessage) {
+		
+		if ( Constants.CREATECHATROOM.equals( jmsType ) )
+			addToChatRoomList( inputMessage );
+		
 		try {
 			Message message = session.createTextMessage(inputMessage);
 			message.setJMSType(jmsType);
@@ -103,6 +112,24 @@ public class ChatClient implements MessageListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void addToChatRoomList( String name ) {
+		chatRooms.add( name );
+	}
+	
+	public void publishMessageToChatRoom( String room, String message ) throws JMSException {
+		
+		for ( TopicPublisher publisher : publisherList ) {
+			if ( publisher.getTopic().getTopicName().equals( room ) ) {
+				TextMessage text = topicSession.createTextMessage( message );
+				text.setJMSType( currentUser );
+				text.setJMSReplyTo( incomingQueue );
+				publisher.publish( text );
+				return;
+			}
+		}
+		
 	}
 	
 	
@@ -128,6 +155,15 @@ public class ChatClient implements MessageListener {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
+	}
+	
+	public void sendInvitation( String user, String room ) throws JMSException {
+		
+		TextMessage message = session.createTextMessage( this.currentUser + " " + room );
+		message.setJMSType( Constants.INVITATION );
+		producer.send( getDestination( user ), message );
+		System.out.println( "Invitation sent." );
+		
 	}
 	
 	
@@ -158,6 +194,21 @@ public class ChatClient implements MessageListener {
 	    }
 	}
 	
+	public boolean userOnline( String user ) {
+		
+		if ( onlineUsers.containsKey( user ) )
+			return true;
+		
+		return false;
+		
+	}
+	
+	public Destination getDestination( String user ) {
+		
+		return onlineUsers.get( user );
+		
+	}
+	
 	
 	/**
 	 * Contact the server and print to request a list of all chat rooms
@@ -176,14 +227,22 @@ public class ChatClient implements MessageListener {
 	}
 	
 	
-	/**
-	 * Create a new chat-room
-	 * @param name	the name of the chat-room
-	 */
-	public void createChatRoom(String name) {
-		// TODO tell server to create a chat room
+	/* Checks if input starts with a chat room name and then returns that name, 
+	 * else return null */
+	
+	public  boolean chatRoomEntered( String name ) {
+		
+		for ( String room : chatRooms ) {
+			if ( room.equals( name ) ) 
+				return true;
+	 	}
+		
+		return false;
+		
 	}
 	
+	
+		
 	
 	/**
 	 * @param chatRoom	the name of the chat room the user is trying to leave
@@ -193,12 +252,82 @@ public class ChatClient implements MessageListener {
 	}
 	
 	
+	/* Creates the topic representing the chat room 
+	 * and sets up the publisher and subscriber 
+	 */
+	
+	public void setupChatRoomTopic( String room ) {
+		
+		try {
+			Topic chatRoom = topicSession.createTopic( room );
+			TopicSubscriber subscriber = topicSession.createSubscriber( chatRoom );
+			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
+			
+			subscriber.setMessageListener( this );
+			this.subscriberList.add( subscriber );
+			this.publisherList.add( publisher );
+			
+			System.out.println( "You are now connected to chat room: " + room );
+			
+		} catch (JMSException e) {
+			e.printStackTrace();
+			System.err.println( "There was a problem setting up the chat room" );
+		}
+		
+	}
+	
+	public void inviteToChatRoom( String room, String user ) {
+		
+		if ( null == room  ) {
+			System.err.println( "Please specify a room name." );
+			return;
+		}
+		
+		if ( null == user ) {
+			System.err.println( "Please specify a user to invite." );
+			return;
+		}
+		
+		if ( room.contains( " " ) ) {
+			System.err.println( "Room name may not contain a space character." );
+			return;
+		}
+		
+		if ( subscribedToChatRoom( room ) )
+			sendServer( Constants.INVITATION, room + ' ' + user  ); // space character is a dilimeter
+		else 
+			return;
+		
+	}
+	
+	public boolean subscribedToChatRoom( String room ) {
+		
+		for ( String chatRoom : this.chatRooms ) {
+			if ( chatRoom.equals( room ) )
+				return true;
+		}
+		
+		return false; //user is not in the room
+		
+	}	
+	
+	public void acceptInvite( String chatRoom ) throws JMSException {
+		
+		setupChatRoomTopic( chatRoom );
+		chatRooms.add( chatRoom );
+		
+		sendServer( Constants.ACCEPTEDINVITE, this.currentUser + " " + chatRoom ); // necessary to add username to ChatRoom's list of users
+		
+	}
+	
+	
 	/**
 	 * What to do when this chat client receives a message
 	 * @param message	the message received
 	 */
 	@SuppressWarnings("unchecked")
 	public void onMessage(Message message) {
+		
 	    try {
 		String type = message.getJMSType();
 		
@@ -215,7 +344,31 @@ public class ChatClient implements MessageListener {
 			//if(message.getBooleanProperty(Constants.RESPONSE)){
 				//System.exit(0);
 			//}
-	    }else{
+	    } else if ( Constants.CREATECHATROOM.equals( type ) ) {
+	    	//substring is used here because the actual chat room name was appended to the type in the server
+	    	if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
+	    		setupChatRoomTopic( chatRooms.get( chatRooms.size() - 1 ) ); // last room name added will be created
+	    	}
+	    	else
+	    		System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
+	    }
+	    else if ( Constants.INVITATION.equals( type ) ) {
+	    	String invite[] = ((TextMessage) message).getText().split( " " ); 
+	    	System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
+	    	System.out.println( "Would you like to accept? Enter 'yes' or 'no'" );
+	    	
+	    	Scanner input = new Scanner( System.in );
+	    	String answer = input.nextLine();
+	    	input.close();
+	    	
+	    	if ( "yes".equalsIgnoreCase( answer ) ) {
+	    		acceptInvite( invite[1] );  // invite[1] is the room name 
+	    	}	    	
+	    	
+	    	
+	    }
+			
+		else{
 		    System.out.println("\nFrom " + type + ": " + 
 			    		((TextMessage)message).getText());
 		    System.out.print("Input: ");
@@ -226,7 +379,7 @@ public class ChatClient implements MessageListener {
 	    }
 	}
 	
-	  public void processUserInput() {
+	  public void processUserInput() throws JMSException {
 		    
 		  
 	       String currentUser = null;
@@ -247,7 +400,7 @@ public class ChatClient implements MessageListener {
 	              System.out.print("Password: ");
 	              currentPassword = input.nextLine();
 	              
-	              this.verifyUser(currentUser, currentPassword);
+	              this.verifyUser( currentUser, currentPassword );
 	              
 	              // wait for a response from the server
 	              try{
@@ -278,8 +431,9 @@ public class ChatClient implements MessageListener {
 	        this.processUserCommands( input );
 	           
 	  }
+	  
 	         
-	  public void processUserCommands( Scanner input ) {
+	  public void processUserCommands( Scanner input ) throws JMSException {
 		  
 	    System.out.println("# Type 'help' for the list of available commands.");
 	    String inputMessage;
@@ -294,7 +448,7 @@ public class ChatClient implements MessageListener {
 	        
 	      } else if(inputMessage.startsWith("exit")) {
 	        // go off-line
-				this.sendServer(Constants.LOGOFF, this.getUser());
+				this.sendServer( Constants.LOGOFF, this.getUser() );
 				input.close();
 				System.exit(0);
 	        
@@ -312,10 +466,26 @@ public class ChatClient implements MessageListener {
 	        this.broadcast(inputMessage);
 	        
 	      } else if(inputMessage.startsWith("createChatRoom")) {
+	    	  
+	    	  if ( inputMessage.length() <= "createChatRoom ".length() ||
+	    		   inputMessage.substring( "createChatRoom ".length() ).contains( " " ) ) {
+	    		  System.err.println( "Invalid room name. Please enter another name for your chat room."
+	    		  		              + "The name may not contain spaces." );
+	    		  continue;
+	    	  }
 	        // create a chat-room
-	        inputMessage = inputMessage.substring("chatRoom".length()+1);
-	        inputMessage = inputMessage.substring(0,inputMessage.indexOf(" "));
-	        this.createChatRoom(inputMessage);
+	    	  String room = "";
+	    	  room = inputMessage.substring("createChatRoom".length()+1);
+	    	  if ( room.length() < 1) {
+	        	System.err.println( "Please give the chat room a name, for example: createChatRoom BossRoom" );
+	        	continue;
+	    	  }
+	    	
+	    	  this.chatRooms.add( room ); // room will be removed if invalid
+	    	
+	    	  // ChatRoom and ChatRoomManager logic handled in server, but topic is actually made in ChatClient
+	  		  sendServer( Constants.CREATECHATROOM, room ); 
+
 	      
 	      } else if(inputMessage.startsWith("send")) {
 	        // send a message to a specific user
@@ -327,7 +497,32 @@ public class ChatClient implements MessageListener {
 	              inputMessage.substring(inputMessage.indexOf(" ")+1));
 	        }
 	        
-	      } else {
+	      } else if ( chatRoomEntered( inputMessage.substring( 0, inputMessage.indexOf(" ") ) ) ) {
+	    	  String roomName = inputMessage.substring( 0, inputMessage.indexOf(" ") );
+	    	  publishMessageToChatRoom( roomName, inputMessage.substring( roomName.length() + 1 ) ); 
+	      }
+	    	  
+	      else if ( inputMessage.startsWith( "invite " ) ) {
+	    	  
+	    	  String invitation[] = inputMessage.split( " " );
+	    	  if ( invitation.length != 3 ) {
+	    		  System.err.println( "Wrong number of arguments. Must be: invite chatRoom username" );
+	    		  continue;
+	    	  }
+	    	  if ( ! chatRoomEntered( invitation[1] ) ) {
+	    		  System.err.println( "You entered a chat room name that does not exist or that you are not subscribed to." );
+	    		  continue;
+	    	  }
+	    	  if ( ! userOnline( invitation[2] )  ) {
+	    		  System.out.println( "That user is not online or does not exist." );
+	    		  continue;
+	    	  }
+	    	  
+	    	  sendInvitation( invitation[1], invitation[2] ); // passing in the username and the room name
+	    	  
+	      }
+	      
+	      else {
 	        // invalid input, display input instructions again
 	        System.out.println("Client did not recognize your input. Please try again.");
 	        System.out.println("# Type 'help' for the list of commands");
