@@ -575,7 +575,7 @@ public class ChatClient implements MessageListener {
 	      if( ( answer = input.nextLine() ).equalsIgnoreCase("yes") ) {
 	        
 	    	ChatClientGUI gui = new ChatClientGUI(this);
-	    
+	    	gui.start();
 	        return true;
 	      } 
 	      else if ( answer.equalsIgnoreCase( "no" ) ) 

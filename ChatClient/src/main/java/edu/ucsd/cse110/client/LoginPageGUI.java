@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.client;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 
-public class LoginPage extends JPanel {
+public class LoginPageGUI extends JPanel {
 
 	private JButton newUser, existingUser; // buttons for user choice / login
 	private JButton Enter; // generic button
@@ -21,12 +22,12 @@ public class LoginPage extends JPanel {
 	private ChatClient client;
 	private boolean newUserFlag; // default existing user
 	
-	public LoginPage(JFrame frame, ChatClient client)  {
+	
+	public LoginPageGUI(JFrame frame, ChatClient client)  {
 		this.frame = frame; 
 		this.client = client;
 		this.setSize(600, 400);
 		this.setLayout(null);
-		log();
 	}
 	
 	/*
@@ -76,8 +77,11 @@ public class LoginPage extends JPanel {
 		userField = new JTextField();
 		JLabel passLabel = new JLabel("Password: ");
 		passField = new JTextField();
+		final JLabel output = new JLabel("Failed, please try again");
+		output.setForeground(Color.RED);
+		output.setVisible(false);
 	   
-	   JButton nextAction;
+	   JButton nextAction; // next action to take
 	   if(newUserFlag)  {
 		   nextAction = new JButton("Register");
 	   }else {
@@ -87,7 +91,7 @@ public class LoginPage extends JPanel {
        nextAction.setLocation(300, 300);
        nextAction.setSize(150, 50);
 	      
-	   // creating layout to align labels with textfields
+	   // creating layout to align labels with text fields
        GroupLayout groupLayout = new GroupLayout(this);
        this.setLayout(groupLayout);
        groupLayout.setAutoCreateGaps(true);
@@ -96,43 +100,57 @@ public class LoginPage extends JPanel {
 	       
        // aligning along horizontal axis
        GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
-       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userLabel).addComponent(passLabel));
-       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userField).addComponent(passField).addComponent(nextAction));
+       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userLabel).addComponent(passLabel).addComponent(nextAction));
+       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userField).addComponent(passField).addComponent(output));
        groupLayout.setHorizontalGroup(hGroup);
 	    // aligning along vertical axis (read documentation for more detail)   
        GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
        vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(userLabel).addComponent(userField));
        vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(passLabel).addComponent(passField));
-       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nextAction));
+       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nextAction).addComponent(output));
        groupLayout.setVerticalGroup(vGroup);
-	       
+	     
+       // action to take after login or register buttons were pressed
        nextAction.addActionListener(new ActionListener() {
     	   public void actionPerformed(ActionEvent a){
-    		   if(newUserFlag)  {    		   
-        		   
-        		   
-  	             
-    			 // TODO register new user  
+    		   if(newUserFlag)  {    		    	             
+       			   client.registerUser(userField.getText(), passField.getText());
+	               try {
+	            	   Thread.sleep(1000);
+	               } catch (InterruptedException e) {
+					e.printStackTrace();
+	               }
+	               
+	               if(client.registered) {
+	            	   output.setVisible(false);
+	            	   client.setUser(userField.getText());
+	            	   System.out.println("registration verified");
+	            	   setCloseOperation();
+	               } else {
+	            	   System.out.println("registration not verified");
+	            	   output.setVisible(true);
+	            	   
+	               } 
     		   }else{
     			   client.verifyUser(userField.getText(), passField.getText());
 	               try {
 	            	   Thread.sleep(1000);
 	               } catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 	               }
 	               
 	               if(client.verified) {
+	            	   output.setVisible(false);
 	            	   client.setUser(userField.getText());
 	            	   System.out.println("login verified");
 	            	   setCloseOperation();
-	            	   // proceed
 	               } else {
 	            	   System.out.println("login not verified");
+	            	   output.setVisible(true);
 	               } 
     		   }
-	           } 
-	       });
+	        } 
+       });
 		
 	}
 	

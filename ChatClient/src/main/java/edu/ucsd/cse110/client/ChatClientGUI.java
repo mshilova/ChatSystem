@@ -6,7 +6,8 @@ public class ChatClientGUI extends JFrame {
 
 	private ChatClient client;  // ChatClient reference
 
-	private LoginPage loginPage;
+	private LoginPageGUI loginPage;
+	private ChatPageGUI chatPage;
 	
 	public ChatClientGUI(ChatClient chatClient) {
 		client = chatClient; // need for the reference to the clients methods
@@ -17,8 +18,31 @@ public class ChatClientGUI extends JFrame {
 		// exit on close
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		loginPage = new LoginPage(this, client); // making login page panel
-		this.add(loginPage);
+		
+		
+		// adding the main chat panel
 	}
 	
+	/*
+	 * 
+	 */
+	public void start()  {
+		loginPage = new LoginPageGUI(this, client); // making login page panel
+		this.add(loginPage);
+		loginPage.log();
+		// continue verifying that login was successful
+		while(!(client.verified || client.registered)) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		doChat();
+		
+	}
+	
+	public void doChat()  {
+		System.out.println("inside doChat");
+	}
 }
