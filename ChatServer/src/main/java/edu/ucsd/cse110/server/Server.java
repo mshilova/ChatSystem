@@ -19,7 +19,7 @@ import org.springframework.jms.core.MessageCreator;
 
 public class Server {
 
-	private LoginManager manager;
+	protected LoginManager manager;
 	private Authenticator authenticator;
 	private String messageType;
 	

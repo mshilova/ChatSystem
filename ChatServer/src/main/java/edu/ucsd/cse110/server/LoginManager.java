@@ -12,13 +12,13 @@ import javax.jms.*;
 
 public class LoginManager{
 	
-    	private static LoginManager manager = null;
+    private static LoginManager manager = null;
 	private Map <String, Destination> onlineClients;
 	private Authenticator authenticator;
 	private MessageProcessor processor;
 
 	
-	private LoginManager(){
+	protected LoginManager(){
 		onlineClients = new HashMap <String, Destination>();
 		authenticator = Authenticator.getInstance();
 		processor = new MessageProcessor();
@@ -78,6 +78,10 @@ public class LoginManager{
 		return onlineClients.containsKey(user);
 	}
 	
+	protected void logAllOff()
+	{
+		onlineClients.clear();
+	}
 	
 
 		  
