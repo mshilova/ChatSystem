@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 
@@ -16,7 +17,8 @@ public class LoginPageGUI extends JPanel {
 
 	private JButton newUser, existingUser; // buttons for user choice / login
 	private JButton Enter; // generic button
-	private JTextField userField, passField; // text fields to hold user name and
+	private JTextField userField;
+	private JPasswordField passField; // text fields to hold user name and
 	                                       // password
 	private JFrame frame;
 	private ChatClient client;
@@ -76,7 +78,7 @@ public class LoginPageGUI extends JPanel {
 		JLabel userLabel = new JLabel("Username: ");
 		userField = new JTextField();
 		JLabel passLabel = new JLabel("Password: ");
-		passField = new JTextField();
+		passField = new JPasswordField();
 		final JLabel output = new JLabel("Failed, please try again");
 		output.setForeground(Color.RED);
 		output.setVisible(false);
@@ -114,7 +116,7 @@ public class LoginPageGUI extends JPanel {
        nextAction.addActionListener(new ActionListener() {
     	   public void actionPerformed(ActionEvent a){
     		   if(newUserFlag)  {    		    	             
-       			   client.registerUser(userField.getText(), passField.getText());
+       			   client.registerUser(userField.getText(), new String(passField.getPassword()));
 	               try {
 	            	   Thread.sleep(1000);
 	               } catch (InterruptedException e) {
@@ -132,7 +134,7 @@ public class LoginPageGUI extends JPanel {
 	            	   
 	               } 
     		   }else{
-    			   client.verifyUser(userField.getText(), passField.getText());
+    			   client.verifyUser(userField.getText(), new String(passField.getPassword()));
 	               try {
 	            	   Thread.sleep(1000);
 	               } catch (InterruptedException e) {
