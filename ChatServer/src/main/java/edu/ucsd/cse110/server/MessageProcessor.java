@@ -44,9 +44,6 @@ public class MessageProcessor {
 	if(temp.length < 1)
 	    return null;
 	
-	if(temp[0].length() < Constants.MINFIELDLENGTH)
-	    return null;
-	
 	return temp[0];
     }
 }

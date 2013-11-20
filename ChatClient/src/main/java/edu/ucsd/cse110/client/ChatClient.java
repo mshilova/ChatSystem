@@ -1,6 +1,9 @@
 package edu.ucsd.cse110.client;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -36,7 +39,10 @@ public class ChatClient implements MessageListener {
 	private TopicSession topicSession;
 	private ArrayList<TopicPublisher> publisherList = new ArrayList<TopicPublisher>();
 	private ArrayList<TopicSubscriber> subscriberList = new ArrayList<TopicSubscriber>();
+	private ArrayList<String> pendingInvitations = new ArrayList<String>();
 	private ArrayList<String> chatRooms = new ArrayList<String>();
+	private  Scanner input = new Scanner( System.in );
+	private boolean invitationPending;
 	
 	public ChatClient(
 			Queue incomingQueue, 
@@ -313,11 +319,30 @@ public class ChatClient implements MessageListener {
 	
 	public void acceptInvite( String chatRoom ) throws JMSException {
 		
+		boolean invited = false;
+		
+		for ( String room : pendingInvitations ) {
+			if ( room.equals( chatRoom ) ) {
+				invited = true;
+				pendingInvitations.remove( room );
+				break;
+			}
+		}
+		
+		if ( ! invited ) {
+			System.err.println( "You were not invited to room: " + chatRoom );
+			return;
+		}
+		
 		setupChatRoomTopic( chatRoom );
 		chatRooms.add( chatRoom );
 		
 		sendServer( Constants.ACCEPTEDINVITE, this.currentUser + " " + chatRoom ); // necessary to add username to ChatRoom's list of users
 		
+	}
+	
+	public void addInvitation( String room ) {
+		pendingInvitations.add( room );
 	}
 	
 	
@@ -355,16 +380,9 @@ public class ChatClient implements MessageListener {
 	    else if ( Constants.INVITATION.equals( type ) ) {
 	    	String invite[] = ((TextMessage) message).getText().split( " " ); 
 	    	System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
-	    	System.out.println( "Would you like to accept? Enter 'yes' or 'no'" );
-	    	
-	    	Scanner input = new Scanner( System.in );
-	    	String answer = input.nextLine();
-	    	input.close();
-	    	
-	    	if ( "yes".equalsIgnoreCase( answer ) ) {
-	    		acceptInvite( invite[1] );  // invite[1] is the room name 
-	    	}	    	
-	    	
+	    	System.out.println( "Would you like to accept? Enter 'accept' or 'accept chat_room_name'" );
+	    
+	    	pendingInvitations.add( invite[1] );  // invite[1] is the room name 	    	
 	    	
 	    }
 			
@@ -500,7 +518,7 @@ public class ChatClient implements MessageListener {
 	              inputMessage.substring(inputMessage.indexOf(" ")+1));
 	        }
 	        
-	      } else if ( chatRoomEntered( inputMessage.substring( 0, inputMessage.indexOf(" ") ) ) ) {
+	      } else if ( inputMessage.contains( " " ) && chatRoomEntered( inputMessage.substring( 0, inputMessage.indexOf(" ") ) ) ) {
 	    	  String roomName = inputMessage.substring( 0, inputMessage.indexOf(" ") );
 	    	  publishMessageToChatRoom( roomName, inputMessage.substring( roomName.length() + 1 ) ); 
 	      }
@@ -521,8 +539,21 @@ public class ChatClient implements MessageListener {
 	    		  continue;
 	    	  }
 	    	  
-	    	  sendInvitation( invitation[1], invitation[2] ); // passing in the username and the room name
+	    	  sendInvitation( invitation[2], invitation[1] ); // passing in the username and the room name
 	    	  
+	      }else if( inputMessage.startsWith("accept" ) ){
+	    	  if( inputMessage.equals("accept") && 1 == pendingInvitations.size() ){
+	    		  acceptInvite( pendingInvitations.get(0) );
+	    	  }else if( inputMessage.contains(" ") ){
+	    		  String acceptRoom[] = inputMessage.split(" ");
+	    		  if( 2 != acceptRoom.length ){
+	    			  System.err.println( "Wrong amout of arguments, use keywork 'accept' followed by a chat room name" );
+	    			  continue;
+	    		  }
+	    		  acceptInvite( acceptRoom[1] );
+	    	  }else{
+	    		  System.err.println("Invalid command. Did you mean 'accept chatRoomName' ? Please enter the command again." );
+	    	  }
 	      }
 	      
 	      else {

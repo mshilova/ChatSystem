@@ -12,6 +12,8 @@ import javax.jms.Session;
 
 
 
+import javax.jms.TextMessage;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.core.JmsTemplate;
@@ -47,25 +49,36 @@ public class Server {
 		    messageType = message.getJMSType();
 		
 		    if(messageType.equals(Constants.VERIFYUSER)) {
-			update = manager.logInUser(message);
-			send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
-	         
+		    	update = manager.logInUser(message);
+		    	send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
 		    } else if(messageType.equals(Constants.REGISTERUSER)) {
-			update = authenticator.registerUser(message);
-			send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
-			update = manager.logInUser(message);
-			send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
-			
-		    } else if(messageType.equals(Constants.LISTCHATROOMS)) {
-			// TODO send a list of chat rooms back to the client
-			
+		    	update = authenticator.registerUser(message);
+		    	send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
+		    	update = manager.logInUser(message);
+		    	send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
 		    } else if(messageType.equals(Constants.CREATECHATROOM)) {
-			// TODO parse message for chat room name
-
+		    	if ( message instanceof TextMessage ) {
+		    		
+		    		String roomName = ((TextMessage)message).getText();
+		    		
+		    		if ( ChatRoomManager.chatRoomExists( roomName ) ) 
+		    			send( message.getJMSReplyTo() , false, Constants.CREATECHATROOM ); 
+		    		else {
+		    			new ChatRoom( roomName );    // will get added to the ClientManager via the constructor
+		    			send( message.getJMSReplyTo() , true, Constants.CREATECHATROOM ); 
+		    		}
+		    	}
+			    else {
+					System.err.println( "Message received in server was not a TextMessage" );
+					return;
+				}
+			    	
+		    } else if ( Constants.ACCEPTEDINVITE.equals( messageType ) ) {
+		    	String userAndRoom[] = ((TextMessage) message).getText().split( " " );		    
+		    
 		    } else if(messageType.equals(Constants.LOGOFF)) {
-			update = manager.logOffUser(message);
-			System.out.println(update);
-			//send(message.getJMSReplyTo(), update, Constants.LOGOFF);
+		    	update = manager.logOffUser(message);
+		    	System.out.println(update);
 		    } else {
 			throw new Exception("Server received a message " 
 					   +"with unrecognized jms type.");

@@ -111,6 +111,7 @@ public class ChatClientApplication {
 		try {
 			client.processUserInput();	
 		} catch ( Exception e ) {
+			e.printStackTrace();
 			System.out.println( "An internal error occurred and the system has crashed. Please log in again." );
 			client.sendServer( Constants.LOGOFF, client.getUser() );
 			System.exit(0);
