@@ -14,55 +14,60 @@ import javax.jms.Message;
 
 public class Authenticator {
     
-    	private static Authenticator authenticator = null;
+    private static Authenticator authenticator = null;
 	private Map <String, String> userData;
 	private MessageProcessor processor;
 	private final String filepath = "UserPass.list";	// should be fine if this file is in the same directory as Server.java
 	
 	private Authenticator(){
 	    try {
-		createUserData();
-		processor = new  MessageProcessor();
+	    	createUserData();
+	    	processor = new  MessageProcessor();
 	    } catch (IOException e) {
-		System.out.println("userData creation error: " + e.getMessage());
+	    	System.out.println("userData creation error: " + e.getMessage());
 	    }
 	}
 	
 	public static Authenticator getInstance(){
 	    if(authenticator == null)
-		authenticator = new Authenticator();
+	    	authenticator = new Authenticator();
 	    return authenticator;
 	}
 	
-	protected boolean authenticate(String username, String password){
+	public boolean authenticate(String username, String password){
 	
 	    if(null == username || null == password )
-		return false;
-	    
+	    	return false;
+	    	
 	    if(username.length() < Constants.MINFIELDLENGTH ||
 	       password.length() < Constants.MINFIELDLENGTH  )
-		return false;
+	    	return false;
 	    
 	    if( userData.containsKey(username) ){
-		if( userData.get(username).equals(password) ){
-	    	    return true;
+	    	if( userData.get(username).equals(password) ){
+	    		return true;
 	    	}
 	    }	 
 	    return false;
 	}
 	
-	protected boolean registerUser(Message msg){    
+	public boolean registerUser(Message msg){    
 	    BufferedWriter writer;
 	    String[] userInfo;
 
 	    try{
-		userInfo = processor.loginMessage(msg);
+	    	userInfo = processor.twoArgs(msg);
 		
-		if(userInfo == null)
-		    return false;	
-		if( null != userData.get(userInfo[0]) )
-	    	    return false;
-		
+	    	if(userInfo == null)
+	    		return false;	
+	    	
+	    	if( null != userData.get(userInfo[0]) )
+	    		return false;
+	    	
+		    if(userInfo[0].length() < Constants.MINFIELDLENGTH ||
+		 	   userInfo[1].length() < Constants.MINFIELDLENGTH  )
+		 	    	return false;
+		 	   
 	    	writer = new BufferedWriter(new FileWriter(filepath,true));
 	    	writer.newLine();
 	    	writer.append(userInfo[0] + " " + userInfo[1]);

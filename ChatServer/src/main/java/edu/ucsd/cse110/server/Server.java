@@ -24,6 +24,7 @@ public class Server {
 	protected LoginManager manager;
 	private Authenticator authenticator;
 	private String messageType;
+	private MessageProcessor processor;
 	
 	/**
 	 * Constructor
@@ -31,7 +32,8 @@ public class Server {
 	public Server() {
 	    	manager = LoginManager.getInstance();
 	    	authenticator = Authenticator.getInstance();
-		messageType = null;
+	    	processor = new MessageProcessor();
+	    	messageType = null;
 	}
 	
 	
@@ -56,26 +58,22 @@ public class Server {
 		    	send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
 		    	update = manager.logInUser(message);
 		    	send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
-		    } else if(messageType.equals(Constants.CREATECHATROOM)) {
-		    	if ( message instanceof TextMessage ) {
-		    		
-		    		String roomName = ((TextMessage)message).getText();
-		    		
-		    		if ( ChatRoomManager.chatRoomExists( roomName ) ) 
-		    			send( message.getJMSReplyTo() , false, Constants.CREATECHATROOM ); 
-		    		else {
-		    			new ChatRoom( roomName );    // will get added to the ClientManager via the constructor
-		    			send( message.getJMSReplyTo() , true, Constants.CREATECHATROOM ); 
-		    		}
+		    } else if(messageType.equals(Constants.CREATECHATROOM)) {    	
+		    	String roomName = processor.oneArg(message);
+		    	update = !ChatRoomManager.chatRoomExists( roomName );
+		    	send( message.getJMSReplyTo() , update, Constants.CREATECHATROOM ); 		  
+		    	if(update){
+		    		ChatRoomManager.addChatRoom(new ChatRoom( roomName )); 
+		    		update = false;
 		    	}
-			    else {
-					System.err.println( "Message received in server was not a TextMessage" );
-					return;
-				}
-			    	
 		    } else if ( Constants.ACCEPTEDINVITE.equals( messageType ) ) {
-		    	String userAndRoom[] = ((TextMessage) message).getText().split( " " );		    
-		    
+		    	String roomAndUser[] = processor.twoArgs(message);
+		    	update = ChatRoomManager.chatRoomExists(roomAndUser[0]);
+		    	send( message.getJMSReplyTo(), update, Constants.ACCEPTEDINVITE );
+		    	if(update){
+		    		ChatRoomManager.addUserToRoom(roomAndUser[1], roomAndUser[0]);
+		    		update = false;
+		    	}    
 		    } else if(messageType.equals(Constants.LOGOFF)) {
 		    	update = manager.logOffUser(message);
 		    	System.out.println(update);
@@ -87,15 +85,14 @@ public class Server {
 		
 		if(update){
 		    Map<String, Destination> userMap = manager.getAllOnlineUsers();
-		    
-		    for(String key : manager.getAllOnlineUsers().keySet()){
-		    	send(userMap.get(key), manager.getAllOnlineUsers(), 
-		    	     Constants.ONLINEUSERS);
+		    Map<String, Destination> toSend = manager.getAllOnlineUsers();
+		    for(String key : userMap.keySet()){
+		    	send(userMap.get(key), toSend, Constants.ONLINEUSERS);
 		    }
 		}
 	}
 	
-	
+
 	/**
 	 * Sends to the client a reply to a previously received request
 	 * @param jmsType

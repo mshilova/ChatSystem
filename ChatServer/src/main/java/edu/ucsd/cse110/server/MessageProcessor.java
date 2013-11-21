@@ -12,21 +12,17 @@ public class MessageProcessor {
      * @return array of tokens in the msg text. Splits on " ".
      * @throws JMSException
      */
-    public String[] loginMessage(Message msg) throws JMSException{
+    public String[] twoArgs(Message msg) throws JMSException{
 	
-	if( !(msg instanceof TextMessage))
-	    return null;
+    	if( !(msg instanceof TextMessage))
+    		return null;
 	
-	String[] temp = ((TextMessage) msg).getText().split(" ");
+    	String[] temp = ((TextMessage) msg).getText().split(" ");
 	
-	if(temp.length < 2 )
-	    return null;
-	
-	if(temp[0].length() < Constants.MINFIELDLENGTH || 
-	   temp[1].length() < Constants.MINFIELDLENGTH   )
-	   return null;
-	
-	return temp;
+    	if(temp.length < 2 )
+    		return null;
+    	
+    	return temp;
     }
     
     /**
@@ -35,15 +31,15 @@ public class MessageProcessor {
      * @return First token in msg object's text.
      * @throws JMSException
      */
-    public String logOffMessage(Message msg) throws JMSException{
-	if( !(msg instanceof TextMessage))
-	    return null;
+    public String oneArg(Message msg) throws JMSException{
+    	if( !(msg instanceof TextMessage))
+    		return null;
 	
-	String[] temp = ((TextMessage)msg).getText().split(" ");
+    	String[] temp = ((TextMessage)msg).getText().split(" ");
 	
-	if(temp.length < 1)
-	    return null;
+    	if(temp.length < 1)
+    		return null;
 	
-	return temp[0];
+    	return temp[0];
     }
 }
