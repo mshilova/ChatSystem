@@ -55,9 +55,11 @@ public class Server {
 		    	send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
 		    } else if(messageType.equals(Constants.REGISTERUSER)) {
 		    	update = authenticator.registerUser(message);
-		    	send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
-		    	update = manager.logInUser(message);
-		    	send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
+		    	send(message.getJMSReplyTo(), update, Constants.REGISTERUSER);
+		    	if(update) {
+			    	update = manager.logInUser(message);
+			    	send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
+		    	}
 		    } else if(messageType.equals(Constants.CREATECHATROOM)) {    	
 		    	String roomName = processor.oneArg(message);
 		    	update = !ChatRoomManager.chatRoomExists( roomName );
