@@ -144,6 +144,7 @@ public class LoginPageGUI extends JPanel {
 	               if(client.verified) {
 	            	   output.setVisible(false);
 	            	   client.setUser(userField.getText());
+	            	   System.out.println("User set: " + client.getUser());
 	            	   System.out.println("login verified");
 	            	   setCloseOperation();
 	               } else {

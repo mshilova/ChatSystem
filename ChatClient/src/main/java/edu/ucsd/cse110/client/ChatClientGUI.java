@@ -40,6 +40,15 @@ public class ChatClientGUI extends JFrame {
 			System.out.println("verified: " + client.verified);
 			System.out.println("registered: " + client.registered);
 		}while(!(client.verified || client.registered));
+		 
+		 try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		 System.out.println("before dochat: " + client.getUser());
 		doChat();
 		
 	}
@@ -47,8 +56,9 @@ public class ChatClientGUI extends JFrame {
 	public void doChat()  {
 		
 		System.out.println("inside doChat");
+		 System.out.println("in dochat: " + client.getUser());
 		this.remove(loginPage); // clear the frame
-		
+		this.setTitle("Welcome " + client.getUser());
 		this.validate();
 		this.repaint();
 		
@@ -56,7 +66,6 @@ public class ChatClientGUI extends JFrame {
         this.add(chatPage); // adding main chat page to the frame
         this.validate();
         this.repaint();
-
 		
 	}
 	/*
