@@ -192,6 +192,14 @@ public class ChatClient implements MessageListener {
 	
 	
 	/**
+	 * 
+	 */
+	public Map<String,Destination> getOnlineUsersMap() {
+		return onlineUsers;
+	}
+	
+	
+	/**
 	 * Contact the server to request a list of all users who are online
 	 */
 	public void listOnlineUsers() {
