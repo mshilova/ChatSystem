@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.jms.*;
 
 
-public class LoginManager{
+public class LoginManager implements Manager{
 	
     private static LoginManager manager = null;
 	private Map <String, Destination> onlineClients;
@@ -26,22 +26,23 @@ public class LoginManager{
 	    return manager;
 	}
 	
-	public Map<String, Destination> getAllOnlineUsers (){     
+
+	public Map<String, Destination> getAllItems(){     
 	    Map <String, Destination> retMap = new HashMap<String,Destination>();
 	    retMap.putAll(onlineClients);
 	    
 	    return retMap;
 	}  
+
 	
-	public boolean logOffUser(Message msg){
+	public boolean removeItem(Message message){
 	    String user;
 	    
 	    try {
-	    	user = processor.oneArg(msg);
+	    	user = processor.extractName(message);
 		
-	    	if(null == user)
-	    		return false;	
-	    
+			if(null == user)
+				return false;	
 	    	if(onlineClients.containsKey(user)){
 	    		onlineClients.remove(user);
 	    		return true;
@@ -51,35 +52,38 @@ public class LoginManager{
 	    }
 	    return false;
 	}
-	    
-	public boolean logInUser(Message msg){
+	 
+	public boolean addItem(Message message){
 	    String[] userInfo;
 	   
 	    try {
-	    	userInfo = processor.twoArgs(msg);
+		userInfo = processor.extractTwoArgs(message);
 		
-	    	if(userInfo == null)
-	    		return false;		
-	    	if(onlineClients.containsKey(userInfo[0]))
-	    		return false;
-	    	if(authenticator.authenticate(userInfo[0], userInfo[1])){
-	    		onlineClients.put(userInfo[0],msg.getJMSReplyTo());
-	    		return true;
-	    	}
+		if(userInfo == null)
+		    return false;	
+		
+		if(userInfo[0].length() < Constants.MINFIELDLENGTH || 
+		   userInfo[1].length() < Constants.MINFIELDLENGTH   )
+			return false;
+	
+		if(onlineClients.containsKey(userInfo[0]))
+		    return false;
+		
+		if(authenticator.authenticate(userInfo[0], userInfo[1])){
+		    onlineClients.put(userInfo[0], message.getJMSReplyTo());
+		    return true;
+		}
 	    } catch (JMSException e) {} 
 	    return false;
 	}
 
-	public boolean checkUserOnline(String user){
-		return onlineClients.containsKey(user);
+	public boolean containsItem(String item){
+		return onlineClients.containsKey(item);
 	}
 	
-	public void logAllOff()
-	{
+	public void removeAllItems(){
 		onlineClients.clear();
 	}
-	
-
 		  
 }
  

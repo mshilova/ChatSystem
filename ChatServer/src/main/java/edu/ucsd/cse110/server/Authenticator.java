@@ -30,7 +30,7 @@ public class Authenticator {
 	
 	public static Authenticator getInstance(){
 	    if(authenticator == null)
-	    	authenticator = new Authenticator();
+		authenticator = new Authenticator();
 	    return authenticator;
 	}
 	
@@ -38,14 +38,10 @@ public class Authenticator {
 	
 	    if(null == username || null == password )
 	    	return false;
-	    	
-	    if(username.length() < Constants.MINFIELDLENGTH ||
-	       password.length() < Constants.MINFIELDLENGTH  )
-	    	return false;
 	    
 	    if( userData.containsKey(username) ){
 	    	if( userData.get(username).equals(password) ){
-	    		return true;
+	    	    return true;
 	    	}
 	    }	 
 	    return false;
@@ -56,18 +52,15 @@ public class Authenticator {
 	    String[] userInfo;
 
 	    try{
-	    	userInfo = processor.twoArgs(msg);
+	    	userInfo = processor.extractTwoArgs(msg);
 		
 	    	if(userInfo == null)
 	    		return false;	
-	    	
-	    	if( null != userData.get(userInfo[0]) )
-	    		return false;
-	    	
-		    if(userInfo[0].length() < Constants.MINFIELDLENGTH ||
-		 	   userInfo[1].length() < Constants.MINFIELDLENGTH  )
-		 	    	return false;
-		 	   
+	    	if( userData.containsKey(userInfo[0]) )
+	    	    return false;
+			if(userInfo[0].length() < Constants.MINFIELDLENGTH || 
+			   userInfo[1].length() < Constants.MINFIELDLENGTH   )
+				return false;
 	    	writer = new BufferedWriter(new FileWriter(filepath,true));
 	    	writer.newLine();
 	    	writer.append(userInfo[0] + " " + userInfo[1]);

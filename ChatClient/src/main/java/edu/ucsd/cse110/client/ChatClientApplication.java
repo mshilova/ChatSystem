@@ -82,7 +82,7 @@ public class ChatClientApplication {
 	 * Terminal output instructions on how to format input commands
 	 */
 	public static void printHelp() {
-		System.out.println("# Type 'listOnlineUsers' to list all online users.");
+		System.out.println("# Type 'listOnlineUsers' to testTestlist all online users.");
 		System.out.println("# Type 'listChatRooms' to list all chat rooms.");
 		System.out.println("# Type 'createChatRoom' followed by the name of the chat room to create a chat room.");
 		System.out.println("# Type 'broadcast' followed by your message to broadcast to all online users.");
@@ -95,25 +95,23 @@ public class ChatClientApplication {
 	
 	
 	public static void main(String[] args) {
-		
+				
 		try {
 			client = wireClient();
 			System.out.println("ChatClient wired.");
 		} catch (JMSException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		
 		try {
-			client.processUserInput();	
+			client.run();	
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			System.out.println( "An internal error occurred and the system has crashed. Please log in again." );
-			client.sendServer( Constants.LOGOFF, client.getUser() );
+			System.err.println( "An internal error occurred and the system has crashed. Please log in again." );
+			client.sendServer( Constants.LOGOFF, client.getUser().getUsername() );
 			System.exit(0);
 		}
 	

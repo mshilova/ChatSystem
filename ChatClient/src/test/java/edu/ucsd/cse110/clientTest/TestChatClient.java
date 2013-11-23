@@ -133,7 +133,7 @@ package edu.ucsd.cse110.clientTest;
 //        Topic broadcastTopic = topicSession.createTopic(Constants.BROADCAST);
 //        TopicPublisher publisher = topicSession.createPublisher(broadcastTopic);
 //        TopicSubscriber subscriber = topicSession.createSubscriber(broadcastTopic);
-//        
+//        )
 //        return new ChatClient(session,producer,consumer,incomingQueue,destQueue,topicSession,publisher,subscriber,broadcastTopic);
 //	}
 //	

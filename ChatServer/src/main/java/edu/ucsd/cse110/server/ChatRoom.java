@@ -1,45 +1,128 @@
 package edu.ucsd.cse110.server;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jms.Destination;
 
 
-public class ChatRoom {
-	
-	private ArrayList<String> userList;
+public class ChatRoom implements Serializable{
+
+	/* serial ID is used for object message. Default should work fine */
+	private static final long serialVersionUID = 1L;
 	private String name;
-
+	private Map<String, Destination> roomUsers;
 	
-	public ChatRoom( String name ) {	
-		userList = new ArrayList<String>();
+	
+	/**
+	 * 	Normal constructor
+	 * @param name
+	 */
+	public ChatRoom(String name){
+		roomUsers = new HashMap<String, Destination>();
 		this.name = name;
 	}
 	
 	
+	/**
+	 * 	Copy constructor
+	 * @param name
+	 * @param roomUsrs
+	 */
+	public ChatRoom(ChatRoom room){
+		this.roomUsers = room.getAllUsers();
+		this.name = room.getName();	
+	}
+	
+	
+	/**
+	 * 
+	 * @return map of all users in chatroom
+	 */
+	public Map<String, Destination> getAllUsers() {
+	    Map <String, Destination> retMap = new HashMap<String,Destination>();
+	    
+	    retMap.putAll(roomUsers);
+	    return retMap;
+	}
+
+	/**
+	 * removes a user from the room
+	 * @param user
+	 * @return 
+	 */
+	public boolean removeUser(String user){
+		    
+		if(null == user)
+			return false;	
+		if(roomUsers.containsKey(user)){
+			roomUsers.remove(user);
+		    return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * adds a user & their destination to the room
+	 * @param user
+	 * @param dest
+	 * @return
+	 */
+	public boolean addUser(String user, Destination dest) {
+		
+		if(user == null || dest == null)
+	    	return false;	
+	    if(roomUsers.containsKey(user))
+	    	return false;
+	    
+	    roomUsers.put(user, dest);
+	
+	    return true;
+
+	}
+
+
+	/**
+	 * checks if the rooms has a user with name user
+	 * @param user
+	 * @return
+	 */
+	public boolean containsUser(String user) {
+		return roomUsers.containsKey(user);
+	}
+
+
+	/**
+	 * removes all users from the room
+	 */
+	public void removeAllUsers() {
+		roomUsers.clear();
+	}
+
+	/**
+	 * gets the room name
+	 * @return
+	 */
 	public String getName() {
-		return this.name;
+		return name;
 	}
-	
-	
-	public boolean isEmpty() {
-		return userList.isEmpty();
+
+	/**
+	 * sets the room name
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
-	
-	
-	public void addUser( String user ) {
-	
-		if ( ! userList.contains( user ) )
-			userList.add( user );
+
+
+	/**
+	 * returns the number of users in the room
+	 * @return
+	 */
+	public int numUsers(){
+		return roomUsers.size();
 	}
-	
-    public ArrayList<String> whosInChatRoom() {
-    	
-    	ArrayList<String> listOfUsers = new ArrayList<String>();
-    	
-    	for ( int i = 0; i < userList.size(); ++i )
-     	  listOfUsers.add( userList.get( i ) );
-    	
-    	return listOfUsers; 
-    }
-    		
-    
 }
