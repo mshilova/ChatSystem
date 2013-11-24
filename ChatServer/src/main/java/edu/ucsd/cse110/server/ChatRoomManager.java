@@ -77,10 +77,8 @@ public class ChatRoomManager implements Manager{
 					room.removeUser(userAndRoom[0]);
 					return new ChatRoom(room);
 				}
-			}
-			
+			}		
 		}catch(JMSException e){ e.printStackTrace(); }
-		
 		return null;
 	}
 

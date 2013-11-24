@@ -20,6 +20,8 @@ public class ChatRoom implements Serializable{
 	 * @param name
 	 */
 	public ChatRoom(String name){
+		if(name == null)
+			throw new IllegalArgumentException();
 		roomUsers = new HashMap<String, Destination>();
 		this.name = name;
 	}
@@ -31,6 +33,9 @@ public class ChatRoom implements Serializable{
 	 * @param roomUsrs
 	 */
 	public ChatRoom(ChatRoom room){
+		if(room == null)
+			throw new IllegalArgumentException();
+		
 		this.roomUsers = room.getAllUsers();
 		this.name = room.getName();	
 	}
@@ -75,15 +80,18 @@ public class ChatRoom implements Serializable{
 		if(user == null || dest == null)
 	    	return false;	
 	    if(roomUsers.containsKey(user))
-	    	return false;
-	    
+	    	return false;    
 	    roomUsers.put(user, dest);
 	
 	    return true;
 
 	}
 
-
+	public Destination getUserDestination(String name){
+		if(null == name)
+			throw new IllegalArgumentException();
+		return roomUsers.get(name);
+	}
 	/**
 	 * checks if the rooms has a user with name user
 	 * @param user
@@ -114,6 +122,9 @@ public class ChatRoom implements Serializable{
 	 * @param name
 	 */
 	public void setName(String name) {
+		if(name == null)
+			throw new IllegalArgumentException();
+		
 		this.name = name;
 	}
 

@@ -49,16 +49,15 @@ public class Server {
 		  
 		    	case Constants.VERIFYUSER:
 		    		update = loginManager.addItem(message);
+		    		System.out.println( update );
 		    		send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
 		    		break;
 		    		
 		    	case Constants.REGISTERUSER:
 		    		update = authenticator.registerUser(message);
-		    		send(message.getJMSReplyTo(), update, Constants.REGISTERUSER);
-		    		if(update) {	// online log in user if registration successful
-		    			update = loginManager.addItem(message);
-		    			send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
-		    		}
+		    		send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
+		    		update = loginManager.addItem(message);
+		    		send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
 		    		break;
 		    		
 		    	case Constants.CREATECHATROOM:

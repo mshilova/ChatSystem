@@ -53,7 +53,6 @@ public class Authenticator {
 
 	    try{
 	    	userInfo = processor.extractTwoArgs(msg);
-		
 	    	if(userInfo == null)
 	    		return false;	
 	    	if( userData.containsKey(userInfo[0]) )
@@ -81,20 +80,15 @@ public class Authenticator {
 	  * @throws IOException
      */
  	private void createUserData() throws IOException {
- 		int space=0;
- 		String userName;
- 		String password;
  		String line;
+ 		String[] userInfo;
 		  		
 		userData = new HashMap<String,String>();
  		BufferedReader reader = new BufferedReader(new FileReader(filepath));
  		
 		while( null != (line = reader.readLine()) ){
-			line     = line.trim();
-		  	space    = line.indexOf(" ");
-	  		userName = line.substring(0, space);
-	  		password = line.substring(space+1,line.length());
-	  		userData.put(userName, password);
+			userInfo = line.split(" ");
+			userData.put(userInfo[0], userInfo[1]);
 		}
 		reader.close();
 	}
