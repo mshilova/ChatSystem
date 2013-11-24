@@ -8,10 +8,8 @@ public class GuiPanelSouth extends JPanel {
 	
 	public GuiPanelSouth(GuiChatPage page) {
 		this.page = page;
-		
-		this.add(new GuiInputBox(page.getFrame()));
-		
-		this.setVisible(true);
+		this.setSize(800, 100);
+		this.add(new GuiInputBox(page));
 	}
 
 }

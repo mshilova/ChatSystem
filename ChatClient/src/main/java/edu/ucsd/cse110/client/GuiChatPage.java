@@ -7,13 +7,14 @@ import javax.swing.JPanel;
 public class GuiChatPage extends JPanel {
 
 	private ChatClientGUI frame;
+	private GuiPanelEast guiPanelEast;
 	
 	public GuiChatPage(ChatClientGUI frame) {
 		this.frame = frame;
         this.setSize(800, 600);
         this.setLayout(new BorderLayout());
         
-        this.add(new GuiPanelEast(this), BorderLayout.EAST);
+        this.add(guiPanelEast = new GuiPanelEast(this), BorderLayout.EAST);
         this.add(new GuiPanelNorth(this), BorderLayout.NORTH);
         this.add(new GuiPanelSouth(this), BorderLayout.SOUTH);
         this.add(new GuiPanelWest(this), BorderLayout.WEST);
@@ -27,4 +28,7 @@ public class GuiChatPage extends JPanel {
 		this.frame = frame;
 	}
 	
+	public GuiPanelEast getEastPanel() {
+		return guiPanelEast;
+	}
 }

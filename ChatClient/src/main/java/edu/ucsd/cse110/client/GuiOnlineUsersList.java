@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -17,7 +18,7 @@ public class GuiOnlineUsersList extends JPanel {
 	
 	private ChatClientGUI frame;
 	private JList<String> onlineUsersList;
-	private  Map<String,Destination> onlineUsers;
+	private Map<String,Destination> onlineUsers;
 
 	static DefaultListModel<String> listModel;
 			
@@ -57,11 +58,15 @@ public class GuiOnlineUsersList extends JPanel {
 		
 	}
 		
-	 private void initComponents() {
-		 listModel = new DefaultListModel<String>();
-		 onlineUsersList = new javax.swing.JList<String>(listModel);
-		 this.add(onlineUsersList);
-   
-	 }
+	private void initComponents() {
+		listModel = new DefaultListModel<String>();
+		onlineUsersList = new javax.swing.JList<String>(listModel);
+		this.add(onlineUsersList);
+	}
+	
+	
+	public List<String> getSelectedUsers() {
+		return onlineUsersList.getSelectedValuesList();
+	}
 	
 }
