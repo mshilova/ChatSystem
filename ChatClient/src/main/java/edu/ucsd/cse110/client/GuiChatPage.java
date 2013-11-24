@@ -10,7 +10,7 @@ public class GuiChatPage extends JPanel {
 	
 	public GuiChatPage(ChatClientGUI frame) {
 		this.frame = frame;
-        this.setSize(600, 400);
+        this.setSize(800, 600);
         this.setLayout(new BorderLayout());
         
         this.add(new GuiPanelEast(this), BorderLayout.EAST);

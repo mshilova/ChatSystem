@@ -51,7 +51,6 @@ public class ChatCommander {
 	    	publisherList.get( 0 ).publish(message);  // using broadcast's publisher 
 	    	System.out.println("Message broadcasted.");
 	    } catch (JMSException e) {
-	   		// TODO Auto-generated catch block
 	   		e.printStackTrace();
 	   	}
 	}
@@ -248,7 +247,6 @@ public void listChatRooms() {
 		message.setJMSReplyTo( client.getQueue() );
 		client.getProducer().send( client.getSession().createQueue(Constants.SERVERQUEUE), message);
 	} catch (JMSException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
 }

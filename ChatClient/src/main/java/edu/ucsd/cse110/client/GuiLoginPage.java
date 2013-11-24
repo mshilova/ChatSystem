@@ -33,20 +33,19 @@ public class GuiLoginPage extends JPanel {
 	public void log()  {
 		
 		newUser = new JButton("New User");
-		newUser.setLocation(250, 120);
+		newUser.setLocation(230, 120);
 		newUser.setSize(150, 50);
 		this.add(newUser);
-		// setting the flag for the new user
 		newUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newUserFlag = true;
+				newUserFlag = true;	// setting the flag for the new user
 				// going to the next page
 				inputPage();
 			}
 		});	
 				
 		existingUser = new JButton("Existing User");
-		existingUser.setLocation(400, 120);
+		existingUser.setLocation(420, 120);
 		existingUser.setSize(150, 50);
 		this.add(existingUser);
 		existingUser.addActionListener(new ActionListener() {
@@ -117,9 +116,9 @@ public class GuiLoginPage extends JPanel {
 	               if(frame.getClient().getUser().getVerified()) {
 	            	   output.setVisible(false);
 	            	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-	            	   System.out.println("registration verified");
+	            	   System.out.println("Registration verified");
 	               } else {
-	            	   System.out.println("registration not verified");
+	            	   System.out.println("Registration not verified");
 	            	   output.setVisible(true);
 	            	   
 	               } 
@@ -134,10 +133,9 @@ public class GuiLoginPage extends JPanel {
 	               if(frame.getClient().getUser().getVerified()) {
 	            	   output.setVisible(false);
 	            	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-	            	   System.out.println("User set: " + frame.getClient().getUser().getUsername());
-	            	   System.out.println("login verified");
+	            	   System.out.println("Login verified");
 	               } else {
-	            	   System.out.println("login not verified");
+	            	   System.out.println("Login not verified");
 	            	   output.setVisible(true);
 	               } 
     		   }

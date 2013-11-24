@@ -216,7 +216,6 @@ public class ChatClient implements MessageListener {
 			message.setJMSReplyTo(incomingQueue);
 			producer.send(session.createQueue(Constants.SERVERQUEUE), message);
 		} catch (JMSException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

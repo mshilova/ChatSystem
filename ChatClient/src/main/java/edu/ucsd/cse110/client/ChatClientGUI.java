@@ -60,10 +60,9 @@ public class ChatClientGUI extends JFrame {
 	
 	
 	public void chatPage()  {
-		System.out.println("inside chatPage");
 		GuiChatPage chatPage = new GuiChatPage(this);
         this.add(chatPage); // adding main chat page to the frame
-        this.setTitle("Welcome " + client.getUser());
+        this.setTitle("Welcome " + client.getUser().getUsername());
         this.validate();
         this.repaint();
 	}
