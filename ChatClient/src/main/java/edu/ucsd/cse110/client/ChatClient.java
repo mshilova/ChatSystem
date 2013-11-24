@@ -76,9 +76,9 @@ public class ChatClient implements MessageListener {
 
 	
 	public void run() throws JMSException {
-		
-		if(useGui())
-			System.exit(0);  // read useGui method header before changing exit()
+		useGui();
+//		if(useGui())
+//			System.exit(0);  // read useGui method header before changing exit()
 		userLogon();         	
 		processor.processUserCommands( this );	
 		
@@ -260,6 +260,13 @@ public class ChatClient implements MessageListener {
 		sendServer(Constants.REGISTERUSER, username + " " + password);
 	}
 	
+	
+	/**
+	 * Contact the server to request a list of all users who are online
+	 */
+	public Map<String,Destination> getOnlineUsers() {
+		return onlineUsers;
+	}
 	
 	/**
 	 * Contact the server to request a list of all users who are online

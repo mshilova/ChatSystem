@@ -5,69 +5,70 @@ import javax.swing.JFrame;
 public class ChatClientGUI extends JFrame {
 
 	private ChatClient client;  // ChatClient reference
-
-	private LoginPageGUI loginPage;
-	private ChatPageGUI chatPage;
 	
 	public ChatClientGUI(ChatClient chatClient) {
 		client = chatClient; // need for the reference to the clients methods
-		// configuring the frame
 		
-		this.setVisible(true);
+		// configuring the frame
 		this.setTitle("Welcome to Chat");
-		this.setSize(600, 400);
+		this.setSize(800, 600);
 		// exit on close
 		this.setCloseOperation();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.setVisible(true);
 	}
+	
+	
+	/*
+	 * Start using the GUI
+	 */
+	public void start()  {
+		loginPage();
+		chatPage();
+	}
+	
 	
 	/*
 	 * Verifying login
 	 */
-	public void start()  {
-		loginPage = new LoginPageGUI(this, client); // making login page panel
+	public void loginPage() {
+		// making login page panel
+		GuiLoginPage loginPage = new GuiLoginPage(this);
 		this.add(loginPage);
 		loginPage.log();
-		// continue verifying that login was successful
-		 do {
-			 
+		
+		// continue verifying until login is successful
+		do {
 			try {
-				System.out.println("verifying login");
+				System.out.println("Verifying login");
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+			} catch(InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println("verified: " + client.verified);
-			System.out.println("registered: " + client.registered);
-		}while(!(client.verified || client.registered));
+			System.out.println("Verification: " + client.getUser().getVerified());
+		} while(!client.getUser().getVerified());
 		 
-		 try {
+		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 
-		 System.out.println("before dochat: " + client.getUser());
-		doChat();
 		
+		this.remove(loginPage);	// clear the frame
 	}
 	
-	public void doChat()  {
-		
-		System.out.println("inside doChat");
-		 System.out.println("in dochat: " + client.getUser());
-		this.remove(loginPage); // clear the frame
-		this.setTitle("Welcome " + client.getUser());
-		this.validate();
-		this.repaint();
-		
-        chatPage = new ChatPageGUI(this, client);
+	
+	public void chatPage()  {
+		System.out.println("inside chatPage");
+		GuiChatPage chatPage = new GuiChatPage(this);
         this.add(chatPage); // adding main chat page to the frame
+        this.setTitle("Welcome " + client.getUser());
         this.validate();
         this.repaint();
-		
 	}
+	
+	
 	/*
 	 * Log out the user when the window is closed.
 	 * Called after user verification.
@@ -76,9 +77,24 @@ public class ChatClientGUI extends JFrame {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		        client.sendServer(Constants.LOGOFF, client.getUser());
-		        System.out.println("closing behavior set");
+		        client.sendServer(Constants.LOGOFF, client.getUser().getUsername());
+		        System.out.println("Closing behavior set");
 		    }
 		});
+	}
+	
+	
+	public void setFrameTitle(String title) {
+		this.setTitle(title);
+	}
+
+
+	public ChatClient getClient() {
+		return client;
+	}
+
+
+	public void setClient(ChatClient client) {
+		this.client = client;
 	}
 }

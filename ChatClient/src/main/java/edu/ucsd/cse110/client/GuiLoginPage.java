@@ -5,30 +5,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 
-public class LoginPageGUI extends JPanel {
+public class GuiLoginPage extends JPanel {
 
 	private JButton newUser, existingUser; // buttons for user choice / login
-	private JButton Enter; // generic button
 	private JTextField userField;
 	private JPasswordField passField; // text fields to hold user name and
 	                                       // password
-	private JFrame frame;
-	private ChatClient client;
+	private ChatClientGUI frame;
 	private boolean newUserFlag; // default existing user
 	
-	
-	public LoginPageGUI(JFrame frame, ChatClient client)  {
-		this.frame = frame; 
-		this.client = client;
-		this.setSize(600, 400);
+	public GuiLoginPage(ChatClientGUI frame)  {
+		this.frame = frame;
+		this.setSize(800, 600);
 		this.setLayout(null);
 	}
 	
@@ -38,7 +33,7 @@ public class LoginPageGUI extends JPanel {
 	public void log()  {
 		
 		newUser = new JButton("New User");
-		newUser.setLocation(120, 120);
+		newUser.setLocation(250, 120);
 		newUser.setSize(150, 50);
 		this.add(newUser);
 		// setting the flag for the new user
@@ -48,11 +43,10 @@ public class LoginPageGUI extends JPanel {
 				// going to the next page
 				inputPage();
 			}
-			
 		});	
 				
 		existingUser = new JButton("Existing User");
-		existingUser.setLocation(300, 120);
+		existingUser.setLocation(400, 120);
 		existingUser.setSize(150, 50);
 		this.add(existingUser);
 		existingUser.addActionListener(new ActionListener() {
@@ -60,13 +54,11 @@ public class LoginPageGUI extends JPanel {
 				// new User flag is false by default
 				// going to the next page
 				inputPage();
-			}
-			
+			}	
 		});
 	}
 	
 	
-
 	public void inputPage() {
 		
 		// changing the title of the frame
@@ -116,37 +108,34 @@ public class LoginPageGUI extends JPanel {
        nextAction.addActionListener(new ActionListener() {
     	   public void actionPerformed(ActionEvent a){
     		   if(newUserFlag)  {    		    	             
-       			   client.registerUser(userField.getText(), new String(passField.getPassword()));
+       			   frame.getClient().registerUser(userField.getText(), new String(passField.getPassword()));
 	               try {
 	            	   Thread.sleep(1000);
 	               } catch (InterruptedException e) {
 					e.printStackTrace();
 	               }
-	               
-	               if(client.registered) {
+	               if(frame.getClient().getUser().getVerified()) {
 	            	   output.setVisible(false);
-	            	   client.setUser(userField.getText());
+	            	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
 	            	   System.out.println("registration verified");
-	            	   setCloseOperation();
 	               } else {
 	            	   System.out.println("registration not verified");
 	            	   output.setVisible(true);
 	            	   
 	               } 
     		   }else{
-    			   client.verifyUser(userField.getText(), new String(passField.getPassword()));
+    			   frame.getClient().verifyUser(userField.getText(), new String(passField.getPassword()));
 	               try {
 	            	   Thread.sleep(1000);
 	               } catch (InterruptedException e) {
 					e.printStackTrace();
 	               }
 	               
-	               if(client.verified) {
+	               if(frame.getClient().getUser().getVerified()) {
 	            	   output.setVisible(false);
-	            	   client.setUser(userField.getText());
-	            	   System.out.println("User set: " + client.getUser());
+	            	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
+	            	   System.out.println("User set: " + frame.getClient().getUser().getUsername());
 	            	   System.out.println("login verified");
-	            	   setCloseOperation();
 	               } else {
 	            	   System.out.println("login not verified");
 	            	   output.setVisible(true);
@@ -157,18 +146,4 @@ public class LoginPageGUI extends JPanel {
 		
 	}
 	
-	/*
-	 * Log out the user when the window is closed.
-	 * Called after user verification.
-	 */
-	private void setCloseOperation() {
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		        client.sendServer(Constants.LOGOFF, client.getUser());
-		        System.out.println("closing behavior set");
-		    }
-		});
-	}
-
 }

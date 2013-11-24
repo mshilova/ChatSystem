@@ -8,38 +8,34 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.jms.Destination;
 import javax.swing.Timer;
 
-public class OnlineUsersListGUI extends JPanel {
+public class GuiOnlineUsersList extends JPanel {
 	
-	private  ChatClient client;
-	private JList onlineUsersList;
+	private ChatClientGUI frame;
+	private JList<String> onlineUsersList;
 	private  Map<String,Destination> onlineUsers;
-	private  String[] users;
 
 	static DefaultListModel<String> listModel;
 			
-	public OnlineUsersListGUI (ChatClient client){
-		this.client = client;
+	public GuiOnlineUsersList (ChatClientGUI frame) {
+		this.frame = frame;
 		this.setVisible(true);
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
 		initComponents();
 		
 		createList();
-	
 	}
 	
-	public void createList(){
+	public void createList() {
 			
 		ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	onlineUsers = client.getOnlineUsersMap();
-        		users = new String[onlineUsers.size()];
+            	onlineUsers = frame.getClient().getOnlineUsers();
         		// Add new Online Users
         		for(String user : onlineUsers.keySet())
         		{
@@ -47,7 +43,7 @@ public class OnlineUsersListGUI extends JPanel {
         				listModel.addElement(user);
            		}
         		
-        		//Remove offline users
+        		//Remove off-line users
         		for(int i = 0; i < listModel.size();i++)
         		{
         			if (!onlineUsers.containsKey(listModel.get(i)))
@@ -61,18 +57,11 @@ public class OnlineUsersListGUI extends JPanel {
 		
 	}
 		
-	 private void initComponents() 
-	 {
-		 
-		 	listModel = new DefaultListModel<String>();
-	        onlineUsersList = new javax.swing.JList(listModel);
-	        this.add(onlineUsersList);
+	 private void initComponents() {
+		 listModel = new DefaultListModel<String>();
+		 onlineUsersList = new javax.swing.JList<String>(listModel);
+		 this.add(onlineUsersList);
    
 	 }
-	 
-	 
-	 
-	 
-	 
 	
 }
