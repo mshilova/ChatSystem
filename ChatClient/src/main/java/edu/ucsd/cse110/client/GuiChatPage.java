@@ -8,6 +8,7 @@ public class GuiChatPage extends JPanel {
 
 	private ChatClientGUI frame;
 	private GuiPanelEast guiPanelEast;
+	private GuiPanelWest guiPanelWest;
 	
 	public GuiChatPage(ChatClientGUI frame) {
 		this.frame = frame;
@@ -17,7 +18,7 @@ public class GuiChatPage extends JPanel {
         this.add(guiPanelEast = new GuiPanelEast(this), BorderLayout.EAST);
         this.add(new GuiPanelNorth(this), BorderLayout.NORTH);
         this.add(new GuiPanelSouth(this), BorderLayout.SOUTH);
-        this.add(new GuiPanelWest(this), BorderLayout.WEST);
+        this.add(guiPanelWest = new GuiPanelWest(this), BorderLayout.WEST);
 	}
 
 	public ChatClientGUI getFrame() {
@@ -30,5 +31,9 @@ public class GuiChatPage extends JPanel {
 	
 	public GuiPanelEast getEastPanel() {
 		return guiPanelEast;
+	}
+	
+	public GuiPanelWest getWestPanel() {
+		return guiPanelWest;
 	}
 }

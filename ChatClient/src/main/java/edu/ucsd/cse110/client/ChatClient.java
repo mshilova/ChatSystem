@@ -30,6 +30,7 @@ public class ChatClient implements MessageListener {
 	private User user;
 	private InputProcessor processor;
 	private ChatClientGUI gui;
+	private boolean usingGui;
 	
 	/*
 	 * 
@@ -76,10 +77,11 @@ public class ChatClient implements MessageListener {
 
 	
 	public void run() throws JMSException {
-		useGui();
 //		if(useGui())
 //			System.exit(0);  // read useGui method header before changing exit()
-		userLogon();         	
+		if(!useGui()) {
+			userLogon();
+		}
 		processor.processUserCommands( this );	
 		
 	}
@@ -105,6 +107,7 @@ public class ChatClient implements MessageListener {
 	 */
 	private boolean useGui() {      // yesNoPrompt is in InputProcessor
 		if(processor.yesNoPrompt("Would you like to use the GUI? (yes/no)")){
+			usingGui = true;
 		    gui = new ChatClientGUI(this);
 		    gui.start();
 		    return true;
@@ -320,20 +323,25 @@ public class ChatClient implements MessageListener {
 	    		else
 		    		System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
 	    		break;
+	    		
 	    	case Constants.CHATROOMUPDATE:
 	    		//TODO set the updated chatroom object somewhere
 	    		// TODO import ChatRoom
 	    		ChatRoom room = (ChatRoom) ((ObjectMessage) message).getObject();
 	    		break;
+	    		
 	    	case Constants.INVITATION:
 	    		String invite[] = ((TextMessage) message).getText().split( " " ); 
 	    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
 	    		System.out.println( "Would you like to accept? Enter 'yes' or 'no'" );
-	    
+	    		
 	    		chatCommander.addPendingInvitation( invite[1] );  // invite[1] is the room name    
 	    		break;
 	    					
 			default:
+				if(usingGui) {
+					gui.updateTextArea("\n" + type + ": " + ((TextMessage)message).getText());
+	    		}
 				System.out.println("\nFrom " + type + ": " + ((TextMessage)message).getText());
 				System.out.print("Input: ");
 	    	}

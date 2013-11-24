@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 public class ChatClientGUI extends JFrame {
 
 	private ChatClient client;  // ChatClient reference
+	private GuiChatPage chatPage;
 	
 	public ChatClientGUI(ChatClient chatClient) {
 		client = chatClient; // need for the reference to the clients methods
@@ -60,7 +61,7 @@ public class ChatClientGUI extends JFrame {
 	
 	
 	public void chatPage()  {
-		GuiChatPage chatPage = new GuiChatPage(this);
+		chatPage = new GuiChatPage(this);
         this.add(chatPage); // adding main chat page to the frame
         this.setTitle("Welcome " + client.getUser().getUsername());
         this.validate();
@@ -95,5 +96,9 @@ public class ChatClientGUI extends JFrame {
 
 	public void setClient(ChatClient client) {
 		this.client = client;
+	}
+	
+	public void updateTextArea(String message) {
+		chatPage.getWestPanel().updateText(message);
 	}
 }

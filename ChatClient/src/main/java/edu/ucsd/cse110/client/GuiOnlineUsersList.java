@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,8 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.jms.Destination;
 import javax.swing.Timer;
 
@@ -61,12 +64,25 @@ public class GuiOnlineUsersList extends JPanel {
 	private void initComponents() {
 		listModel = new DefaultListModel<String>();
 		onlineUsersList = new javax.swing.JList<String>(listModel);
-		this.add(onlineUsersList);
+//		onlineUsersList.setSelectionModel(listModel);
+//		onlineUsersList.setSelectionModel(new DefaultListSelectionModel() {
+//			@Override
+//			public void setSelectionInterval(int index0, int index1) {
+//				if(super.isSelectedIndex(index0)) {
+//					super.removeSelectionInterval(index0,index1);
+//				} else {
+//					super.addSelectionInterval(index0,index1);
+//				}
+//			}
+//		});
+		JScrollPane scrollPane = new JScrollPane(onlineUsersList);
+		this.add(scrollPane);
+//		this.add(onlineUsersList);
 	}
 	
 	
-	public List<String> getSelectedUsers() {
-		return onlineUsersList.getSelectedValuesList();
+	public ArrayList<String> getSelectedUsers() {
+		return (ArrayList<String>)onlineUsersList.getSelectedValuesList();
 	}
 	
 }

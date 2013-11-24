@@ -90,6 +90,10 @@ public class ChatClientApplication {
 		System.out.println("# Type 'send' followed by multiple user-names "
 				+ "separated by commas and without spaces, followed by your "
 				+ "message, to send your message to multiple users.");
+		System.out.println("# Type the name of the chat room followed by your message "
+				+ "to send a message to that chat room");
+		System.out.println("# Type 'invite' followed by the name of the chat room "
+				+ "and the name of the user to invite that user to that chat room");
 		System.out.println("# Type 'exit' to close the program.");
 	}
 	

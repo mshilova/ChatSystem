@@ -19,7 +19,7 @@ public class GuiInputBox extends JPanel {
 
 	private GuiChatPage page;
 	private JTextField field;
-//	private List<String> sendList;
+	private ArrayList<String> sendList;
 	
 	public GuiInputBox(GuiChatPage chatPage) {
 		this.page = chatPage;
@@ -39,7 +39,7 @@ public class GuiInputBox extends JPanel {
 				if("".equals(field.getText())) {
 					output.setVisible(true);
 				} else {
-	//				sendList = page.getEastPanel().getOnlineUsersList().getSelectedUsers();
+					sendList = page.getEastPanel().getOnlineUsersList().getSelectedUsers();
 					output.setVisible(false);
 					field.setText("");
 					System.out.println("Sending message");
