@@ -40,8 +40,15 @@ public class GuiInputBox extends JPanel {
 					output.setVisible(true);
 				} else {
 					sendList = page.getEastPanel().getOnlineUsersList().getSelectedUsers();
+					// printing the list of users, testing
+					for(String s: sendList) {
+						System.out.println(s);
+						// sending a message to a user
+						page.getFrame().getClient().send(s, field.getText());
+					}
 					output.setVisible(false);
 					field.setText("");
+					
 					System.out.println("Sending message");
 				}
 			}

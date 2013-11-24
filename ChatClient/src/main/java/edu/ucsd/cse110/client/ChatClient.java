@@ -81,8 +81,9 @@ public class ChatClient implements MessageListener {
 //			System.exit(0);  // read useGui method header before changing exit()
 		if(!useGui()) {
 			userLogon();
+			processor.processUserCommands( this );
 		}
-		processor.processUserCommands( this );	
+		//processor.processUserCommands( this );	
 		
 	}
 	
@@ -341,9 +342,10 @@ public class ChatClient implements MessageListener {
 			default:
 				if(usingGui) {
 					gui.updateTextArea("\n" + type + ": " + ((TextMessage)message).getText());
-	    		}
-				System.out.println("\nFrom " + type + ": " + ((TextMessage)message).getText());
-				System.out.print("Input: ");
+	    		} else {
+	    			System.out.println("\nFrom " + type + ": " + ((TextMessage)message).getText());
+	    			System.out.print("Input: ");
+				}
 	    	}
 	    }catch(JMSException e) { e.printStackTrace(); }
 	}

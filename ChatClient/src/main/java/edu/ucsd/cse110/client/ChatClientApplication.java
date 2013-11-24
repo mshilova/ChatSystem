@@ -87,9 +87,9 @@ public class ChatClientApplication {
 		System.out.println("# Type 'createChatRoom' followed by the name of the chat room to create a chat room.");
 		System.out.println("# Type 'broadcast' followed by your message to broadcast to all online users.");
 		System.out.println("# Type 'send' followed by a user-name and then your message to send that message to that user.");
-		System.out.println("# Type 'send' followed by multiple user-names "
-				+ "separated by commas and without spaces, followed by your "
-				+ "message, to send your message to multiple users.");
+//		System.out.println("# Type 'send' followed by multiple user-names "
+//				+ "separated by commas and without spaces, followed by your "
+//				+ "message, to send your message to multiple users.");
 		System.out.println("# Type the name of the chat room followed by your message "
 				+ "to send a message to that chat room");
 		System.out.println("# Type 'invite' followed by the name of the chat room "

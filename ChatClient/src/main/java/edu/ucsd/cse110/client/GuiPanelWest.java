@@ -13,7 +13,6 @@ public class GuiPanelWest extends JPanel {
 		this.page = page;
 		
 		textArea = new JTextArea(30,45);
-		textArea.setText("testing");
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(textArea); 
