@@ -334,7 +334,7 @@ public class ChatClient implements MessageListener {
 	    	case Constants.INVITATION:
 	    		String invite[] = ((TextMessage) message).getText().split( " " ); 
 	    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
-	    		System.out.println( "Would you like to accept? Enter 'yes' or 'no'" );
+	    		System.out.println( "Would you like to accept? Enter 'accept chatRoomName'" );
 	    		
 	    		chatCommander.addPendingInvitation( invite[1] );  // invite[1] is the room name    
 	    		break;
