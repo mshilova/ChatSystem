@@ -317,9 +317,16 @@ public class ChatClient implements MessageListener {
 	    		user.setVerified( message.getBooleanProperty(Constants.RESPONSE) );
 	    		break;	    	
 	    		
-	    	case Constants.CREATECHATROOM:  		
+	    	case Constants.CREATECHATROOM:
+	    		System.out.println(message.getBooleanProperty(Constants.RESPONSE));
 	    		if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
 	    			chatCommander.setupChatRoomTopic(); // last room name added to list will be created
+	    			if(usingGui) {
+						
+						gui.getChatPage().getWestPanel().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
+					
+		    		}
+	    			
 	    		}
 	    		else
 		    		System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
@@ -332,10 +339,16 @@ public class ChatClient implements MessageListener {
 	    		break;
 	    		
 	    	case Constants.INVITATION:
-	    		String invite[] = ((TextMessage) message).getText().split( " " ); 
-	    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
-	    		System.out.println( "Would you like to accept? Enter 'yes' or 'no'" );
 	    		
+	    		String invite[] = ((TextMessage) message).getText().split( " " );
+	    		if(usingGui) {	
+	    			gui.getChatPage().getWestPanel().addChatRoomInvite(invite[1]);		
+	    		} else {
+	    		 
+		    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
+		    		System.out.println( "Would you like to accept? Enter 'yes' or 'no'" );
+		    		
+		    	}
 	    		chatCommander.addPendingInvitation( invite[1] );  // invite[1] is the room name    
 	    		break;
 	    					
