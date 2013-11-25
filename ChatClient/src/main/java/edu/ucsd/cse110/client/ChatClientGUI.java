@@ -98,7 +98,11 @@ public class ChatClientGUI extends JFrame {
 		this.client = client;
 	}
 	
-	public void updateTextArea(String message) {
-		chatPage.getWestPanel().updateText(message);
+	public void updateTextArea(String sender, String message) {
+		chatPage.getWestPanel().updateTextReceive(sender, message);
+	}
+	
+	public GuiChatPage getChatPage()  {
+		return chatPage;
 	}
 }

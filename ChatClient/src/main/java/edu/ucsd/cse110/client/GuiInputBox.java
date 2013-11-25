@@ -22,6 +22,7 @@ public class GuiInputBox extends JPanel {
 	private ArrayList<String> sendList;
 	
 	public GuiInputBox(GuiChatPage chatPage) {
+		
 		this.page = chatPage;
 		this.setLayout(new FlowLayout());
 		
@@ -44,6 +45,7 @@ public class GuiInputBox extends JPanel {
 					for(String s: sendList) {
 						System.out.println(s);
 						// sending a message to a user
+						page.getWestPanel().updateTextSend(s, field.getText());
 						page.getFrame().getClient().send(s, field.getText());
 					}
 					output.setVisible(false);

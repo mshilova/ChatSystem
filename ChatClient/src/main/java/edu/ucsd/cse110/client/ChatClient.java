@@ -341,7 +341,9 @@ public class ChatClient implements MessageListener {
 	    					
 			default:
 				if(usingGui) {
-					gui.updateTextArea("\n" + type + ": " + ((TextMessage)message).getText());
+					
+					gui.updateTextArea(type, ((TextMessage)message).getText());
+				
 	    		} else {
 	    			System.out.println("\nFrom " + type + ": " + ((TextMessage)message).getText());
 	    			System.out.print("Input: ");
