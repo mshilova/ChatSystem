@@ -240,7 +240,7 @@ public void publishMessageToChatRoom( String room, String message ) throws JMSEx
  * Contact the server and print to request a list of all chat rooms
  */
 public void listChatRooms() {
-	Message message;
+	/*Message message;
 	try {
 		message = client.getSession().createTextMessage( client.getQueue().toString());
 		message.setJMSType(Constants.LISTCHATROOMS);
@@ -248,7 +248,12 @@ public void listChatRooms() {
 		client.getProducer().send( client.getSession().createQueue(Constants.SERVERQUEUE), message);
 	} catch (JMSException e) {
 		e.printStackTrace();
+	}*/
+	
+	for ( String room : chatRooms ) {
+	  System.out.println( room );	
 	}
+	
 }
 
 }

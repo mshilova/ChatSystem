@@ -72,7 +72,7 @@ public class InputProcessor {
 	        // list all online users
 	        client.listOnlineUsers();
 	        
-	      } else if(inputMessage.startsWith("listChatRooms")) {
+	      } else if(inputMessage.equalsIgnoreCase("listChatRooms")) {
 	        // list all chat rooms
 	        chatCommander.listChatRooms();
 	        
