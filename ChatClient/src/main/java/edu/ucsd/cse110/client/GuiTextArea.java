@@ -9,7 +9,7 @@ public class GuiTextArea extends JPanel{
 	private JTextArea textArea;
 	
 	public GuiTextArea() {
-		textArea = new JTextArea(30,45);
+		textArea = new JTextArea(30,40);
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(textArea); 

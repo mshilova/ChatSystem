@@ -31,8 +31,6 @@ public class GuiInputBox extends JPanel {
 		output.setVisible(false);
 		field = new JTextField(50);
 		
-	
-		
 		JButton send = new JButton("Send");
 		send.setSize(100, 20);
 		send.addActionListener(new ActionListener() {

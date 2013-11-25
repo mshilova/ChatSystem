@@ -1,23 +1,34 @@
 package edu.ucsd.cse110.client;
 
+import java.awt.Color;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public class GuiPanelWest extends JPanel {
 
 	private GuiChatPage page;
+	private JPanel general;
+	private JPanel chatRooms;
 	
 	public GuiPanelWest(GuiChatPage page) {
 		this.page = page;
+        this.setBorder(BorderFactory.createLineBorder(Color.black));
+
+		JTabbedPane tabbedPane = new JTabbedPane();
+		general = new JPanel();
+		general.setPreferredSize(new Dimension(500, 440));
+		chatRooms = new JPanel();
+		chatRooms.setPreferredSize(new Dimension(500, 440));
 		
-//		JTabbedPane tabbedPane = new JTabbedPane();
-		
-//		textArea = new JTextArea(30,45);
-//		textArea.setLineWrap(true);
-//		textArea.setEditable(false);
-//		JScrollPane scrollPane = new JScrollPane(textArea); 
-//		this.add(scrollPane);
-//		scrollPane.setVisible(true);
-//		this.add(page.getEastPanel().getOnlineUsersList().getTextArea("General"));
+		//adding tabs
+		tabbedPane.addTab("General", general);
+		//TODO add drop down to have multiple chat rooms
+		tabbedPane.addTab("ChatRooms", chatRooms);
+		this.add(tabbedPane);
 		this.setVisible(true);
 	}
 	
@@ -27,9 +38,9 @@ public class GuiPanelWest extends JPanel {
 	 */
 	public void updateTextReceive(String sender, String message) {
 		page.getEastPanel().getOnlineUsersList().appendTextReceive(sender, message);
-		if(this.getComponentCount()==0) {
-			setTextArea(sender);
-		}
+		setTextArea(sender);
+		// select the senders text area for reply
+		page.getEastPanel().getOnlineUsersList().setReplyUser(sender);
 	}
 	
 	/*
@@ -37,16 +48,22 @@ public class GuiPanelWest extends JPanel {
 	 */
 	public void updateTextSend(String receiver, String message) {
 		page.getEastPanel().getOnlineUsersList().appendTextSend(receiver, message);
-		if(this.getComponentCount()==0) {
+		if(general.getComponentCount()==0) {
 			setTextArea(receiver);
 		}
 	}
 	
 	public void setTextArea(String s) {
-		this.removeAll();
-		this.add(page.getEastPanel().getOnlineUsersList().getTextArea(s));
-		this.revalidate();
-		this.repaint();
+		general.removeAll();
+		general.add(page.getEastPanel().getOnlineUsersList().getTextArea(s));
+		general.revalidate();
+		general.repaint();
 	}
+	
+	/*
+	 * Update text area in chatbox
+	 */
+	
+	
 
 }

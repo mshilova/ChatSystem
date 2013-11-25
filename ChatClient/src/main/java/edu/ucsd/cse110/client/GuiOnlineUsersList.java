@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -33,10 +34,10 @@ public class GuiOnlineUsersList extends JPanel {
 			
 	public GuiOnlineUsersList (ChatClientGUI frame) {
 		this.frame = frame;
-		userText = new HashMap<String,GuiTextArea>();
 		this.setVisible(true);
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
+		userText = new HashMap<String,GuiTextArea>();
 		initComponents();
 		
 		createList();
@@ -106,6 +107,10 @@ public class GuiOnlineUsersList extends JPanel {
 	
 	public ArrayList<String> getSelectedUsers() {
 		return (ArrayList<String>)onlineUsersList.getSelectedValuesList();
+	}
+	
+	public void setReplyUser(String name)  {
+		onlineUsersList.setSelectedValue(name, true);
 	}
 	
 }
