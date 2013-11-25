@@ -195,7 +195,7 @@ public boolean chatRoomEntered(String inputMessage ) {
 		name = inputMessage;
 	else {
 		roomAndMessage = inputMessage.split( " " );
-		if ( 2 != roomAndMessage.length )
+		if ( 2 > roomAndMessage.length )
 			return false;
 		
 		name = roomAndMessage[0];

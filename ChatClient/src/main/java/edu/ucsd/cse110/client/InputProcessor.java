@@ -56,7 +56,6 @@ public class InputProcessor {
 	    String inputMessage;
 
 	    while(true) {
-	      System.out.print("Input: ");
 	      inputMessage = input.nextLine();
 	      
 	      if(inputMessage.startsWith("help")) {
