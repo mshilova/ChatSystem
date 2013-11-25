@@ -2,9 +2,11 @@ package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,20 +15,25 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.jms.Destination;
 import javax.swing.Timer;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class GuiOnlineUsersList extends JPanel {
 	
 	private ChatClientGUI frame;
 	private JList<String> onlineUsersList;
 	private Map<String,Destination> onlineUsers;
+	private Map<String,GuiTextArea> userText;
 
 	static DefaultListModel<String> listModel;
 			
 	public GuiOnlineUsersList (ChatClientGUI frame) {
 		this.frame = frame;
+		userText = new HashMap<String,GuiTextArea>();
 		this.setVisible(true);
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -45,6 +52,9 @@ public class GuiOnlineUsersList extends JPanel {
         		{
         			if (listModel.indexOf(user)== -1)
         				listModel.addElement(user);
+        			if(!userText.containsKey(user))  {
+        				userText.put(user, new GuiTextArea());
+        			}
            		}
         		
         		//Remove off-line users
@@ -52,6 +62,7 @@ public class GuiOnlineUsersList extends JPanel {
         		{
         			if (!onlineUsers.containsKey(listModel.get(i)))
         				listModel.remove(i);
+        			// TODO remove text area for logged off user
            		}
             }
         };
@@ -64,22 +75,34 @@ public class GuiOnlineUsersList extends JPanel {
 	private void initComponents() {
 		listModel = new DefaultListModel<String>();
 		onlineUsersList = new javax.swing.JList<String>(listModel);
-//		onlineUsersList.setSelectionModel(listModel);
-//		onlineUsersList.setSelectionModel(new DefaultListSelectionModel() {
-//			@Override
-//			public void setSelectionInterval(int index0, int index1) {
-//				if(super.isSelectedIndex(index0)) {
-//					super.removeSelectionInterval(index0,index1);
-//				} else {
-//					super.addSelectionInterval(index0,index1);
-//				}
-//			}
-//		});
+		
 		JScrollPane scrollPane = new JScrollPane(onlineUsersList);
 		this.add(scrollPane);
-//		this.add(onlineUsersList);
+		
+		onlineUsersList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// Set the text area to the user just selected
+				if(e.getValueIsAdjusting()) {
+					frame.getChatPage().getWestPanel().setTextArea(onlineUsersList.getSelectedValue());
+				}
+			}
+			
+		});
 	}
 	
+	public GuiTextArea getTextArea(String s)  {
+		return userText.get(s); // returning the text area for each user
+	}
+	
+	public void appendTextReceive(String user, String message)  {
+		userText.get(user).append("\n" + user + ": " + message);
+	}
+	
+	public void appendTextSend(String user, String message) {
+		userText.get(user).append("\nMe: " + message);
+
+	}
 	
 	public ArrayList<String> getSelectedUsers() {
 		return (ArrayList<String>)onlineUsersList.getSelectedValuesList();
