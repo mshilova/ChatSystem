@@ -321,7 +321,7 @@ public class ChatClient implements MessageListener {
 	    		if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
 	    			chatCommander.setupChatRoomTopic(); // last room name added to list will be created
 	    			if(usingGui) {
-						gui.getChatPage().getWestPanel().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
+						gui.getPanelWest().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
 		    		}
 	    		} else
 	    			System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
@@ -337,7 +337,7 @@ public class ChatClient implements MessageListener {
 	
 	    		String invite[] = ((TextMessage) message).getText().split( " " );
 	    		if(usingGui) {	
-	    			gui.getChatPage().getWestPanel().addChatRoomInvite(invite[1]);		
+	    			gui.getPanelWest().addChatRoomInvite(invite[1]);		
 	    		} else {
 	    		 
 		    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );

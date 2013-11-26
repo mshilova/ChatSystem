@@ -2,23 +2,18 @@ package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import javax.jms.Destination;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.jms.Destination;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -85,7 +80,7 @@ public class GuiOnlineUsersList extends JPanel {
 			public void valueChanged(ListSelectionEvent e) {
 				// Set the text area to the user just selected
 				if(e.getValueIsAdjusting()) {
-					frame.getChatPage().getWestPanel().setTextArea(onlineUsersList.getSelectedValue());
+					frame.getPanelWest().setTextArea(onlineUsersList.getSelectedValue());
 				}
 			}
 			

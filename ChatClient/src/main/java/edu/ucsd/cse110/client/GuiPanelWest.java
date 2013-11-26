@@ -1,24 +1,21 @@
 package edu.ucsd.cse110.client;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 public class GuiPanelWest extends JPanel {
 
-	private GuiChatPage page;
+	private ChatClientGUI frame;
 	private JPanel general;
 	private JPanel chatRooms;
-	private JComboBox chatRoomList;
+	private JComboBox<String> chatRoomList;
 	
-	public GuiPanelWest(GuiChatPage page) {
-		this.page = page;
+	public GuiPanelWest(ChatClientGUI gui) {
+		this.frame = gui;
 //        this.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -33,7 +30,7 @@ public class GuiPanelWest extends JPanel {
 		//TODO add drop down to have multiple chat rooms
 		tabbedPane.addTab("ChatRooms", chatRooms);
 		// making an empty drop down list for chatrooms
-		chatRoomList = new JComboBox();
+		chatRoomList = new JComboBox<String>();
 		chatRoomList.setPreferredSize(new Dimension(200, 25));
 		chatRoomList.setEditable(false);
 		
@@ -69,17 +66,17 @@ public class GuiPanelWest extends JPanel {
 	 * Update your text area from a sender
 	 */
 	public void updateTextReceive(String sender, String message) {
-		page.getEastPanel().getOnlineUsersList().appendTextReceive(sender, message);
+		frame.getEastPanel().getOnlineUsersList().appendTextReceive(sender, message);
 		setTextArea(sender);
 		// select the senders text area for reply
-		page.getEastPanel().getOnlineUsersList().setReplyUser(sender);
+		frame.getEastPanel().getOnlineUsersList().setReplyUser(sender);
 	}
 	
 	/*
 	 * Update your text area for messages you send
 	 */
 	public void updateTextSend(String receiver, String message) {
-		page.getEastPanel().getOnlineUsersList().appendTextSend(receiver, message);
+		frame.getEastPanel().getOnlineUsersList().appendTextSend(receiver, message);
 		if(general.getComponentCount()==0) {
 			setTextArea(receiver);
 		}
@@ -87,7 +84,7 @@ public class GuiPanelWest extends JPanel {
 	
 	public void setTextArea(String s) {
 		general.removeAll();
-		general.add(page.getEastPanel().getOnlineUsersList().getTextArea(s));
+		general.add(frame.getEastPanel().getOnlineUsersList().getTextArea(s));
 		general.revalidate();
 		general.repaint();
 	}

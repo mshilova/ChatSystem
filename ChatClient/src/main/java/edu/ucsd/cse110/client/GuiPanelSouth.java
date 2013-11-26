@@ -4,12 +4,12 @@ import javax.swing.JPanel;
 
 public class GuiPanelSouth extends JPanel {
 
-	private GuiChatPage page;
+	private ChatClientGUI frame;
 	
-	public GuiPanelSouth(GuiChatPage page) {
-		this.page = page;
+	public GuiPanelSouth(ChatClientGUI gui) {
+		this.frame = gui;
 		this.setSize(800, 100);
-		this.add(new GuiInputBox(page));
+		this.add(new GuiInputBox(frame));
 	}
 
 }

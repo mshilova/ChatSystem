@@ -1,11 +1,15 @@
 package edu.ucsd.cse110.client;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 
 public class ChatClientGUI extends JFrame {
 
 	private ChatClient client;  // ChatClient reference
-	private GuiChatPage chatPage;
+	private GuiPanelEast guiPanelEast;
+	private GuiPanelSouth guiPanelSouth;
+	private GuiPanelWest guiPanelWest;
 	
 	public ChatClientGUI(ChatClient chatClient) {
 		client = chatClient; // need for the reference to the clients methods
@@ -16,7 +20,8 @@ public class ChatClientGUI extends JFrame {
 		// exit on close
 		this.setCloseOperation();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		this.setLayout(new BorderLayout());
+
 		this.setVisible(true);
 	}
 	
@@ -25,18 +30,18 @@ public class ChatClientGUI extends JFrame {
 	 * Start using the GUI
 	 */
 	public void start()  {
-		loginPage();
-		chatPage();
+		setLoginPage();
+		setChatPage();
 	}
 	
 	
 	/*
 	 * Verifying login
 	 */
-	public void loginPage() {
+	public void setLoginPage() {
 		// making login page panel
 		GuiLoginPage loginPage = new GuiLoginPage(this);
-		this.add(loginPage);
+		this.add(loginPage,BorderLayout.CENTER);
 		loginPage.log();
 		
 		// continue verifying until login is successful
@@ -55,16 +60,16 @@ public class ChatClientGUI extends JFrame {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		this.remove(loginPage);	// clear the frame
+		this.remove(loginPage);
 	}
 	
 	
-	public void chatPage()  {
-		chatPage = new GuiChatPage(this);
-        this.add(chatPage); // adding main chat page to the frame
+	public void setChatPage()  {
+        this.add(guiPanelWest = new GuiPanelWest(this), BorderLayout.WEST);
+        this.add(guiPanelEast = new GuiPanelEast(this), BorderLayout.EAST);
+        this.add(guiPanelSouth = new GuiPanelSouth(this), BorderLayout.SOUTH);
         this.setTitle("Welcome " + client.getUser().getUsername());
-        this.validate();
+        this.revalidate();
         this.repaint();
 	}
 	
@@ -99,10 +104,18 @@ public class ChatClientGUI extends JFrame {
 	}
 	
 	public void updateTextArea(String sender, String message) {
-		chatPage.getWestPanel().updateTextReceive(sender, message);
+		this.getPanelWest().updateTextReceive(sender, message);
 	}
 	
-	public GuiChatPage getChatPage()  {
-		return chatPage;
+	public GuiPanelEast getEastPanel() {
+		return guiPanelEast;
+	}
+	
+	public GuiPanelSouth getPanelSouth() {
+		return guiPanelSouth;
+	}
+	
+	public GuiPanelWest getPanelWest() {
+		return guiPanelWest;
 	}
 }

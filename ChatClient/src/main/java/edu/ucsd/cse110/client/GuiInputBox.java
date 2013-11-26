@@ -1,29 +1,27 @@
 package edu.ucsd.cse110.client;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 
 public class GuiInputBox extends JPanel {
 
-	private GuiChatPage page;
+	private ChatClientGUI frame;
 	private JTextField field;
 	private ArrayList<String> sendList;
 	
-	public GuiInputBox(GuiChatPage chatPage) {
+	public GuiInputBox(ChatClientGUI gui) {
 		
-		this.page = chatPage;
+		this.frame = gui;
 		this.setLayout(new FlowLayout());
 		
 		final JLabel output = new JLabel("Please enter a message");
@@ -38,13 +36,13 @@ public class GuiInputBox extends JPanel {
 				if("".equals(field.getText())) {
 					output.setVisible(true);
 				} else {
-					sendList = page.getEastPanel().getOnlineUsersList().getSelectedUsers();
+					sendList = frame.getEastPanel().getOnlineUsersList().getSelectedUsers();
 					// printing the list of users, testing
 					for(String s: sendList) {
 						System.out.println(s);
 						// sending a message to a user
-						page.getWestPanel().updateTextSend(s, field.getText());
-						page.getFrame().getClient().send(s, field.getText());
+						frame.getPanelWest().updateTextSend(s, field.getText());
+						frame.getClient().send(s, field.getText());
 					}
 					output.setVisible(false);
 					field.setText("");
@@ -62,7 +60,7 @@ public class GuiInputBox extends JPanel {
 					output.setVisible(true);
 				} else {
 					output.setVisible(false);
-					page.getFrame().getClient().getChatCommander().broadcast(field.getText());
+					frame.getClient().getChatCommander().broadcast(field.getText());
 					field.setText("");
 					System.out.println("Broadcasting message");
 				}

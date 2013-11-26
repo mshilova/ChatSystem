@@ -49,7 +49,7 @@ public class Server {
 		  
 		    	case Constants.VERIFYUSER:
 		    		update = loginManager.addItem(message);
-		    		System.out.println( update );
+		    		System.out.println( "Verification: " + update );
 		    		send(message.getJMSReplyTo(), update , Constants.VERIFYUSER);
 		    		break;
 		    		
@@ -131,8 +131,8 @@ public class Server {
 		};
 		try {		
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
-			System.out.println("Server sent a response.");
-		} catch (JMSException e) { e.printStackTrace(); }	
+			System.out.println("Server sent a response.1");
+		} catch (JMSException e) { e.printStackTrace(); }
 	}
 		
 	
@@ -156,7 +156,7 @@ public class Server {
 		};
 		try {
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
-			System.out.println("Server sent a response.");
+			System.out.println("Server sent a response.2");
 		} catch (JMSException e) { e.printStackTrace(); }
 	}
 	
@@ -173,7 +173,7 @@ public class Server {
 		};
 		try {
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
-			System.out.println("Server sent a response.");
+			System.out.println("Server sent a response.3");
 		} catch (JMSException e) { e.printStackTrace(); }
 	}	
 }

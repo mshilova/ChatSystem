@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 public class GuiLoginPage extends JPanel {
 
-	private JButton newUser, existingUser; // buttons for user choice / login
+//	private JButton newUser, existingUser; // buttons for user choice / login
 	private JTextField userField;
 	private JPasswordField passField; // text fields to hold user name and
 	                                       // password
@@ -32,7 +32,7 @@ public class GuiLoginPage extends JPanel {
 	 */
 	public void log()  {
 		
-		newUser = new JButton("New User");
+		JButton newUser = new JButton("New User");
 		newUser.setLocation(230, 120);
 		newUser.setSize(150, 50);
 		this.add(newUser);
@@ -44,7 +44,7 @@ public class GuiLoginPage extends JPanel {
 			}
 		});	
 				
-		existingUser = new JButton("Existing User");
+		JButton existingUser = new JButton("Existing User");
 		existingUser.setLocation(420, 120);
 		existingUser.setSize(150, 50);
 		this.add(existingUser);
@@ -55,6 +55,9 @@ public class GuiLoginPage extends JPanel {
 				inputPage();
 			}	
 		});
+		
+		frame.revalidate();
+		frame.repaint();
 	}
 	
 	

@@ -1,34 +1,29 @@
 package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.jms.JMSException;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class GuiPanelEast extends JPanel {
 
-	final private GuiChatPage page;
+	final private ChatClientGUI frame;
 	private GuiOnlineUsersList onlineUsersList;
 	private JButton logoff, createChatRoom, invite;
 	
 	
-	public GuiPanelEast(GuiChatPage c_page) {
-		this.page = c_page;
+	public GuiPanelEast(ChatClientGUI gui) {
+		this.frame = gui;
 		this.setPreferredSize(new Dimension(200,500));
 		this.setLayout(new BorderLayout());
 
-		onlineUsersList = new GuiOnlineUsersList(page.getFrame());
+		onlineUsersList = new GuiOnlineUsersList(frame);
 		onlineUsersList.setPreferredSize(new Dimension(200,380));
 		this.add(onlineUsersList, BorderLayout.NORTH);
 		
@@ -52,8 +47,8 @@ public class GuiPanelEast extends JPanel {
 				// getting the user name is strange: client is passed in the constructor to the commander, then the commender is getting the client,
 				// then the user name. If we just call on the client to get user name, there is an IOB exception, but if we get the client 
 				// through the commander, it works. Consider refactoring this, why passing the client to commander then getting it to get the name?
-		  		page.getFrame().getClient().sendServer( Constants.CREATECHATROOM, page.getFrame().getClient().getChatCommander().getClient().getUser().getUsername()+" " + response );
-		  		page.getFrame().getClient().getChatCommander().add(response);
+		  		frame.getClient().sendServer( Constants.CREATECHATROOM, frame.getClient().getChatCommander().getClient().getUser().getUsername()+" " + response );
+		  		frame.getClient().getChatCommander().add(response);
 				
 			}
 			
@@ -67,13 +62,13 @@ public class GuiPanelEast extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				ArrayList<String> users = page.getEastPanel().getOnlineUsersList().getSelectedUsers();
-				String room = page.getWestPanel().getSelectedRoom();
+				ArrayList<String> users = frame.getEastPanel().getOnlineUsersList().getSelectedUsers();
+				String room = frame.getPanelWest().getSelectedRoom();
 				if(room != null)  {
 					for(String user: users)
 					{
 						try {
-							page.getFrame().getClient().getChatCommander().sendInvitation(user, room);
+							frame.getClient().getChatCommander().sendInvitation(user, room);
 						} catch (JMSException e1) {
 							e1.printStackTrace();
 						}
@@ -90,9 +85,9 @@ public class GuiPanelEast extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				page.getFrame().getClient().sendServer( Constants.LOGOFF, page.getFrame().getClient().getUser().getUsername() );
+				frame.getClient().sendServer( Constants.LOGOFF, frame.getClient().getUser().getUsername() );
 				System.exit(0);
-				page.getFrame().dispose(); // closing gui 
+				frame.dispose(); // closing gui 
 				
 			}
 			
