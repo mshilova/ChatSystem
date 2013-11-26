@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.client;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +71,7 @@ public class ChatClient implements MessageListener {
 		user = new User();
 		try {
 			consumer.setMessageListener(this);
-			subscriber.setMessageListener(this); 
+			subscriber.setMessageListener(subscription); 
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -358,7 +360,24 @@ public class ChatClient implements MessageListener {
 	    }catch(JMSException e) { e.printStackTrace(); }
 	}
 	
+	private MessageListener subscription = new MessageListener() {
+		@Override
+		public void onMessage(Message message) {
+			String type;
+			try {
+				type = message.getJMSType();
+				if(usingGui) {
+					gui.updateTextArea(type, ((TextMessage)message).getText());
+	    		} else {
+	    			System.out.println("From " + type + ": " + ((TextMessage)message).getText());
+				}
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}
 
+		}
+	};
+	
 }
 
 
