@@ -61,26 +61,30 @@ public class ChatRoomManager implements Manager{
 	 * @param message
 	 * @return
 	 */
-	public ChatRoom removeUser(Message message){
-		String[] userAndRoom;
-		ChatRoom room;
-		
-		try{
-			userAndRoom = processor.extractTwoArgs(message);
-			
-			if(userAndRoom == null)
-				return null;
-		
-			if( rooms.containsKey(userAndRoom[1]) ){
-				room = rooms.get(userAndRoom[1]);
-				if( room.containsUser(userAndRoom[0]) ){
-					room.removeUser(userAndRoom[0]);
-					return new ChatRoom(room);
-				}
-			}		
-		}catch(JMSException e){ e.printStackTrace(); }
-		return null;
-	}
+
+	  public ChatRoom removeUser(Message message){
+	    String[] userAndRoom;
+	    ChatRoom room;
+
+	    try{
+	      userAndRoom = processor.extractTwoArgs(message);
+
+	      if(userAndRoom == null)
+	        return null;
+
+	      if( rooms.containsKey(userAndRoom[1]) ){
+	        room = rooms.get(userAndRoom[1]);
+	        if( room.containsUser(userAndRoom[0]) ){
+	          room.removeUser(userAndRoom[0]);
+	          if ( 0 == room.numUsers() )
+	            rooms.remove( userAndRoom[1] );
+	          return new ChatRoom(room);
+	        }
+	      }
+	    }catch(JMSException e){ e.printStackTrace(); }
+	    return null;
+	  }
+
 
 	/**
 	 * adds a ChatRoom to the map of ChatRooms
