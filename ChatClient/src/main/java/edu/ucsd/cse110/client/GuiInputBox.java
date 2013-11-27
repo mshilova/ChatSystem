@@ -1,7 +1,6 @@
 package edu.ucsd.cse110.client;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -20,9 +19,7 @@ public class GuiInputBox extends JPanel {
 	private ArrayList<String> sendList;
 	
 	public GuiInputBox(ChatClientGUI gui) {
-		
 		this.frame = gui;
-		this.setLayout(new FlowLayout());
 		
 		final JLabel output = new JLabel("Please enter a message");
 		output.setForeground(Color.RED);
@@ -68,27 +65,30 @@ public class GuiInputBox extends JPanel {
 		});
 		
 		
-		   // creating layout to align labels with text fields
-	       GroupLayout groupLayout = new GroupLayout(this);
-	       this.setLayout(groupLayout);
-	       groupLayout.setAutoCreateGaps(true);
-	       groupLayout.setAutoCreateContainerGaps(true);
-	       // create a sequential group for the horizontal axis
+		// creating layout to align labels with text fields
+		GroupLayout groupLayout = new GroupLayout(this);
+		this.setLayout(groupLayout);
+		groupLayout.setAutoCreateGaps(true);
+		groupLayout.setAutoCreateContainerGaps(true);
 		       
-	       // aligning along horizontal axis
-	       GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
-	       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(output).addComponent(field));
-	       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(send));
-	       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(broadcast));
-	       groupLayout.setHorizontalGroup(hGroup);
-		    // aligning along vertical axis (read documentation for more detail)   
-	       GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
-	       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(output));
-	       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(field).addComponent(send).addComponent(broadcast));
-	       groupLayout.setVerticalGroup(vGroup);
+		// aligning along horizontal axis
+		GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
+		hGroup.addGroup(groupLayout.createParallelGroup().addComponent(output).addComponent(field));
+		hGroup.addGroup(groupLayout.createParallelGroup().addComponent(send));
+		hGroup.addGroup(groupLayout.createParallelGroup().addComponent(broadcast));
+		groupLayout.setHorizontalGroup(hGroup);
+		// aligning along vertical axis (read documentation for more detail)   
+		GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
+		vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(output));
+		vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(field).addComponent(send).addComponent(broadcast));
+		groupLayout.setVerticalGroup(vGroup);
 	}
 	
 	
+	/**
+	 * 
+	 * @return	the text in the input box
+	 */
 	public String getText() {
 		return field.getText();
 	}

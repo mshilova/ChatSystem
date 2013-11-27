@@ -101,7 +101,10 @@ public class GuiOnlineUsersList extends JPanel {
 	}
 	
 	public ArrayList<String> getSelectedUsers() {
-		return (ArrayList<String>)onlineUsersList.getSelectedValuesList();
+		if(!onlineUsersList.getSelectedValuesList().isEmpty()) {
+			return (ArrayList<String>)onlineUsersList.getSelectedValuesList();
+		}
+		return new ArrayList<String>();
 	}
 	
 	public void setReplyUser(String name)  {

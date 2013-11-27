@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -15,81 +14,80 @@ import javax.swing.JTabbedPane;
 public class GuiPanelWest extends JPanel {
 
 	private ChatClientGUI frame;
-	private JPanel general;
-	private JPanel chatRooms;
+	private JPanel generalTab, chatRoomsTab;
 	private JComboBox<String> chatRoomList;
 	private HashMap<String,GuiTextArea> chatRoomTextAreas;
 	
 	public GuiPanelWest(ChatClientGUI gui) {
 		this.frame = gui;
 		chatRoomTextAreas = new HashMap<String,GuiTextArea>();
-//        this.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		JTabbedPane tabbedPane = new JTabbedPane();
-		general = new JPanel();
-		general.setPreferredSize(new Dimension(500, 440));
-		chatRooms = new JPanel();
-		chatRooms.setPreferredSize(new Dimension(500, 440));
-		chatRooms.setLayout(new FlowLayout(FlowLayout.LEADING));
+		generalTab = new JPanel();
+		generalTab.setPreferredSize(new Dimension(500, 450));
+		generalTab.setLayout(new FlowLayout(FlowLayout.LEADING));
+		chatRoomsTab = new JPanel();
+		chatRoomsTab.setPreferredSize(new Dimension(500, 450));
+		chatRoomsTab.setLayout(new FlowLayout(FlowLayout.LEADING));
 		
 		//adding tabs
-		tabbedPane.addTab("General", general);
+		tabbedPane.addTab("General", generalTab);
 		//TODO add drop down to have multiple chat rooms
-		tabbedPane.addTab("ChatRooms", chatRooms);
+		tabbedPane.addTab("ChatRooms", chatRoomsTab);
 		// making an empty drop down list for chatrooms
 		chatRoomList = new JComboBox<String>();
 		chatRoomList.setPreferredSize(new Dimension(200, 25));
 		chatRoomList.setEditable(false);
 		chatRoomList.addActionListener(chatRoomSelect);
 		
-		chatRooms.add(chatRoomList);
+		chatRoomsTab.add(chatRoomList);
 		this.add(tabbedPane);
 		this.setVisible(true);
 	}
-	/*
-	 * Adding chat room name to the drop down menu in the chatroom tab.
+	
+	
+	/**
+	 * Adding chat room name to the drop down menu in the ChatRooms tab.
+	 * Create a new text area for that chat room
+	 * @param roomName	the name of the chat room to be added
 	 */
-	public void addChatRoom(String s)  {
-		chatRoomTextAreas.put(s, new GuiTextArea());
-		chatRoomList.addItem(s);
+	public void addChatRoom(String roomName)  {
+		chatRoomTextAreas.put(roomName, new GuiTextArea());
+		chatRoomList.addItem(roomName);
 		
 	}
 	
 	
-	public void addChatRoomInvite(String s)  {
+	/**
+	 * Add chat room name to the drop down menu in the ChatRooms tab and create
+	 * a new text area for that chat room if the user accepts the chat room
+	 * invitation
+	 * @param roomName	the name of the chat room to be added if invitation is 
+	 * 					accepted
+	 */
+	public void addChatRoomInvite(String roomName)  {
 		//TODO make it stand out from 
 		// the created rooms
 		// idea: connect to chat room when selected
 		
-	    int reply = JOptionPane.showConfirmDialog(null, "Would you like to join the chat room '" + s + "'", "Invitaion", JOptionPane.YES_NO_OPTION);
+	    int reply = JOptionPane.showConfirmDialog(null, "Would you like to join the chat room '" + roomName + "'?", "Invitation", JOptionPane.YES_NO_OPTION);
 	    
         if (reply == JOptionPane.YES_OPTION) {
-//          JOptionPane.showMessageDialog(null, "HELLO");
-        	System.out.println("yes was clicked");
-        	chatRoomList.addItem(s);
-        	chatRoomTextAreas.put(s, new GuiTextArea());
+        	System.out.println("Yes was clicked");
+        	chatRoomList.addItem(roomName);
+        	chatRoomTextAreas.put(roomName, new GuiTextArea());
         }
         else {
-//           JOptionPane.showMessageDialog(null, "GOODBYE");
-        	System.out.println("no was clicked");
-           System.exit(0);
+        	System.out.println("No was clicked");
         }
 		
-		
 	}
 	
-	//TODO when user accept chat room invite, add that chat room text area
 	
-	public String getSelectedRoom()  {
-		return (String)chatRoomList.getSelectedItem();
-	}
-	public void removeRoom(String s) {
-		chatRoomList.removeItem(s);
-		// might have to repaint, not sure yet
-	}
-	
-	/*
+	/**
 	 * Update your text area from a sender
+	 * @param sender	the sender
+	 * @param message	the message to be appended to the text area
 	 */
 	public void updateTextReceive(String sender, String message) {
 		frame.getEastPanel().getOnlineUsersList().appendTextReceive(sender, message);
@@ -98,49 +96,77 @@ public class GuiPanelWest extends JPanel {
 		frame.getEastPanel().getOnlineUsersList().setReplyUser(sender);
 	}
 	
-	/*
+
+	/**
 	 * Update your text area for messages you send
+	 * @param receiver	the receiver of your message
+	 * @param message	the message to be appended to the text area
 	 */
 	public void updateTextSend(String receiver, String message) {
 		frame.getEastPanel().getOnlineUsersList().appendTextSend(receiver, message);
-		if(general.getComponentCount()==0) {
+		if(generalTab.getComponentCount()==0) {
 			setTextArea(receiver);
 		}
 	}
 	
-	public void setTextArea(String s) {
-		general.removeAll();
-		general.add(frame.getEastPanel().getOnlineUsersList().getTextArea(s));
-		general.revalidate();
-		general.repaint();
+	
+	/**
+	 * Set the text area in the General tab to a specific user
+	 * @param user	the name of the user whose text area should be shown
+	 */
+	public void setTextArea(String user) {
+		generalTab.removeAll();
+		generalTab.add(frame.getEastPanel().getOnlineUsersList().getTextArea(user));
+		generalTab.revalidate();
+		generalTab.repaint();
 	}
 	
+	
+	/**
+	 * 
+	 * @return	the name of the currently selected chat room
+	 */
+	public String getSelectedRoom()  {
+		return (String)chatRoomList.getSelectedItem();
+	}
+	
+	
+	/**
+	 * Removes a chat room from the drop down menu in the ChatRooms tab
+	 * @param the name of the chat room to be removed from the drop down menu
+	 */
+	public void removeRoom(String roomName) {
+		chatRoomList.removeItem(roomName);
+	}
+	
+	
+	/**
+	 * Set the text area in the ChatRooms tab to a specific chat room
+	 * @param room	the name of the chat room whose text area should be shown
+	 */
 	public void setRoomTextArea(String s) {
 //		for(JComponent c: (JComponent[])chatRooms.getComponents())  {
 //			if(c instanceof GuiTextArea)  {
 //				chatRooms.remove(c);
 //			}			
 //		}
-		chatRooms.add(chatRoomTextAreas.get(s));
-		chatRooms.revalidate();
-		chatRooms.repaint();
+		chatRoomsTab.add(chatRoomTextAreas.get(s));
+		chatRoomsTab.revalidate();
+		chatRoomsTab.repaint();
 	}
 	
-	/*
-	 * Update text area in chatbox
-	 */
 	
+	/*
+	 * When a chat room is selected in the chatRoomList menu, switch to the text
+	 * area of that chat room
+	 */
 	private ActionListener chatRoomSelect = new ActionListener() {
-
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			
+		public void actionPerformed(ActionEvent e) {	
 			String room =	(String)((JComboBox)e.getSource()).getSelectedItem();
 			setRoomTextArea(room);
 			System.out.println("inside room action listener, room is : " + room);
 		}
-		
-		
 		
 	};
 

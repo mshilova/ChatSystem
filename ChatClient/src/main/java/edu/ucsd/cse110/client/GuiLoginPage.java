@@ -3,6 +3,8 @@ package edu.ucsd.cse110.client;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -14,10 +16,10 @@ import javax.swing.JTextField;
 
 public class GuiLoginPage extends JPanel {
 
-//	private JButton newUser, existingUser; // buttons for user choice / login
 	private JTextField userField;
-	private JPasswordField passField; // text fields to hold user name and
-	                                       // password
+	private JPasswordField passField; // text fields to hold user name and password
+	private JLabel failLabel;
+	
 	private ChatClientGUI frame;
 	private boolean newUserFlag; // default existing user
 	
@@ -39,8 +41,7 @@ public class GuiLoginPage extends JPanel {
 		newUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				newUserFlag = true;	// setting the flag for the new user
-				// going to the next page
-				inputPage();
+				inputPage();	// going to the next page
 			}
 		});	
 				
@@ -51,8 +52,7 @@ public class GuiLoginPage extends JPanel {
 		existingUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// new User flag is false by default
-				// going to the next page
-				inputPage();
+				inputPage();	// going to the next page
 			}	
 		});
 		
@@ -71,11 +71,15 @@ public class GuiLoginPage extends JPanel {
 		
 		JLabel userLabel = new JLabel("Username: ");
 		userField = new JTextField();
+		userField.addKeyListener(enterOnEnter);
+		
 		JLabel passLabel = new JLabel("Password: ");
 		passField = new JPasswordField();
-		final JLabel output = new JLabel("Failed, please try again");
-		output.setForeground(Color.RED);
-		output.setVisible(false);
+		passField.addKeyListener(enterOnEnter);
+		
+		failLabel = new JLabel("Failed, please try again");
+		failLabel.setForeground(Color.RED);
+		failLabel.setVisible(false);
 	   
 	   JButton nextAction; // next action to take
 	   if(newUserFlag)  {
@@ -97,54 +101,74 @@ public class GuiLoginPage extends JPanel {
        // aligning along horizontal axis
        GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
        hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userLabel).addComponent(passLabel).addComponent(nextAction));
-       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userField).addComponent(passField).addComponent(output));
+       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userField).addComponent(passField).addComponent(failLabel));
        groupLayout.setHorizontalGroup(hGroup);
 	    // aligning along vertical axis (read documentation for more detail)   
        GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
        vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(userLabel).addComponent(userField));
        vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(passLabel).addComponent(passField));
-       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nextAction).addComponent(output));
+       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nextAction).addComponent(failLabel));
        groupLayout.setVerticalGroup(vGroup);
 	     
        // action to take after login or register buttons were pressed
        nextAction.addActionListener(new ActionListener() {
     	   public void actionPerformed(ActionEvent a){
-    		   if(newUserFlag)  {    		    	             
-       			   frame.getClient().registerUser(userField.getText(), new String(passField.getPassword()));
-	               try {
-	            	   Thread.sleep(1000);
-	               } catch (InterruptedException e) {
-					e.printStackTrace();
-	               }
-	               if(frame.getClient().getUser().getVerified()) {
-	            	   output.setVisible(false);
-	            	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-	            	   System.out.println("Registration verified");
-	               } else {
-	            	   System.out.println("Registration not verified");
-	            	   output.setVisible(true);
-	            	   
-	               } 
-    		   }else{
-    			   frame.getClient().verifyUser(userField.getText(), new String(passField.getPassword()));
-	               try {
-	            	   Thread.sleep(1000);
-	               } catch (InterruptedException e) {
-					e.printStackTrace();
-	               }
-	               
-	               if(frame.getClient().getUser().getVerified()) {
-	            	   output.setVisible(false);
-	            	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-	            	   System.out.println("Login verified");
-	               } else {
-	            	   System.out.println("Login not verified");
-	            	   output.setVisible(true);
-	               } 
-    		   }
+    		   attemptLogin();
 	        } 
        });
 		
 	}
+	
+	
+	/**
+	 * Attempt to register or log in using the input user name and password
+	 */
+	public void attemptLogin() {
+		 if(newUserFlag)  {    		    	             
+ 			   frame.getClient().registerUser(userField.getText(), new String(passField.getPassword()));
+             try {
+          	   Thread.sleep(1000);
+             } catch (InterruptedException e) {
+				e.printStackTrace();
+             }
+             if(frame.getClient().getUser().getVerified()) {
+          	   failLabel.setVisible(false);
+          	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
+          	   System.out.println("Registration verified");
+             } else {
+          	   System.out.println("Registration not verified");
+          	   failLabel.setVisible(true);
+          	   
+             } 
+		   }else{
+			   frame.getClient().verifyUser(userField.getText(), new String(passField.getPassword()));
+             try {
+          	   Thread.sleep(1000);
+             } catch (InterruptedException e) {
+				e.printStackTrace();
+             }
+             
+             if(frame.getClient().getUser().getVerified()) {
+          	   failLabel.setVisible(false);
+          	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
+          	   System.out.println("Login verified");
+             } else {
+          	   System.out.println("Login not verified");
+          	   failLabel.setVisible(true);
+             } 
+		   }
+	}
+	
+	
+	/*
+	 * Attempt to register or log in when the enter key is pressed
+	 */
+	private KeyAdapter enterOnEnter = new KeyAdapter() {
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+				attemptLogin();
+			}
+		}
+	};
 	
 }

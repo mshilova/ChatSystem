@@ -1,7 +1,5 @@
 package edu.ucsd.cse110.client;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,14 +77,10 @@ public class ChatClient implements MessageListener {
 
 	
 	public void run() throws JMSException {
-//		if(useGui())
-//			System.exit(0);  // read useGui method header before changing exit()
 		if(!useGui()) {
 			userLogon();
 			processor.processUserCommands( this );
 		}
-		//processor.processUserCommands( this );	
-		
 	}
 	
 	
@@ -104,11 +98,11 @@ public class ChatClient implements MessageListener {
 	
 	
 	/* 
-	 * Starts the gui, when the function returns we just exit because we used 
-	 * the gui for input. We don't want to start the text input after exiting 
-	 * gui mode.
+	 * Starts the GUI, when the function returns we just exit because we used 
+	 * the GUI for input. We don't want to start the text input after exiting 
+	 * GUI mode.
 	 */
-	private boolean useGui() {      // yesNoPrompt is in InputProcessor
+	private boolean useGui() {	// yesNoPrompt is in InputProcessor
 		if(processor.yesNoPrompt("Would you like to use the GUI? (yes/no)")){
 			usingGui = true;
 		    gui = new ChatClientGUI(this);
@@ -360,6 +354,10 @@ public class ChatClient implements MessageListener {
 	    }catch(JMSException e) { e.printStackTrace(); }
 	}
 	
+	
+	/*
+	 * MessageListener for messages from chat rooms
+	 */
 	private MessageListener subscription = new MessageListener() {
 		@Override
 		public void onMessage(Message message) {

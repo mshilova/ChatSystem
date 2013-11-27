@@ -8,7 +8,6 @@ public class GuiPanelSouth extends JPanel {
 	
 	public GuiPanelSouth(ChatClientGUI gui) {
 		this.frame = gui;
-		this.setSize(800, 100);
 		this.add(new GuiInputBox(frame));
 	}
 
