@@ -136,7 +136,17 @@ public class InputProcessor {
 	    	  chatCommander.sendInvitation( invitation[2], invitation[1] ); // passing in the username and the room name
 	    	  
 	      }else if( inputMessage.startsWith("accept" ) )
-	    	 chatCommander.acceptInvite( inputMessage );    
+	    	 chatCommander.acceptInvite( inputMessage );  
+	      else if ( inputMessage.startsWith( "leave " ) || inputMessage.startsWith( "Leave " ) ) {
+	          String leaveRoom[] = inputMessage.split( " " );
+	          if ( 2 != leaveRoom.length ) {
+	            System.out.println( "Please enter 'leave' followed by the name of the room." );
+	            continue;
+	          }
+	  
+	          chatCommander.leaveChatRoom( leaveRoom[1] );
+	  
+	      }
 	      else {	    	  System.out.println("else..");
 
 	        // invalid input, display input instructions again

@@ -67,9 +67,39 @@ public class ChatCommander {
 	/**
 	 * @param chatRoom	the name of the chat room the user is trying to leave
 	 */
-	public void leaveChatRoom(String chatRoom) {
-		// TODO leave the chat room user is in
-	}
+	public boolean leaveChatRoom(String chatRoom) throws JMSException {
+	    // TODO leave the chat room user is in
+
+	    if ( ! chatRoomEntered( chatRoom ) ) {
+	      System.out.println( "You're not in that chat room." );
+	      return false;
+	    }
+
+	    chatRooms.remove( chatRoom );
+
+	    for ( int i = 0; i < publisherList.size(); ++i )
+	      if ( chatRoom.equals( publisherList.get(i).getTopic().getTopicName() ) ) {
+	        publisherList.get(i).close();
+	        publisherList.remove(i);
+	        break;
+	      }
+
+	    for ( int i = 0; i < subscriberList.size(); ++i )
+	      if ( chatRoom.equals( subscriberList.get(i).getTopic().getTopicName() ) ) {
+	        subscriberList.get(i).close();
+	        subscriberList.remove(i);
+	        break;
+	      }
+
+	    System.out.println( "You have left the chat room: " + chatRoom );
+
+	    String userAndRoom = client.getUser().getUsername() + " " + chatRoom;
+	    client.sendServer( Constants.LEAVECHATROOM, userAndRoom );
+
+	    return true;
+
+	  }
+
 	
 	public void add( String room ) {
 		chatRooms.add( room );
