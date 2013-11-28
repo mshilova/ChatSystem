@@ -32,7 +32,6 @@ public class ChatClientGUI extends JFrame {
 	 */
 	public void start()  {
 		setLoginPage();
-		setChatPage();
 	}
 	
 	
@@ -44,24 +43,6 @@ public class ChatClientGUI extends JFrame {
 		GuiLoginPage loginPage = new GuiLoginPage(this);
 		this.add(loginPage,BorderLayout.CENTER);
 		loginPage.log();
-		
-		// continue verifying until login is successful
-		do {
-			try {
-				System.out.println("Verifying login");
-				Thread.sleep(1000);
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.out.println("Verification: " + client.getUser().getVerified());
-		} while(!client.getUser().getVerified());
-		 
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		this.remove(loginPage);
 	}
 	
 	

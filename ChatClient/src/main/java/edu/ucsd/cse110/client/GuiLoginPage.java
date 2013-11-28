@@ -139,39 +139,41 @@ public class GuiLoginPage extends JPanel {
 	 * Attempt to register or log in using the input user name and password
 	 */
 	public void attemptLogin() {
-		 if(newUserFlag)  {    		    	             
- 			   frame.getClient().registerUser(userField.getText(), new String(passField.getPassword()));
-             try {
-          	   Thread.sleep(1000);
-             } catch (InterruptedException e) {
+		if(newUserFlag)  {    		    	             
+			frame.getClient().registerUser(userField.getText(), new String(passField.getPassword()));
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
 				e.printStackTrace();
-             }
-             if(frame.getClient().getUser().getVerified()) {
-          	   failLabel.setVisible(false);
-          	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-          	   System.out.println("Registration verified");
-             } else {
-          	   System.out.println("Registration not verified");
-          	   failLabel.setVisible(true);
-          	   
-             } 
-		   }else{
-			   frame.getClient().verifyUser(userField.getText(), new String(passField.getPassword()));
-             try {
-          	   Thread.sleep(1000);
-             } catch (InterruptedException e) {
+			}
+			if(frame.getClient().getUser().getVerified()) {
+				failLabel.setVisible(false);
+				frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
+				System.out.println("Registration verified");
+				frame.remove(this);
+				frame.setChatPage();
+			} else {
+				System.out.println("Registration not verified");
+				failLabel.setVisible(true);
+			} 
+		} else{
+			frame.getClient().verifyUser(userField.getText(), new String(passField.getPassword()));
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
 				e.printStackTrace();
-             }
-             
-             if(frame.getClient().getUser().getVerified()) {
-          	   failLabel.setVisible(false);
-          	   frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-          	   System.out.println("Login verified");
-             } else {
-          	   System.out.println("Login not verified");
-          	   failLabel.setVisible(true);
-             } 
-		   }
+			}
+			if(frame.getClient().getUser().getVerified()) {
+				failLabel.setVisible(false);
+				frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
+				System.out.println("Login verified");
+				frame.remove(this);
+				frame.setChatPage();
+			} else {
+				System.out.println("Login not verified");
+				failLabel.setVisible(true);
+			} 
+		}
 	}
 	
 	
