@@ -14,6 +14,9 @@ public interface Constants {
 	 * to let the server know how to process the message.
 	 */
 	// used between client and server to identify the type of request and response
+	public static final String MESSAGE = "message";
+	public static final String ROOMMESSAGE = "roomMessage";
+	
 	public static final String LISTCHATROOMS = "listChatRooms";
 	public static final String ONLINEUSERS = "onlineUsers";
 	

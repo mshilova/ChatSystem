@@ -46,8 +46,9 @@ public class ChatCommander {
 	public void broadcast(String inputMessage) {		
 	    try {
 	    	Message message = topicSession.createTextMessage(inputMessage);
-	    	message.setJMSType( client.getUser().getUsername() );
+	    	message.setJMSType(Constants.MESSAGE);
 	    	message.setJMSReplyTo( client.getQueue() );
+	    	message.setStringProperty("SENDER", client.getUser().getUsername());
 	    	publisherList.get( 0 ).publish(message);  // using broadcast's publisher 
 	    	System.out.println("Message broadcasted.");
 	    } catch (JMSException e) {
@@ -257,7 +258,9 @@ public void publishMessageToChatRoom( String room, String message ) throws JMSEx
 	for ( TopicPublisher publisher : publisherList ) {
 		if ( publisher.getTopic().getTopicName().equals( room ) ) {
 			TextMessage text = topicSession.createTextMessage( message );
-			text.setJMSType( client.getUser().getUsername() );
+			text.setJMSType(Constants.ROOMMESSAGE);
+			text.setStringProperty("ROOM", room);
+			text.setStringProperty("SENDER", client.getUser().getUsername());
 			text.setJMSReplyTo( client.getQueue() );
 			publisher.publish( text );
 			return;

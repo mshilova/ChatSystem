@@ -76,8 +76,7 @@ public class GuiPanelWest extends JPanel {
         	System.out.println("Yes was clicked");
         	chatRoomList.addItem(roomName);
         	chatRoomTextAreas.put(roomName, new GuiTextArea());
-        }
-        else {
+        } else {
         	System.out.println("No was clicked");
         }
 		
@@ -163,7 +162,7 @@ public class GuiPanelWest extends JPanel {
 	private ActionListener chatRoomSelect = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {	
-			String room =	(String)((JComboBox)e.getSource()).getSelectedItem();
+			String room = (String)((JComboBox)e.getSource()).getSelectedItem();
 			setRoomTextArea(room);
 			System.out.println("inside room action listener, room is : " + room);
 		}
