@@ -5,9 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,8 +40,17 @@ public class GuiLoginPage extends JPanel {
 	 */
 	public void log()  {
 		
+		/*
+		 * BONUS
+		 */
+		JLabel picture = new JLabel();
+		picture.setIcon(new ImageIcon("src/main/resources/michael.gif"));
+		picture.setLocation(300, 100);
+		picture.setSize(200, 200);
+		this.add(picture);
+		
 		JButton newUser = new JButton("New User");
-		newUser.setLocation(230, 120);
+		newUser.setLocation(230, 320);
 		newUser.setSize(150, 50);
 		this.add(newUser);
 		newUser.addActionListener(new ActionListener() {
@@ -47,7 +61,7 @@ public class GuiLoginPage extends JPanel {
 		});	
 				
 		JButton existingUser = new JButton("Existing User");
-		existingUser.setLocation(420, 120);
+		existingUser.setLocation(420, 320);
 		existingUser.setSize(150, 50);
 		this.add(existingUser);
 		existingUser.addActionListener(new ActionListener() {
