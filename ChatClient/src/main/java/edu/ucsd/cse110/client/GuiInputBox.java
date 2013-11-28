@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 public class GuiInputBox extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private ChatClientGUI frame;
 	private JTextField field;
 	private ArrayList<String> sendList;

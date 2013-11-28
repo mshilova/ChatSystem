@@ -20,6 +20,7 @@ import javax.swing.event.ListSelectionListener;
 
 public class GuiOnlineUsersList extends JPanel {
 	
+	private static final long serialVersionUID = 1L;
 	private ChatClientGUI frame;
 	private JList<String> onlineUsersList;
 	private Map<String,Destination> onlineUsers;

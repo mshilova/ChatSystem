@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.client;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ import javax.swing.JTabbedPane;
 
 public class GuiPanelWest extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private ChatClientGUI frame;
 	private JPanel generalTab, chatRoomsTab;
 	private JComboBox<String> chatRoomList;
@@ -34,7 +36,7 @@ public class GuiPanelWest extends JPanel {
 		tabbedPane.addTab("General", generalTab);
 		//TODO add drop down to have multiple chat rooms
 		tabbedPane.addTab("ChatRooms", chatRoomsTab);
-		// making an empty drop down list for chatrooms
+		// making an empty drop down list for chat rooms
 		chatRoomList = new JComboBox<String>();
 		chatRoomList.setPreferredSize(new Dimension(200, 25));
 		chatRoomList.setEditable(false);
@@ -144,11 +146,11 @@ public class GuiPanelWest extends JPanel {
 	 * @param room	the name of the chat room whose text area should be shown
 	 */
 	public void setRoomTextArea(String s) {
-//		for(JComponent c: (JComponent[])chatRooms.getComponents())  {
-//			if(c instanceof GuiTextArea)  {
-//				chatRooms.remove(c);
-//			}			
-//		}
+		for(Component c: (Component[])chatRoomsTab.getComponents())  {
+			if(c instanceof GuiTextArea)  {
+				chatRoomsTab.remove(c);
+			}
+		}
 		chatRoomsTab.add(chatRoomTextAreas.get(s));
 		chatRoomsTab.revalidate();
 		chatRoomsTab.repaint();
@@ -161,10 +163,10 @@ public class GuiPanelWest extends JPanel {
 	 */
 	private ActionListener chatRoomSelect = new ActionListener() {
 		@Override
-		public void actionPerformed(ActionEvent e) {	
-			String room = (String)((JComboBox)e.getSource()).getSelectedItem();
+		public void actionPerformed(ActionEvent e) {
+			String room = (String)chatRoomList.getSelectedItem();
 			setRoomTextArea(room);
-			System.out.println("inside room action listener, room is : " + room);
+			System.out.println("Inside room action listener, room is : " + room);
 		}
 		
 	};

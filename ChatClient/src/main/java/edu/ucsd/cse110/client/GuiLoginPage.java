@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 
 public class GuiLoginPage extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private JTextField userField;
 	private JPasswordField passField; // text fields to hold user name and password
 	private JLabel failLabel;

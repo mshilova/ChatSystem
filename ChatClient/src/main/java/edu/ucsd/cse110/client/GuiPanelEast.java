@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 public class GuiPanelEast extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	final private ChatClientGUI frame;
 	private GuiOnlineUsersList onlineUsersList;
 	private JButton logoff, createChatRoom, invite;
