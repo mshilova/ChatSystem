@@ -99,7 +99,7 @@ public class InputProcessor {
 	    	
 	  
 	    	  // ChatRoom and ChatRoomManager logic handled in server, but topic is actually made in ChatClient
-	  		  client.sendServer( Constants.CREATECHATROOM, chatCommander.getClient().getUser().getUsername()+" " +room ); 
+	    	  chatCommander.createChatRoom( room );
 	  		  chatCommander.add( room );  	  //TODO this was the line changed in ChatClient
 	      
 	      } else if(inputMessage.startsWith("send")) {

@@ -65,6 +65,16 @@ public class ChatCommander {
 		pendingInvitations.add( room );
 	}
 	
+	
+	/**
+	 * 
+	 * @param room	name of the chat room
+	 */
+	public void createChatRoom(String room) {
+		client.sendServer( Constants.CREATECHATROOM, client.getUser().getUsername()+" "+room );
+	}
+	
+	
 	/**
 	 * @param chatRoom	the name of the chat room the user is trying to leave
 	 */
