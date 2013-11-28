@@ -69,7 +69,7 @@ public class ChatClient implements MessageListener {
 		user = new User();
 		try {
 			consumer.setMessageListener(this);
-			subscriber.setMessageListener(subscription); 
+			subscriber.setMessageListener(this); 
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -228,16 +228,16 @@ public class ChatClient implements MessageListener {
 	 */
 	public void send(String username, String inputMessage) {
 	    try {
-		// retrieve the address associated with the recipient's user-name
-		if(onlineUsers.containsKey(username)) {
-		    Message message = session.createTextMessage(inputMessage);
-		    message.setJMSType(user.getUsername());
-		    Destination dest = onlineUsers.get(username);
-		    producer.send(dest, message);
-		    System.out.println("Message sent to " + username + ".");
-		} else {
-		    System.out.println(username + " is not online.");
-		}	
+			// retrieve the address associated with the recipient's user-name
+			if(onlineUsers.containsKey(username)) {
+			    Message message = session.createTextMessage(inputMessage);
+			    message.setJMSType(Constants.MESSAGE);
+			    message.setStringProperty("SENDER", username);
+			    producer.send(onlineUsers.get(username), message);
+			    System.out.println("Message sent to " + username + ".");
+			} else {
+			    System.out.println(username + " is not online.");
+			}	
 	    } catch (JMSException e) { e.printStackTrace(); }
 	}
 
@@ -269,6 +269,7 @@ public class ChatClient implements MessageListener {
 	
 	/**
 	 * Contact the server to request a list of all users who are online
+	 * Print out that list of online users
 	 */
 	public void listOnlineUsers() {
 		
@@ -278,6 +279,11 @@ public class ChatClient implements MessageListener {
 	}
 	
 	
+	/**
+	 * Check if a specific user in online
+	 * @param user	user-name of user to check if he/she is online
+	 * @return	boolean true if the user is online, false otherwise
+	 */
 	public boolean userOnline( String user ) {	
 		if ( onlineUsers.containsKey( user ) )
 			return true;	
@@ -285,6 +291,11 @@ public class ChatClient implements MessageListener {
 	}
 	
 	
+	/**
+	 * 
+	 * @param user
+	 * @return	the address of the user
+	 */
 	public Destination getDestination( String user ) {	
 		return onlineUsers.get( user );	
 	}
@@ -297,9 +308,7 @@ public class ChatClient implements MessageListener {
 	@SuppressWarnings("unchecked")
 	public void onMessage(Message message) {
 	    try {
-	    	String type = message.getJMSType();
-		
-	    	switch (type){
+	    	switch (message.getJMSType()){
 	    	
 	    	case Constants.ONLINEUSERS:
 	    		onlineUsers = (HashMap<String, Destination>) (( (ObjectMessage) message ).getObject());
@@ -330,7 +339,6 @@ public class ChatClient implements MessageListener {
 	    		break;
 	    		
 	    	case Constants.INVITATION:
-	
 	    		String invite[] = ((TextMessage) message).getText().split( " " );
 	    		if(usingGui) {	
 	    			gui.getPanelWest().addChatRoomInvite(invite[1]);		
@@ -341,41 +349,31 @@ public class ChatClient implements MessageListener {
 		    	}
 	    		chatCommander.addPendingInvitation( invite[1] );  // invite[1] is the room name    
 	    		break;
-	    					
-			default:
+	    	
+	    	case Constants.MESSAGE:
 				if(usingGui) {
-					
-					gui.updateTextArea(type, ((TextMessage)message).getText());
+					gui.updateTextArea(message.getStringProperty("SENDER"), ((TextMessage)message).getText());
+	    		} else {
+	    			System.out.println("From " + message.getStringProperty("SENDER") + ": " + ((TextMessage)message).getText());
+				}
+				break;
+			
+	    	case Constants.ROOMMESSAGE:
+				if(usingGui) {
+					// TODO update text area of chat room
+//					gui.updateTextArea(message.getStringProperty("SENDER"), ((TextMessage)message).getText());
+	    		} else {
+	    			System.out.println("In " + message.getStringProperty("ROOM")
+	    					+ ": From " + message.getStringProperty("SENDER")
+	    					+ ": " + ((TextMessage)message).getText());
+				}
+				break;
 				
-	    		} else {
-	    			System.out.println("From " + type + ": " + ((TextMessage)message).getText());
-				}
+			default:
+				throw new JMSException("Unrecognized JMSType");
 	    	}
-	    }catch(JMSException e) { e.printStackTrace(); }
+	    	
+	    } catch(JMSException e) { e.printStackTrace(); }
 	}
-	
-	
-	/*
-	 * MessageListener for messages from chat rooms
-	 */
-	private MessageListener subscription = new MessageListener() {
-		@Override
-		public void onMessage(Message message) {
-			String type;
-			try {
-				type = message.getJMSType();
-				if(usingGui) {
-					gui.updateTextArea(type, ((TextMessage)message).getText());
-	    		} else {
-	    			System.out.println("From " + type + ": " + ((TextMessage)message).getText());
-				}
-			} catch (JMSException e) {
-				e.printStackTrace();
-			}
 
-		}
-	};
-	
 }
-
-
