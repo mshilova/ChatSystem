@@ -234,11 +234,7 @@ public class TestChatRoomManager {
  			try {
  				connection.close();
  			} catch (JMSException e) {
- 				/* 
- 				 * This means that the connection was already closed or got 
- 				 * some error while closing. Given that we are closing the
- 				 * client we can safely ignore this.
- 				*/
+ 				
  			}
  		}
  	}
