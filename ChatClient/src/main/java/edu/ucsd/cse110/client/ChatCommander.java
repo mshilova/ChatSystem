@@ -74,6 +74,7 @@ public class ChatCommander {
 	 * @param room	name of the chat room
 	 */
 	public void createChatRoom(String room) {
+		chatRooms.add( room );
 		client.sendServer( Constants.CREATECHATROOM, client.getUser().getUsername()+" "+room );
 	}
 	
@@ -114,9 +115,13 @@ public class ChatCommander {
 
 	  }
 
-	
+
 	public void add( String room ) {
 		chatRooms.add( room );
+	}
+	
+	public void removeLastRoomAdded() {
+		chatRooms.remove( chatRooms.size() - 1 );
 	}
 	
 	
@@ -202,6 +207,7 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 	
 	if( inputMessage.equals("accept") && 1 == pendingInvitations.size() ) 
 		chatRoom = pendingInvitations.get( 0 );
+	
 	else if( inputMessage.contains(" ") ){
 		  acceptRoom = inputMessage.split(" ");
 		  if( 2 == acceptRoom.length )
@@ -216,6 +222,12 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 		return false;
 	}
 	
+	if ( ! pendingInvitations.contains( chatRoom ) ) {
+		System.out.println( "You don't have any pending invitations for the chat room: " + chatRoom );
+		return false;
+	}
+	
+	pendingInvitations.remove( chatRoom ); 
 	setupChatRoomTopic( chatRoom );
 	chatRooms.add( chatRoom );
 	System.out.println("accepted invite ");

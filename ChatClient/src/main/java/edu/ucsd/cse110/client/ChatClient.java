@@ -328,8 +328,10 @@ public class ChatClient implements MessageListener {
 	    			if(usingGui) {
 						gui.getPanelWest().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
 		    		}
-	    		} else
+	    		} else {
+	    			chatCommander.removeLastRoomAdded();
 	    			System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
+	    		}
 	    		break;
 	    		
 	    	case Constants.CHATROOMUPDATE:
