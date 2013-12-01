@@ -369,6 +369,15 @@ public class ChatClient implements MessageListener {
 				}
 				break;
 				
+	    	case Constants.USERSINCHATROOM:
+	    		if ( usingGui ) {
+	    			// TODO Masha and Nobel will do something with this - Kacy
+	    		} else {
+		    		Map usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
+		    		chatCommander.listUsersInChatRoom( usersInChatRoom );
+	    		}
+	    		break;
+	    		
 			default:
 				throw new JMSException("Unrecognized JMSType");
 	    	}

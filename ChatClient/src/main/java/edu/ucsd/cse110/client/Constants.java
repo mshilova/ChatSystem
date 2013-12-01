@@ -33,6 +33,7 @@ public interface Constants {
 	
 	public static final String RESPONSE = "success";
 	public static final String CHATROOMUPDATE = "chatRoomUpdate";
+	public static final String USERSINCHATROOM = "USERSINCHATROOM";
 	public static final int MINFIELDLENGTH = 4;
 	
 }

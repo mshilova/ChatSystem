@@ -1,7 +1,10 @@
 package edu.ucsd.cse110.client;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
@@ -296,6 +299,30 @@ public void listChatRooms() {
 	for ( String room : chatRooms ) {
 	  System.out.println( room );	
 	}
+	
+}
+
+public boolean requestUsersInChatRoom( String room ) {
+	
+	if ( ! chatRoomEntered( room ) ) {
+		System.out.println( "Sorry, you're not in that chat room." );
+		return false;
+	}
+	
+	client.sendServer( Constants.USERSINCHATROOM, room );
+	
+	return true;
+	
+}
+
+public void listUsersInChatRoom( Map<String, Destination> usersInChatRoom ) {
+	
+	Set<String> users = usersInChatRoom.keySet();
+	
+	for ( String user : users ) {
+		System.out.println( user );
+	}
+	
 	
 }
 

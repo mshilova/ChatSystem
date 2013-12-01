@@ -147,6 +147,17 @@ public class InputProcessor {
 	          chatCommander.leaveChatRoom( leaveRoom[1] );
 	  
 	      }
+	      else if ( inputMessage.startsWith( "inChatRoom " ) ) {
+	    	  
+	    	  String inChatRoomAndRoomName[] = inputMessage.split( " " );
+	    	  if ( 2 != inChatRoomAndRoomName.length ) {
+	    		  System.out.println( "Invalid number of arguments.  Type in 'inChatRoom' followed by the room name." );
+	    		  continue;
+	    	  }
+	    	  
+	    	  chatCommander.requestUsersInChatRoom( inChatRoomAndRoomName[1] );
+	    	  
+	      }
 	      else {	    	  System.out.println("else..");
 
 	        // invalid input, display input instructions again
