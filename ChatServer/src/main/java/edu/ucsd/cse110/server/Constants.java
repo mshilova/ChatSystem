@@ -30,4 +30,6 @@ public interface Constants {
 	public static final String LEAVECHATROOM = "leaveChatRoom";
 
 	public static final String CHATROOMUPDATE = "chatRoomUpdate";
+	public static final String USERSINCHATROOM = "USERSINCHATROOM";
+
 }

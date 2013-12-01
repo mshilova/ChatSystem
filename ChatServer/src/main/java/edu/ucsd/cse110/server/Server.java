@@ -68,6 +68,12 @@ public class Server {
 		    	case Constants.ACCEPTEDINVITE:
 		    		updateChatRoom(chatRoomManager.addUser(message));
 		    		break;
+		    	
+		    	case Constants.USERSINCHATROOM:
+		    		ChatRoom room = chatRoomManager.getRoom( message );
+		    		send( message.getJMSReplyTo(), room.getAllUsers(), Constants.USERSINCHATROOM );
+		    		break;
+		    		
 		    		
 		    	case Constants.LEAVECHATROOM:  
 		    		updateChatRoom(chatRoomManager.removeUser(message));

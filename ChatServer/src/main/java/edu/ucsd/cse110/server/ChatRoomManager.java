@@ -32,8 +32,9 @@ public class ChatRoomManager implements Manager{
 	}	
 	
 	/* Returns reference to a room */
-	public ChatRoom getRoom(String room){
-		return rooms.get(room);
+	public ChatRoom getRoom(Message room) throws JMSException{
+		String roomName = processor.extractName( room );
+		return rooms.get( roomName );
 	}
 	
 	/**
