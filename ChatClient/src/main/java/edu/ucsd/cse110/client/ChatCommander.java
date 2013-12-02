@@ -46,7 +46,29 @@ public class ChatCommander {
 	 * Broadcast a message to all users
 	 * @param inputMessage	the message to broadcast
 	 */
-	public void broadcast(String inputMessage) {		
+	public boolean broadcast(String inputMessage) {		
+		
+		if ( "".equals( inputMessage ) ) {
+			System.out.println( "You must enter a message to broadcast" );
+			return false;
+		}
+		
+		boolean justSpaces = true;
+		
+		for ( int i = 0; i < inputMessage.length(); ++i ) 
+			if ( inputMessage.charAt( i ) == ' '  )
+				continue;
+			else {
+				justSpaces = false;
+				break;
+			}
+
+		if ( justSpaces ) {
+			System.out.println( "You must enter a message to broadcast" );
+			return false;
+		}
+			
+		
 	    try {
 	    	Message message = topicSession.createTextMessage(inputMessage);
 	    	message.setJMSType(Constants.MESSAGE);
@@ -57,15 +79,19 @@ public class ChatCommander {
 	    } catch (JMSException e) {
 	   		e.printStackTrace();
 	   	}
+	    
+	    return true;
+	    
 	}
 	
-	public void setTopicSession( TopicSession session ) {
-		topicSession = session;
-	}
 	
-	
-	public void addPendingInvitation( String room ) {
+	public boolean addPendingInvitation( String room ) {
+		
+		if ( pendingInvitations.contains( room ) )
+			return false;
+	 
 		pendingInvitations.add( room );
+		return true;
 	}
 	
 	
@@ -120,8 +146,12 @@ public class ChatCommander {
 		chatRooms.add( room );
 	}
 	
-	public void removeLastRoomAdded() {
+	public String removeLastRoomAdded() {
+		
+		String toReturn = chatRooms.get( chatRooms.size() - 1 );
 		chatRooms.remove( chatRooms.size() - 1 );
+		
+		return toReturn;
 	}
 	
 	
@@ -129,7 +159,7 @@ public class ChatCommander {
 	 * and sets up the publisher and subscriber 
 	 */
 	
-	public void setupChatRoomTopic( String room ) {
+	public boolean setupChatRoomTopic( String room ) {
 				
 		try {
 			Topic chatRoom = topicSession.createTopic( room );
@@ -145,33 +175,45 @@ public class ChatCommander {
 		} catch (JMSException e) {
 			e.printStackTrace();
 			System.err.println( "There was a problem setting up the chat room" );
+			return false;
 		}
 		
-	}
-	
-	public void setupChatRoomTopic() {
+		return true;
 		
-		setupChatRoomTopic( chatRooms.get(chatRooms.size() - 1) );
-	
 	}
 	
-	public void addSubscriber( TopicSubscriber subscriber ) {
+	public String setupChatRoomTopic() {
 		
-		subscriberList.add( subscriber );
+		String room = chatRooms.get( chatRooms.size() - 1 );
+		setupChatRoomTopic( room );
+		
+		return room;
+	
 	}
 	
-	public void addPublisher( TopicPublisher publisher ) {
-		publisherList.add( publisher );
+	public boolean addSubscriber( TopicSubscriber subscriber ) {	
+		return subscriberList.add( subscriber );
+	}
+	
+	public boolean addPublisher( TopicPublisher publisher ) {
+		return publisherList.add( publisher );
 	}
 	
 	
-	public void sendInvitation( String user, String room ) throws JMSException {
-		System.out.println("In send invitation.");
+	public boolean sendInvitation( String user, String room ) throws JMSException {
+		
+		if ( ! client.userOnline( user ) ) {
+			System.out.println( "That user is not online." );
+			return false;
+		}
+		
 		System.out.println("USer " + user+ " room " + room);
 		TextMessage message = client.getSession().createTextMessage( client.getUser().getUsername() + " " + room );
 		message.setJMSType( Constants.INVITATION );
 		client.getProducer().send( client.getDestination( user ), message );
 		System.out.println( "Invitation sent." );
+		
+		return true;
 		
 	}
 	
@@ -298,15 +340,6 @@ public void publishMessageToChatRoom( String room, String message ) throws JMSEx
  * Contact the server and print to request a list of all chat rooms
  */
 public void listChatRooms() {
-	/*Message message;
-	try {
-		message = client.getSession().createTextMessage( client.getQueue().toString());
-		message.setJMSType(Constants.LISTCHATROOMS);
-		message.setJMSReplyTo( client.getQueue() );
-		client.getProducer().send( client.getSession().createQueue(Constants.SERVERQUEUE), message);
-	} catch (JMSException e) {
-		e.printStackTrace();
-	}*/
 	
 	for ( String room : chatRooms ) {
 	  System.out.println( room );	
