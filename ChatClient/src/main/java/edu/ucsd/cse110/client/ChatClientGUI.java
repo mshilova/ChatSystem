@@ -2,6 +2,8 @@ package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
 
+import javax.jms.JMSException;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
 public class ChatClientGUI extends JFrame {
@@ -64,6 +66,15 @@ public class ChatClientGUI extends JFrame {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	JComboBox<String> rooms = guiPanelWest.getChatRoomsTab().getChatRooms();
+		    	for(int i=0; i<rooms.getItemCount(); i++) {
+		    		try {
+						client.getChatCommander().leaveChatRoom(rooms.getItemAt(i));
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+		    	}
+		    	
 		        client.sendServer(Constants.LOGOFF, client.getUser().getUsername());
 		        System.out.println("Closing behavior set");
 		    }
@@ -86,7 +97,11 @@ public class ChatClientGUI extends JFrame {
 	}
 	
 	public void updateTextArea(String sender, String message) {
-		this.getPanelWest().updateTextReceive(sender, message);
+		this.getPanelWest().getGeneralTab().updateTextReceive(sender, message);
+	}
+	
+	public void updateRoomTextArea(String room, String sender, String message) {
+		this.getPanelWest().getChatRoomsTab().updateRoomTextReceive(room, sender, message);
 	}
 	
 	public GuiPanelEast getEastPanel() {

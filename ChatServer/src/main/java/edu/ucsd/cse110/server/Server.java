@@ -71,7 +71,9 @@ public class Server {
 		    	
 		    	case Constants.USERSINCHATROOM:
 		    		ChatRoom room = chatRoomManager.getRoom( message );
+//		    		message.setStringProperty("ROOM", room.getName());
 		    		send( message.getJMSReplyTo(), room.getAllUsers(), Constants.USERSINCHATROOM );
+		    		System.out.println("server received good");
 		    		break;
 		    		
 		    		

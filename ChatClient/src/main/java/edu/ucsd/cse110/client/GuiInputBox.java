@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.jms.JMSException;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -18,53 +19,23 @@ public class GuiInputBox extends JPanel {
 	private ChatClientGUI frame;
 	private JTextField field;
 	private ArrayList<String> sendList;
+	private final JLabel output;
 	
 	public GuiInputBox(ChatClientGUI gui) {
 		this.frame = gui;
 		
-		final JLabel output = new JLabel("Please enter a message");
-		output.setForeground(Color.RED);
-		output.setVisible(false);
+		output = new JLabel();
+		
+		
 		field = new JTextField(50);
 		
 		JButton send = new JButton("Send");
-		send.setSize(100, 20);
-		send.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if("".equals(field.getText())) {
-					output.setVisible(true);
-				} else {
-					sendList = frame.getEastPanel().getOnlineUsersList().getSelectedUsers();
-					// printing the list of users, testing
-					for(String s: sendList) {
-						System.out.println(s);
-						// sending a message to a user
-						frame.getPanelWest().updateTextSend(s, field.getText());
-						frame.getClient().send(s, field.getText());
-					}
-					output.setVisible(false);
-					field.setText("");
-					
-					System.out.println("Sending message");
-				}
-			}
-		});
+		send.addActionListener(sendAction);
+		send.setToolTipText("Select user to send message.");
 		
 		JButton broadcast = new JButton("Broadcast");
-		broadcast.setSize(100, 20);
-		broadcast.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {			
-				if("".equals(field.getText())) {
-					output.setVisible(true);
-				} else {
-					output.setVisible(false);
-					frame.getClient().getChatCommander().broadcast(field.getText());
-					field.setText("");
-					System.out.println("Broadcasting message");
-				}
-			}
-		});
-		
+		broadcast.addActionListener(broadcastAction);
+		broadcast.setToolTipText("Broadcast message to all users.");
 		
 		// creating layout to align labels with text fields
 		GroupLayout groupLayout = new GroupLayout(this);
@@ -94,4 +65,82 @@ public class GuiInputBox extends JPanel {
 		return field.getText();
 	}
 
+	
+	private ActionListener sendAction = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			if(frame.getPanelWest().getSelectedTab() instanceof GuiTabChatRooms)  {
+				// inside ChatRoom tab
+				try {
+					// getting the room name
+					String room = frame.getPanelWest().getChatRoomsTab().getSelectedRoom();
+					System.out.println("Room: " + room);
+					if(room != null)  {
+						String message = field.getText();
+						if("".equals(field.getText()))  {
+							output.setText("Please enter a message.");
+							output.setForeground(Color.RED);
+							output.setVisible(true);
+						} else {
+							frame.getClient().getChatCommander().publishMessageToChatRoom(room, message);
+							frame.getPanelWest().getChatRoomsTab().updateRoomTextSend(message);
+						}	
+					}	else {
+						output.setText("Please select a Chat Room.");
+						output.setForeground(Color.RED);
+						output.setVisible(true);
+					}
+				} catch (JMSException e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				// general tab sending message
+				if("".equals(field.getText())) {
+					output.setText("Please enter a message.");
+					output.setForeground(Color.RED);
+					output.setVisible(true);
+				} else {
+					sendList = frame.getEastPanel().getOnlineUsersList().getSelectedUsers();
+					if(sendList.isEmpty()) {
+						output.setText("Select a user to send message");
+						output.setForeground(Color.RED);
+						output.setVisible(true);
+					} else {
+						// printing the list of users, testing
+						for(String s: sendList) {
+							System.out.println(s);
+							// sending a message to a user
+							frame.getPanelWest().getGeneralTab().updateTextSend(s, field.getText());
+							frame.getClient().send(s, field.getText());
+						}
+						output.setText("Sending messages to Users.");
+						output.setForeground(Color.black);
+						field.setText("");
+						
+						System.out.println("Sending message");
+					}
+					
+				}
+			}
+		}
+	};
+	
+	
+	private ActionListener broadcastAction = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {			
+				if("".equals(field.getText())) {
+					output.setVisible(true);
+				} else {
+					output.setVisible(false);
+					frame.getClient().getChatCommander().broadcast(field.getText());
+					field.setText("");
+					System.out.println("Broadcasting message");
+				}
+			}
+	};
+	
+	public void setLabel(String s)  {
+		output.setText(s);
+		output.setForeground(Color.black);
+		output.setVisible(true);
+	}
 }

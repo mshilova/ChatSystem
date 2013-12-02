@@ -1,7 +1,7 @@
 package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.jms.Destination;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,7 +32,6 @@ public class GuiOnlineUsersList extends JPanel {
 		this.frame = frame;
 		this.setVisible(true);
 		this.setLayout(new BorderLayout());
-		this.setBorder(BorderFactory.createLineBorder(Color.black));
 		userText = new HashMap<String,GuiTextArea>();
 		initComponents();
 		
@@ -70,6 +69,10 @@ public class GuiOnlineUsersList extends JPanel {
 	}
 		
 	private void initComponents() {
+		JLabel label = new JLabel("Online Users");
+		label.setPreferredSize(new Dimension(200,25));
+		this.add(label,BorderLayout.NORTH);
+		
 		listModel = new DefaultListModel<String>();
 		onlineUsersList = new javax.swing.JList<String>(listModel);
 		
@@ -81,26 +84,48 @@ public class GuiOnlineUsersList extends JPanel {
 			public void valueChanged(ListSelectionEvent e) {
 				// Set the text area to the user just selected
 				if(e.getValueIsAdjusting()) {
-					frame.getPanelWest().setTextArea(onlineUsersList.getSelectedValue());
+					frame.getPanelWest().getGeneralTab().setTextArea(onlineUsersList.getSelectedValue());
 				}
 			}
 			
 		});
 	}
 	
-	public GuiTextArea getTextArea(String s)  {
-		return userText.get(s); // returning the text area for each user
+	
+	/**
+	 * 
+	 * @param name	name of the user whose text area is to be received
+	 * @return	the text area of the user
+	 */
+	public GuiTextArea getTextArea(String name)  {
+		return userText.get(name);
 	}
 	
+	
+	/**
+	 * Append the user text area for messages received
+	 * @param user	the user whose text area is to appended
+	 * @param message	the message to append
+	 */
 	public void appendTextReceive(String user, String message)  {
 		userText.get(user).append("\n" + user + ": " + message);
 	}
 	
+	
+	/**
+	 * Append the user text area for messages sent
+	 * @param user	the user whose text area is to be appended
+	 * @param message	the message to append
+	 */
 	public void appendTextSend(String user, String message) {
 		userText.get(user).append("\nMe: " + message);
-
 	}
 	
+	
+	/**
+	 * 
+	 * @return	list of users selected in the online users list
+	 */
 	public ArrayList<String> getSelectedUsers() {
 		if(!onlineUsersList.getSelectedValuesList().isEmpty()) {
 			return (ArrayList<String>)onlineUsersList.getSelectedValuesList();
@@ -108,8 +133,20 @@ public class GuiOnlineUsersList extends JPanel {
 		return new ArrayList<String>();
 	}
 	
+	
+	/**
+	 * Select a user in the online users list
+	 * @param name
+	 */
 	public void setReplyUser(String name)  {
 		onlineUsersList.setSelectedValue(name, true);
 	}
 	
+	
+	/**
+	 * Clear selection
+	 */
+	public void deselectAll() {
+		onlineUsersList.clearSelection();
+	}
 }

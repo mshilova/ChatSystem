@@ -74,6 +74,7 @@ public class ChatCommander {
 	 * @param room	name of the chat room
 	 */
 	public void createChatRoom(String room) {
+		chatRooms.add( room );
 		client.sendServer( Constants.CREATECHATROOM, client.getUser().getUsername()+" "+room );
 	}
 	
@@ -114,9 +115,13 @@ public class ChatCommander {
 
 	  }
 
-	
+
 	public void add( String room ) {
 		chatRooms.add( room );
+	}
+	
+	public void removeLastRoomAdded() {
+		chatRooms.remove( chatRooms.size() - 1 );
 	}
 	
 	
@@ -127,6 +132,7 @@ public class ChatCommander {
 	public void setupChatRoomTopic( String room ) {
 				
 		try {
+			System.out.println("accepted the invite, inside commander.");
 			Topic chatRoom = topicSession.createTopic( room );
 			TopicSubscriber subscriber = topicSession.createSubscriber( chatRoom );
 			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
@@ -202,6 +208,7 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 	
 	if( inputMessage.equals("accept") && 1 == pendingInvitations.size() ) 
 		chatRoom = pendingInvitations.get( 0 );
+	
 	else if( inputMessage.contains(" ") ){
 		  acceptRoom = inputMessage.split(" ");
 		  if( 2 == acceptRoom.length )
@@ -216,6 +223,12 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 		return false;
 	}
 	
+	if ( ! pendingInvitations.contains( chatRoom ) ) {
+		System.out.println( "You don't have any pending invitations for the chat room: " + chatRoom );
+		return false;
+	}
+	
+	pendingInvitations.remove( chatRoom ); 
 	setupChatRoomTopic( chatRoom );
 	chatRooms.add( chatRoom );
 	System.out.println("accepted invite ");
@@ -267,9 +280,11 @@ public void addToChatRoomList( String name ) {
 }
 
 public void publishMessageToChatRoom( String room, String message ) throws JMSException {
-	
+	System.out.println("inside commander");
 	for ( TopicPublisher publisher : publisherList ) {
+		System.out.println("inside commander loop");
 		if ( publisher.getTopic().getTopicName().equals( room ) ) {
+			System.out.println("inside commander loop if");
 			TextMessage text = topicSession.createTextMessage( message );
 			text.setJMSType(Constants.ROOMMESSAGE);
 			text.setStringProperty("ROOM", room);
@@ -310,7 +325,7 @@ public boolean requestUsersInChatRoom( String room ) {
 	}
 	
 	client.sendServer( Constants.USERSINCHATROOM, room );
-	
+	System.out.println("request good");
 	return true;
 	
 }
@@ -324,6 +339,16 @@ public void listUsersInChatRoom( Map<String, Destination> usersInChatRoom ) {
 	}
 	
 	
+}
+
+public void leaveAllChatRooms() {
+	for(int i=chatRooms.size()-1; i>=0; i--) {
+		try {
+			this.leaveChatRoom(chatRooms.get(i));
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
 }

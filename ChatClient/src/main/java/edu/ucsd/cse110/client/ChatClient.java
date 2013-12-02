@@ -326,22 +326,28 @@ public class ChatClient implements MessageListener {
 	    		if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
 	    			chatCommander.setupChatRoomTopic(); // last room name added to list will be created
 	    			if(usingGui) {
-						gui.getPanelWest().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
+						gui.getPanelWest().getChatRoomsTab().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
 		    		}
-	    		} else
+	    		} else {
+	    			chatCommander.removeLastRoomAdded();
 	    			System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
+	    			if(usingGui) {
+	    				gui.getEastPanel().errorPopUp();
+	    			}
+	    		}
 	    		break;
 	    		
 	    	case Constants.CHATROOMUPDATE:
 	    		//TODO set the updated chatroom object somewhere
 	    		// TODO import ChatRoom
 	    		ChatRoom room = (ChatRoom) ((ObjectMessage) message).getObject();
+	    		
 	    		break;
 	    		
 	    	case Constants.INVITATION:
 	    		String invite[] = ((TextMessage) message).getText().split( " " );
 	    		if(usingGui) {	
-	    			gui.getPanelWest().addChatRoomInvite(invite[1]);		
+	    			gui.getPanelWest().getChatRoomsTab().addChatRoomInvite(invite[1]);		
 	    		} else {
 	    		 
 		    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
@@ -359,21 +365,30 @@ public class ChatClient implements MessageListener {
 				break;
 			
 	    	case Constants.ROOMMESSAGE:
-				if(usingGui) {
-					// TODO update text area of chat room
-//					gui.updateTextArea(message.getStringProperty("SENDER"), ((TextMessage)message).getText());
-	    		} else {
-	    			System.out.println("In " + message.getStringProperty("ROOM")
-	    					+ ": From " + message.getStringProperty("SENDER")
-	    					+ ": " + ((TextMessage)message).getText());
-				}
+	    		String sender = message.getStringProperty("SENDER");
+	    		System.out.println("sender chat room: " + sender);
+	    		if(!user.getUsername().equals(sender)) {
+					if(usingGui) {
+						gui.updateRoomTextArea(
+								message.getStringProperty("ROOM"),
+								sender,
+								((TextMessage)message).getText());
+		    		} else {
+		    			System.out.println("In " + message.getStringProperty("ROOM")
+		    					+ ": From " + message.getStringProperty("SENDER")
+		    					+ ": " + ((TextMessage)message).getText());
+					}
+	    		}
 				break;
 				
 	    	case Constants.USERSINCHATROOM:
 	    		if ( usingGui ) {
-	    			// TODO Masha and Nobel will do something with this - Kacy
+	    			String chatRoomName = message.getStringProperty("ROOM");
+	    			Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
+	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(chatRoomName, usersInChatRoom);
+	    			System.out.println("received good");
 	    		} else {
-		    		Map usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
+		    		Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
 		    		chatCommander.listUsersInChatRoom( usersInChatRoom );
 	    		}
 	    		break;

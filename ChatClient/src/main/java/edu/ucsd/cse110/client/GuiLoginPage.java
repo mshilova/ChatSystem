@@ -5,13 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.border.EtchedBorder;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -47,6 +45,7 @@ public class GuiLoginPage extends JPanel {
 		picture.setIcon(new ImageIcon("src/main/resources/michael.gif"));
 		picture.setLocation(300, 100);
 		picture.setSize(200, 200);
+		picture.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		this.add(picture);
 		
 		JButton newUser = new JButton("New User");
@@ -95,42 +94,41 @@ public class GuiLoginPage extends JPanel {
 		failLabel = new JLabel("Failed, please try again");
 		failLabel.setForeground(Color.RED);
 		failLabel.setVisible(false);
-	   
-	   JButton nextAction; // next action to take
-	   if(newUserFlag)  {
-		   nextAction = new JButton("Register");
-	   }else {
-		   nextAction = new JButton("Log in");
-	   }
-	   
-       nextAction.setLocation(300, 300);
-       nextAction.setSize(150, 50);
-	      
-	   // creating layout to align labels with text fields
-       GroupLayout groupLayout = new GroupLayout(this);
-       this.setLayout(groupLayout);
-       groupLayout.setAutoCreateGaps(true);
-       groupLayout.setAutoCreateContainerGaps(true);
-       // create a sequential group for the horizontal axis
-	       
-       // aligning along horizontal axis
-       GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
-       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userLabel).addComponent(passLabel).addComponent(nextAction));
-       hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userField).addComponent(passField).addComponent(failLabel));
-       groupLayout.setHorizontalGroup(hGroup);
-	    // aligning along vertical axis (read documentation for more detail)   
-       GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
-       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(userLabel).addComponent(userField));
-       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(passLabel).addComponent(passField));
-       vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nextAction).addComponent(failLabel));
-       groupLayout.setVerticalGroup(vGroup);
-	     
-       // action to take after login or register buttons were pressed
-       nextAction.addActionListener(new ActionListener() {
-    	   public void actionPerformed(ActionEvent a){
-    		   attemptLogin();
-	        } 
-       });
+		
+		JButton nextAction; // next action to take
+		if(newUserFlag)  {
+			nextAction = new JButton("Register");
+		} else {
+			nextAction = new JButton("Log in");
+		}
+		nextAction.setLocation(300, 300);
+		nextAction.setSize(150, 50);
+       
+		// creating layout to align labels with text fields
+		GroupLayout groupLayout = new GroupLayout(this);
+		this.setLayout(groupLayout);
+		groupLayout.setAutoCreateGaps(true);
+		groupLayout.setAutoCreateContainerGaps(true);
+		// create a sequential group for the horizontal axis
+		
+		// aligning along horizontal axis
+		GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
+		hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userLabel).addComponent(passLabel).addComponent(nextAction));
+		hGroup.addGroup(groupLayout.createParallelGroup().addComponent(userField).addComponent(passField).addComponent(failLabel));
+		groupLayout.setHorizontalGroup(hGroup);
+		// aligning along vertical axis (read documentation for more detail)   
+		GroupLayout.SequentialGroup vGroup = groupLayout.createSequentialGroup();
+		vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(userLabel).addComponent(userField));
+		vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(passLabel).addComponent(passField));
+		vGroup.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(nextAction).addComponent(failLabel));
+		groupLayout.setVerticalGroup(vGroup);
+		
+		// action to take after login or register buttons were pressed
+		nextAction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a){
+				attemptLogin();
+				} 
+		});
 		
 	}
 	
