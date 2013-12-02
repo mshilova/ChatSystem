@@ -233,6 +233,7 @@ public class InputProcessor {
 	}
 
 	
+
 	public void processLogOff(ChatCommander commander, ChatClient client) {
 		commander.leaveAllChatRooms();
 		client.sendServer( Constants.LOGOFF, client.getUser().getUsername() );

@@ -115,47 +115,52 @@ public class TestChatRoomManager {
 		}
 	}
 	
-//	@Test
-//	public void testcopyRoom()
-//	{
-//		try
-//		{
-//		  ChatRoomManager manager = ChatRoomManager.getInstance();
-//		  Message messy = session.createTextMessage( "create Chatroom1");
-//		  assertTrue( manager.addItem( messy ) );
-//		  assertTrue( manager.containsItem("Chatroom1") );
-//		
-//		  ChatRoom chat1 = manager.getRoom("Chatroom1" );  BONNIE - getRoom now takes a Message object, not a String, please update
-//		  ChatRoom chat2 = manager.copyRoom( "Chatroom1" );
-//		  assertEquals( chat1.getName(), chat2.getName() );
-//		  assertSame( chat1.getName(), chat2.getName() );
-//		
-//		  ChatRoom chat3 = new ChatRoom("Chatroom1");
-//		  assertEquals( chat1.getName(), chat3.getName() );
-//		  assertNotSame( chat1.getName(), chat3.getName() );
-//		}
-//		catch( JMSException e)
-//		{
-//			fail(); // Should not go here
-//		}
-//	}
+	@Test
+	public void testcopyRoom()
+	{
+		try
+		{
+		  ChatRoomManager manager = ChatRoomManager.getInstance();
+		  Message messy = session.createTextMessage( "Bonnie Chatroom1");
+		  assertTrue( manager.addItem( messy ) );
+		  assertTrue( manager.containsItem("Chatroom1") );
+		  
+		  Message mess = session.createTextMessage("Chatroom1");
+		  
+		  ChatRoom chat1 = manager.getRoom( mess );  
+		  ChatRoom chat2 = manager.copyRoom( "Chatroom1" );
+		  assertEquals( chat1.getName(), chat2.getName() );
+		  assertSame( chat1.getName(), chat2.getName() );
+		
+		  ChatRoom chat3 = new ChatRoom("Chatroom1");
+		  assertEquals( chat1.getName(), chat3.getName() );
+		  assertNotSame( chat1.getName(), chat3.getName() );
+		}
+		catch( JMSException e)
+		{
+			fail(); // Should not go here
+		}
+	}
 	
-//	@Test
-//	public void testgetRoom()
-//	{
-//		ChatRoomManager manage = ChatRoomManager.getInstance();
-//		try
-//		{
-//			Message mess = session.createTextMessage("create Chatroom" );
-//			assertTrue( manage.addItem( mess ) );
-//			ChatRoom chat1 = manage.getRoom("Chatroom");  BONNIE - getRoom now takes a Message object, not a String, please update
-//			assertEquals("Chatroom", chat1.getName());
-//		}
-//		catch( JMSException e)
-//		{
-//			fail(); // Should not go here
-//		}
-//	}
+	@Test
+	public void testgetRoom()
+	{
+		ChatRoomManager manage = ChatRoomManager.getInstance();
+		try
+		{
+			Message mess = session.createTextMessage("Bonnie Chatroom" );
+			assertTrue( manage.addItem( mess ) );
+	        assertTrue( manage.containsItem( "Chatroom" ) );
+	        
+	        Message messy = session.createTextMessage("Chatroom");
+			ChatRoom chat1 = manage.getRoom( messy ); 
+			assertEquals("Chatroom", chat1.getName());
+		}
+		catch( JMSException e)
+		{
+			fail(); // Should not go here
+		}
+	}
 	
 	@Test
 	public void testremoveItem()
