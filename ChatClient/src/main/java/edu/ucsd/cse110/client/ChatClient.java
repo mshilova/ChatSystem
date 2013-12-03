@@ -106,8 +106,9 @@ public class ChatClient implements MessageListener {
 	private boolean useGui() {	// yesNoPrompt is in InputProcessor
 		if(processor.yesNoPrompt("Would you like to use the GUI? (yes/no)")){
 			usingGui = true;
-		    gui = new ChatClientGUI(this);
-		    gui.start();
+			gui = SkipGuiLogin.skip(this); // TODO remove this when done testing
+//		    gui = new ChatClientGUI(this);
+//		    gui.start();
 		    return true;
 		}
 		return false;
