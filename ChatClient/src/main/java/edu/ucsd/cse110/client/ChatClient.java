@@ -233,7 +233,7 @@ public class ChatClient implements MessageListener {
 			if(onlineUsers.containsKey(username)) {
 			    Message message = session.createTextMessage(inputMessage);
 			    message.setJMSType(Constants.MESSAGE);
-			    message.setStringProperty("SENDER", username);
+			    message.setStringProperty("SENDER", user.getUsername());
 			    producer.send(onlineUsers.get(username), message);
 			    System.out.println("Message sent to " + username + ".");
 			} else {
