@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.client;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -83,6 +84,7 @@ public class GuiInputBox extends JPanel {
 						} else {
 							frame.getClient().getChatCommander().publishMessageToChatRoom(room, message);
 							frame.getPanelWest().getChatRoomsTab().updateRoomTextSend(message);
+							field.setText("");
 						}	
 					}	else {
 						output.setText("Please select a Chat Room.");
@@ -128,9 +130,17 @@ public class GuiInputBox extends JPanel {
 	private ActionListener broadcastAction = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {			
 				if("".equals(field.getText())) {
+					output.setText("Please enter a message.");
+					output.setForeground(Color.RED);
 					output.setVisible(true);
 				} else {
-					output.setVisible(false);
+					if(getCurrentTab() instanceof GuiTabGeneral) {
+						output.setText("Sending messages to Users.");
+					} else if(getCurrentTab() instanceof GuiTabChatRooms) {
+						output.setText("Sending messages to Chat Rooms.");
+					}
+					output.setForeground(Color.black);
+					output.setVisible(true);
 					frame.getClient().getChatCommander().broadcast(field.getText());
 					field.setText("");
 					System.out.println("Broadcasting message");
@@ -142,5 +152,11 @@ public class GuiInputBox extends JPanel {
 		output.setText(s);
 		output.setForeground(Color.black);
 		output.setVisible(true);
+	}
+	
+	
+	public Component getCurrentTab() {
+		return frame.getPanelWest().getSelectedTab();
+		
 	}
 }
