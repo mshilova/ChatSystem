@@ -69,6 +69,9 @@ public class InputProcessor {
 	      
 	      else if(inputMessage.equalsIgnoreCase("listChatRooms")) 
 	          chatCommander.listChatRooms(); // list all chat rooms
+	      
+	      else if(inputMessage.equalsIgnoreCase("listAllChatRooms")) 
+	          chatCommander.listAllChatRooms(); // list all chat rooms
 	        
 	      else if(inputMessage.startsWith("broadcast")) 
 	          processBroadcast(chatCommander, inputMessage);   // broadcast the message

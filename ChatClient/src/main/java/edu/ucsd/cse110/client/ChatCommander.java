@@ -13,9 +13,12 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 
+import edu.ucsd.cse110.server.ChatRoom;
+
 public class ChatCommander {
 	
-	protected ArrayList<String> chatRooms = new ArrayList<String>();
+	protected ArrayList<String> chatRooms = new ArrayList<String>();  //list of rooms the user is subscribed to
+	private ArrayList<String> allChatRooms = new ArrayList<String>();
 	private ArrayList<String> pendingInvitations = new ArrayList<String>();
 	private ArrayList<TopicPublisher> publisherList = new ArrayList<TopicPublisher>();
 	private ArrayList<TopicSubscriber> subscriberList = new ArrayList<TopicSubscriber>();
@@ -282,7 +285,8 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 
 
 
-/* Checks if input starts with a chat room name and then returns that name, 
+/* This method checks if the user is in the chat room passed in 
+ * Checks if input starts with a chat room name and then returns that name, 
  * else return false */
 
 public boolean chatRoomEntered(String inputMessage ) {
@@ -306,6 +310,15 @@ public boolean chatRoomEntered(String inputMessage ) {
  	}
 	
 	return false;
+		
+}
+
+public boolean chatRoomEntered( String room, boolean fromRequestUsersInChatRoom ) {
+	
+	if ( ! fromRequestUsersInChatRoom )
+		return false;
+	
+	return allChatRooms.contains( room );
 		
 }
 
@@ -343,17 +356,33 @@ public void publishMessageToChatRoom( String room, String message ) throws JMSEx
  * Contact the server and print to request a list of all chat rooms
  */
 public void listChatRooms() {
-	
+		
 	for ( String room : chatRooms ) {
 	  System.out.println( room );	
 	}
 	
 }
 
+public void updateAllChatRooms( ArrayList<String> allRooms ) {
+	allChatRooms = allRooms;
+}
+
+
+public void listAllChatRooms() {
+	
+	System.out.println( "There are currently " + allChatRooms.size()  + " running chat rooms." );
+	
+	for ( String room : allChatRooms ) {
+		System.out.println( room );
+	}
+
+}
+
+
 public boolean requestUsersInChatRoom( String room ) {
 	
-	if ( ! chatRoomEntered( room ) ) {
-		System.out.println( "Sorry, you're not in that chat room." );
+	if ( ! chatRoomEntered( room, true ) ) {
+		System.out.println( "Sorry, that chat room doesn't exist." );
 		return false;
 	}
 	

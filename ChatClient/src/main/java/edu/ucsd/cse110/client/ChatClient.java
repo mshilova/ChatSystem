@@ -2,6 +2,7 @@ package edu.ucsd.cse110.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -342,6 +343,11 @@ public class ChatClient implements MessageListener {
 	    		// TODO import ChatRoom
 	    		ChatRoom room = (ChatRoom) ((ObjectMessage) message).getObject();
 	    		
+	    		break;
+	    		
+	    	case Constants.UPDATEALLCHATROOMS:
+    			 chatCommander.updateAllChatRooms( (ArrayList<String>) (( (ObjectMessage) message ).getObject()) );
+
 	    		break;
 	    		
 	    	case Constants.INVITATION:

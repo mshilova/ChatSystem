@@ -83,7 +83,8 @@ public class ChatClientApplication {
 	 */
 	public static void printHelp() {
 		System.out.println("# Type 'listOnlineUsers' to testTestlist all online users.");
-		System.out.println("# Type 'listChatRooms' to list all chat rooms.");
+		System.out.println("# Type 'listChatRooms' to list chat rooms you're in.");
+		System.out.println("# Type 'listAllChatRooms' to list all existing chat rooms.");
 		System.out.println("# Type 'createChatRoom' followed by the name of the chat room to create a chat room.");
 		System.out.println("# Type 'broadcast' followed by your message to broadcast to all online users.");
 		System.out.println("# Type 'send' followed by a user-name and then your message to send that message to that user.");
