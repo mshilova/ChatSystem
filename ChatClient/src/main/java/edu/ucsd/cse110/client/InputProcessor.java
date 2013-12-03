@@ -170,6 +170,16 @@ public class InputProcessor {
 	public boolean processMessageForChatRoom(ChatCommander chatCommander,
 			String inputMessage) throws JMSException {
 	
+		
+		//Added by Savuthy to fix avaoid error when user input only chatroom without space
+		if (! inputMessage.contains(" "))
+		{
+			System.out.println("Invalid input: [ChatRoomName] [Message]");
+			return false;
+		}
+		//End Added block
+		
+		
 		String roomName = inputMessage.substring( 0, inputMessage.indexOf(" ") );
 		chatCommander.publishMessageToChatRoom( roomName, inputMessage.substring( roomName.length() + 1 ) );
 		  
