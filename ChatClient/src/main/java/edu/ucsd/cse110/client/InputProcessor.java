@@ -184,14 +184,27 @@ public class InputProcessor {
 			return false;
 		}
 		
-		inputMessage = inputMessage.substring("send".length()+1);
-		String userList = inputMessage.substring(0,inputMessage.indexOf(" "));
-		String[] mailingList = userList.split(",");
-		for(String recipient : mailingList) {
-		  client.send(recipient,
-		      inputMessage.substring(inputMessage.indexOf(" ")+1));
+		inputMessage = inputMessage.substring("send".length()+1);	// everything after "send "
+		
+		// remove any spaces after "send " and before the list of receivers
+		while(inputMessage.indexOf(" ") == 0) {
+			inputMessage = inputMessage.replaceFirst(" ", "");
 		}
 		
+		int userAndMessageSplit = inputMessage.indexOf(" ");
+		
+		if( userAndMessageSplit == -1 ) {
+			System.out.println( "You must specify users and a message to send." );
+			return false;
+		} else {
+			
+			String userList = inputMessage.substring(0,userAndMessageSplit);
+			String[] mailingList = userList.split(",");
+			for(String recipient : mailingList) {
+			  client.send(recipient,
+			      inputMessage.substring(inputMessage.indexOf(" ")+1));
+			}
+		}
 		return true;
 	}
 
