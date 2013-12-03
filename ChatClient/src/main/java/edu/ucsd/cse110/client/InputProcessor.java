@@ -57,45 +57,45 @@ public class InputProcessor {
 
 	    while(true) {
 	      inputMessage = input.nextLine();
+	      String inputCommand = inputMessage.toLowerCase();
 	      
-	      if(inputMessage.startsWith("help")) 
+	      if(inputCommand.startsWith("help")) 
 	          ChatClientApplication.printHelp();     // display the help message  
 	      
-	      else if(inputMessage.startsWith("exit")) 
+	      else if(inputCommand.startsWith("exit")) 
 	    	  processLogOff(chatCommander, client);  // go off-line
 	        
-	      else if(inputMessage.startsWith("listOnlineUsers")) 
+	      else if(inputCommand.startsWith("listonlineusers")) 
 	          client.listOnlineUsers();  // list all online users
 	      
-	      else if(inputMessage.equalsIgnoreCase("listChatRooms")) 
+	      else if(inputCommand.equalsIgnoreCase("listchatrooms")) 
 	          chatCommander.listChatRooms(); // list all chat rooms
 	      
-	      else if(inputMessage.equalsIgnoreCase("listAllChatRooms")) 
+	      else if(inputCommand.equalsIgnoreCase("listallchatrooms")) 
 	          chatCommander.listAllChatRooms(); // list all chat rooms
 	        
-	      else if(inputMessage.startsWith("broadcast")) 
+	      else if(inputCommand.startsWith("broadcast ")) 
 	          processBroadcast(chatCommander, inputMessage);   // broadcast the message
 
-          else if(inputMessage.startsWith("createChatRoom")) 
+          else if(inputCommand.startsWith("createchatroom ")) 
 	    	  processChatRoomCreation(chatCommander, inputMessage);  	 
 	      
-	      else if(inputMessage.startsWith("send")) 
+	      else if(inputCommand.startsWith("send ")) 
 	        processMessageToSend(client, inputMessage);	     // send a message to a specific user
 
 	      else if ( chatCommander.chatRoomEntered(inputMessage) )  
 	    	  processMessageForChatRoom(chatCommander, inputMessage); 
 	      
-	      else if ( inputMessage.startsWith( "invite " ) ) 
+	      else if ( inputCommand.startsWith( "invite " ) ) 
 	    	  processInvitation(client, chatCommander, inputMessage);
 	    	  
-	      else if( inputMessage.startsWith("accept" ) )
+	      else if( inputCommand.startsWith("accept" ) )
 	    	 chatCommander.acceptInvite( inputMessage );  
 	      
-	      else if ( inputMessage.startsWith( "leave " ) || inputMessage.startsWith( "Leave " ) ) 
+	      else if ( inputCommand.startsWith( "leave " )) 
 	         processLeaveChatRoom(chatCommander, inputMessage);
 	  
-	      
-	      else if ( inputMessage.startsWith( "inChatRoom " ) ) 
+	      else if ( inputCommand.startsWith( "inchatroom " ) ) 
 	    	 processListUsersInChatRoom(chatCommander, inputMessage);
 	    	  
 	      
