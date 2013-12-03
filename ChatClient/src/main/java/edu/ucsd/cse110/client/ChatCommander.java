@@ -413,4 +413,15 @@ public void leaveAllChatRooms() {
 	}
 }
 
+public boolean isChatRoomExisted(String strRoom)
+{
+	for ( String room : allChatRooms ) {
+		  if (strRoom.equals(room))
+		  {
+			  return true;
+		  }
+		}
+	return false;
+}
+
 }
