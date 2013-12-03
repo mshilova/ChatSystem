@@ -15,6 +15,8 @@ public interface Constants {
 	 */
 	// used between client and server to identify the type of request and response
 	public static final String LISTCHATROOMS = "listChatRooms";
+	public static final String UPDATEALLCHATROOMS = "updateAllChatRooms";
+
 	public static final String ONLINEUSERS = "onlineUsers";
 	public static final String CREATECHATROOM = "createChatRoom";
 	public static final String ACCEPTEDINVITE = "acceptedinvite";

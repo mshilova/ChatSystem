@@ -1,8 +1,10 @@
 
 package edu.ucsd.cse110.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -170,10 +172,17 @@ public class ChatRoomManager implements Manager{
 	 * returns a copy of all the active ChatRooms 
 	 */
 	
-	public Map<String, ? extends Object> getAllItems() {
-		Map<String, ChatRoom> retMap = new HashMap<String, ChatRoom>();
-		retMap.putAll(rooms);
-		return retMap;
+	
+	
+	public ArrayList<String> getAllItems() {
+		
+		Set<String> chatRooms = rooms.keySet();
+		ArrayList<String> listOfRoomNames = new ArrayList<String>();
+		
+		for ( String room : chatRooms )
+		 	listOfRoomNames.add( room );
+			
+		return listOfRoomNames;
 	}
 
 

@@ -10,6 +10,6 @@ public interface Manager {
 	public abstract boolean addItem(Message message);
 	public abstract boolean containsItem(String item);
 	public abstract void removeAllItems();
-	public abstract Map<String, ? extends Object> getAllItems();
+	//public abstract Map<String, ? extends Object> getAllItems();
 
 }

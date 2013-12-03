@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.server;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.jms.Destination;
@@ -58,11 +59,14 @@ public class Server {
 		    		send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
 		    		update = loginManager.addItem(message);
 		    		send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
+		    			
 		    		break;
 		    		
 		    	case Constants.CREATECHATROOM:
 		    		update = chatRoomManager.addItem(message);
 		    		send(message.getJMSReplyTo(), update, Constants.CREATECHATROOM);
+		    		updateChatRooms( chatRoomManager.getAllItems() );
+		    		
 		    		break;
 		    		
 		    	case Constants.ACCEPTEDINVITE:
@@ -76,10 +80,11 @@ public class Server {
 		    		System.out.println("server received good");
 		    		break;
 		    		
-		    		
 		    	case Constants.LEAVECHATROOM:  
 		    		updateChatRoom(chatRoomManager.removeUser(message));
 		    		chatRoomManager.update();
+		    		updateChatRooms( chatRoomManager.getAllItems() ); 
+		    		
 		    		break;
 		    		
 		    	case Constants.LOGOFF:
@@ -94,6 +99,10 @@ public class Server {
 		
 		updateOnlineUsers( update );
 		
+		if ( update ) 
+    		updateChatRooms( chatRoomManager.getAllItems() );
+
+		
 	}
 	
 	
@@ -105,6 +114,17 @@ public class Server {
 		
 		for(String user : recipients.keySet()){
 			send(recipients.get(user), room, Constants.CHATROOMUPDATE);
+		}
+		
+	}
+	
+	
+	public void updateChatRooms( ArrayList<String> listOfRooms ){
+		
+		Map<String, Destination> userMap = (Map<String, Destination>) loginManager.getAllItems();
+	    
+		for(String key : loginManager.getAllItems().keySet()){
+			send(userMap.get(key), listOfRooms, Constants.UPDATEALLCHATROOMS );
 		}
 		
 	}
@@ -167,6 +187,24 @@ public class Server {
 			System.out.println("Server sent a response.2");
 		} catch (JMSException e) { e.printStackTrace(); }
 	}
+	
+	
+
+public void send(Destination recipient, final ArrayList<String> chatRooms, final String type) {
+		
+		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);	
+		MessageCreator messageCreator = new MessageCreator() {
+				public Message createMessage(Session session) throws JMSException {
+					ObjectMessage objectMessage = session.createObjectMessage((Serializable) chatRooms );
+					objectMessage.setJMSType(type);
+					return objectMessage;
+				}
+		};
+		try {
+			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
+			System.out.println("Server sent a response.3");
+		} catch (JMSException e) { e.printStackTrace(); }
+	}	
 	
 	
 	public void send(Destination recipient, final Map<String, Destination> onlineUsers, final String type) {
