@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.jms.JMSException;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -17,6 +18,7 @@ public class GuiPanelEast extends JPanel {
 	private static final long serialVersionUID = 1L;
 	final private ChatClientGUI frame;
 	private GuiOnlineUsersList onlineUsersList;
+	private GuiChatRoomsList chatRoomsList;
 	private JButton logoff, createChatRoom, invite;
 	
 	
@@ -25,9 +27,18 @@ public class GuiPanelEast extends JPanel {
 		this.setPreferredSize(new Dimension(200,500));
 		this.setLayout(new BorderLayout());
 
+		JPanel lists = new JPanel();
+		lists.setLayout(new BoxLayout(lists,BoxLayout.Y_AXIS));
+		lists.setPreferredSize(new Dimension(200, 400));
+		this.add(lists, BorderLayout.NORTH);
+		
 		onlineUsersList = new GuiOnlineUsersList(frame);
-		onlineUsersList.setPreferredSize(new Dimension(200,380));
-		this.add(onlineUsersList, BorderLayout.NORTH);
+		onlineUsersList.setPreferredSize(new Dimension(200,200));
+		lists.add(onlineUsersList);
+		
+		chatRoomsList = new GuiChatRoomsList(frame);
+		chatRoomsList.setPreferredSize(new Dimension(200,100));
+		lists.add(chatRoomsList);
 		
 		JPanel buttonsPanel = new JPanel();
 		this.add(buttonsPanel, BorderLayout.CENTER);
