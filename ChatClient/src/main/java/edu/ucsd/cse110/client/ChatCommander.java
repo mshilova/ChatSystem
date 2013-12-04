@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ public class ChatCommander {
 	private ArrayList<String> pendingInvitations = new ArrayList<String>();
 	private ArrayList<TopicPublisher> publisherList = new ArrayList<TopicPublisher>();
 	private ArrayList<TopicSubscriber> subscriberList = new ArrayList<TopicSubscriber>();
+	public Map<String, ChatRoom> chatRoomMap = new HashMap<String,ChatRoom>();	//TODO make private
 	private TopicSession topicSession;
 	private ChatClient client;
 

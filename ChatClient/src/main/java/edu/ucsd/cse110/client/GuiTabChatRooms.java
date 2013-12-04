@@ -19,8 +19,9 @@ public class GuiTabChatRooms extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private ChatClientGUI frame;
-	private JComboBox<String> chatRoomList, membersList;
+	private JComboBox<String> chatRoomList;
 	private HashMap<String,GuiTextArea> chatRoomTextAreas;
+	private HashMap<String,JComboBox<String>> membersBoxes;
 
 	public GuiTabChatRooms(ChatClientGUI gui) {
 		this.frame = gui;
@@ -33,6 +34,7 @@ public class GuiTabChatRooms extends JPanel {
 		chatRoomList.setPreferredSize(new Dimension(150, 25));
 		chatRoomList.setEditable(false);
 		chatRoomList.addActionListener(roomSelectAction);
+		chatRoomList.setName("roomList");
 		this.add(chatRoomList);
 		
 		JButton leaveButton = new JButton("Leave Chat Room");
@@ -40,10 +42,7 @@ public class GuiTabChatRooms extends JPanel {
 		leaveButton.setToolTipText("Leave this Chat Room.");
 		this.add(leaveButton);
 		
-		membersList = new JComboBox<String>();
-		membersList.setPreferredSize(new Dimension(150, 25));
-		membersList.setEditable(false);
-		this.add(membersList);
+		membersBoxes = new HashMap<String,JComboBox<String>>();
 	}
 	
 	/**
@@ -51,10 +50,13 @@ public class GuiTabChatRooms extends JPanel {
 	 * Create a new text area for that chat room
 	 * @param roomName	the name of the chat room to be added
 	 */
-	public void addChatRoom(String roomName)  {
+	public void addChatRoom(String roomName, String creator)  {
+		membersBoxes.put(roomName, new JComboBox<String>());
+		membersBoxes.get(roomName).addItem(creator);
+		System.out.println("added combobox");
 		chatRoomTextAreas.put(roomName, new GuiTextArea());
 		chatRoomList.addItem(roomName);
-		
+		frame.getClient().getChatCommander().setupChatRoomTopic(roomName);
 	}
 	
 	
@@ -70,11 +72,17 @@ public class GuiTabChatRooms extends JPanel {
 	    
         if (reply == JOptionPane.YES_OPTION) {
         	System.out.println("Yes was clicked");
+        	membersBoxes.put(roomName, new JComboBox<String>());
         	chatRoomTextAreas.put(roomName, new GuiTextArea());
         	chatRoomList.addItem(roomName);
-        	frame.getClient().getChatCommander().setupChatRoomTopic(roomName);
+        	// accepting the invite
+        	try {
+        		frame.getClient().getChatCommander().addPendingInvitation( roomName );
+				frame.getClient().getChatCommander().acceptInvite("accept "+roomName);
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}
         	frame.getPanelWest().setSelectedTab("chatrooms");
-        	frame.getClient().getChatCommander().requestUsersInChatRoom(roomName);
         } else {
         	System.out.println("No was clicked");
         }
@@ -112,25 +120,31 @@ public class GuiTabChatRooms extends JPanel {
 	 */
 	public void setRoomTextArea(String s) {
 		for(Component c: (Component[])this.getComponents())  {
-			if(c instanceof GuiTextArea)  {
+			if(c instanceof GuiTextArea) {
 				this.remove(c);
+			} else if(c instanceof JComboBox) {
+				if(!"roomList".equals(c.getName())) {
+					this.remove(c);
+				}
 			}
 		}
+		this.add(membersBoxes.get(s));
 		this.add(chatRoomTextAreas.get(s));
+		System.out.println("box size: "+membersBoxes.size());
 		this.revalidate();
 		this.repaint();
 	}
 	
 	
 	public void setRoomMembers(String room, Map<String, Destination> userMap) {
-		membersList.removeAllItems();
-		membersList.revalidate();
-		membersList.repaint();
+		membersBoxes.get(room).removeAllItems();
+		membersBoxes.get(room).revalidate();
+		membersBoxes.get(room).repaint();
 		for(Map.Entry<String, Destination> entry : userMap.entrySet()) {
-			membersList.addItem(entry.getKey());
+			membersBoxes.get(room).addItem(entry.getKey());
 		}
-		membersList.revalidate();
-		membersList.repaint();
+		membersBoxes.get(room).revalidate();
+		membersBoxes.get(room).repaint();
 	}
 	
 	public void updateRoomTextSend(String text) {
@@ -159,9 +173,7 @@ public class GuiTabChatRooms extends JPanel {
 			if(room != null) {
 				setRoomTextArea(room);
 				System.out.println("Entered room: " + room);
-//				frame.getClient().getChatCommander().requestUsersInChatRoom(room);
-			}
-			
+			}	
 		}
 		
 	};
@@ -182,7 +194,5 @@ public class GuiTabChatRooms extends JPanel {
 			
 		}
 	};
-	
-	
 
 }

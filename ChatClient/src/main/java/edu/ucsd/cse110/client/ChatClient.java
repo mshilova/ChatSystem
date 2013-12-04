@@ -328,7 +328,7 @@ public class ChatClient implements MessageListener {
 	    		if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
 	    			chatCommander.setupChatRoomTopic(); // last room name added to list will be created
 	    			if(usingGui) {
-						gui.getPanelWest().getChatRoomsTab().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1));
+						gui.getPanelWest().getChatRoomsTab().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1), user.getUsername());
 		    		}
 	    		} else {
 	    			chatCommander.removeLastRoomAdded();
@@ -342,8 +342,12 @@ public class ChatClient implements MessageListener {
 	    	case Constants.CHATROOMUPDATE:
 	    		//TODO set the updated chatroom object somewhere
 	    		// TODO import ChatRoom
+	    		System.out.println("in chatroom update");
 	    		ChatRoom room = (ChatRoom) ((ObjectMessage) message).getObject();
-	    		
+	    		//this.chatCommander.chatRoomMap.put(room.getName(), room);
+	    		if(usingGui) {
+	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(room.getName(), room.getAllUsers() );
+	    		}
 	    		break;
 	    		
 	    	case Constants.UPDATEALLCHATROOMS:
@@ -390,10 +394,10 @@ public class ChatClient implements MessageListener {
 				
 	    	case Constants.USERSINCHATROOM:
 	    		if ( usingGui ) {
-	    			String chatRoomName = message.getStringProperty("ROOM");
-	    			Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
-	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(chatRoomName, usersInChatRoom);
-	    			System.out.println("received good");
+//	    			String chatRoomName = message.getStringProperty("ROOM");
+//	    			Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
+//	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(chatRoomName, usersInChatRoom);
+//	    			System.out.println("received good");
 	    		} else {
 		    		Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
 		    		chatCommander.listUsersInChatRoom( usersInChatRoom );
