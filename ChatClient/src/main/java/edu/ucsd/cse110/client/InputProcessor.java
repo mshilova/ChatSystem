@@ -88,6 +88,9 @@ public class InputProcessor {
 	      
 	      else if ( inputCommand.startsWith( "invite " ) ) 
 	    	  processInvitation(client, chatCommander, inputMessage);
+	      
+	      else if ( inputCommand.startsWith( "askforinvite " ) )
+	    	  processRequestForInvitation( chatCommander, inputMessage );
 	    	  
 	      else if( inputCommand.startsWith("accept" ) )
 	    	 chatCommander.acceptInvite( inputMessage );  
@@ -108,6 +111,18 @@ public class InputProcessor {
 	    
 	  }
 
+	
+	public boolean processRequestForInvitation( ChatCommander chatCommander, String inputMessage ) throws JMSException {
+		
+		String inviteAndRoom[] = inputMessage.split( " " );
+		
+		if ( 2 != inviteAndRoom.length )
+			return false;
+		
+		return chatCommander.requestInvite( inviteAndRoom[1] );
+		
+	}
+	
 	
 	public boolean processListUsersInChatRoom(ChatCommander chatCommander,
 			String inputMessage) {

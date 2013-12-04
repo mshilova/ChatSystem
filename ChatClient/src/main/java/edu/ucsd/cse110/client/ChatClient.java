@@ -377,7 +377,6 @@ public class ChatClient implements MessageListener {
 			
 	    	case Constants.ROOMMESSAGE:
 	    		String sender = message.getStringProperty("SENDER");
-	    		System.out.println("sender chat room: " + sender);
 	    		if(!user.getUsername().equals(sender)) {
 					if(usingGui) {
 						gui.updateRoomTextArea(

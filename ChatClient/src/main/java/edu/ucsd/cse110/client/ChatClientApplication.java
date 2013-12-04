@@ -95,6 +95,7 @@ public class ChatClientApplication {
 				+ "to send a message to that chat room.");
 		System.out.println("# Type 'invite' followed by the name of the chat room "
 				+ "and the name of the user to invite that user to that chat room.");
+		System.out.println("# Type 'askForInvite' followed by the name of the chat room you want to be invited to.");
 		System.out.println("# Type 'inChatRoom' followed by the name of the chat room "
 				+ "to list the users in the chat room.");
 		System.out.println("# Type 'exit' to close the program.");

@@ -167,7 +167,6 @@ public class ChatCommander {
 	public boolean setupChatRoomTopic( String room ) {
 				
 		try {
-			System.out.println("accepted the invite, inside commander.");
 			Topic chatRoom = topicSession.createTopic( room );
 			TopicSubscriber subscriber = topicSession.createSubscriber( chatRoom );
 			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
@@ -337,11 +336,8 @@ public void addToChatRoomList( String name ) {
 }
 
 public void publishMessageToChatRoom( String room, String message ) throws JMSException {
-	System.out.println("inside commander");
 	for ( TopicPublisher publisher : publisherList ) {
-		System.out.println("inside commander loop");
 		if ( publisher.getTopic().getTopicName().equals( room ) ) {
-			System.out.println("inside commander loop if");
 			TextMessage text = topicSession.createTextMessage( message );
 			text.setJMSType(Constants.ROOMMESSAGE);
 			text.setStringProperty("ROOM", room);
@@ -359,6 +355,9 @@ public void publishMessageToChatRoom( String room, String message ) throws JMSEx
  */
 public void listChatRooms() {
 		
+	if ( 0 == chatRooms.size() )
+		System.out.println( "You're not currently in any chat rooms." );
+	
 	for ( String room : chatRooms ) {
 	  System.out.println( room );	
 	}
@@ -415,15 +414,38 @@ public void leaveAllChatRooms() {
 	}
 }
 
-public boolean isChatRoomExisted(String strRoom)
-{
-	for ( String room : allChatRooms ) {
-		  if (strRoom.equals(room))
-		  {
-			  return true;
-		  }
+
+public boolean chatRoomExists( String room ) {
+	return allChatRooms.contains( room );
+}
+
+
+public boolean requestInvite( String room ) throws JMSException {
+
+		if ( chatRoomEntered( room ) ) {
+			System.out.println( "You're already in that chatroom." );
+			return false;
 		}
-	return false;
+		
+		if ( chatRoomExists( room ) ) {
+			Topic chatRoom = topicSession.createTopic( room );
+			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
+			String message = client.getUser().getUsername() + " would like to be invited to your chat room: " + room;
+			TextMessage text = topicSession.createTextMessage( message );
+			text.setJMSType(Constants.MESSAGE);
+			text.setJMSReplyTo( client.getQueue() );
+			text.setStringProperty( "SENDER", client.getUser().getUsername() );
+			publisher.send( text );
+			
+			return true;
+		}
+		else {
+			System.out.println( "That chat room doesn't exist." );
+			return false;
+		}
+			
+			
+	
 }
 
 }

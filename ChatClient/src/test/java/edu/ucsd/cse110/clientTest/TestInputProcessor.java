@@ -73,7 +73,7 @@ public class TestInputProcessor {
 		assertFalse(processor.processListUsersInChatRoom(chatCommander, inputMessage));
 
 		//Testing successfully send processListUsersInChatRoom
-		if (! chatCommander.isChatRoomExisted("myRoom"))
+		if (! chatCommander.chatRoomExists("myRoom"))
 			chatCommander.createChatRoom("myRoom");
 		
 		try {
@@ -105,7 +105,7 @@ public class TestInputProcessor {
 			assertFalse(processor.processLeaveChatRoom(chatCommander, inputMessage));
 
 			//Testing successfully send ProcessLeaveChatRoom
-			if (! chatCommander.isChatRoomExisted("leaveRoom"))
+			if (! chatCommander.chatRoomExists("leaveRoom"))
 				chatCommander.createChatRoom("leaveRoom");
 
 			inputMessage = "leave leaveRoom";
@@ -141,7 +141,7 @@ public class TestInputProcessor {
 			
 			
 			//Testing User not online
-			if (! chatCommander.isChatRoomExisted("InvitationRoom"))
+			if (! chatCommander.chatRoomExists("InvitationRoom"))
 				chatCommander.createChatRoom("InvitationRoom");
 			inputMessage = "invite InvitationRoom Mike";
 
@@ -158,7 +158,7 @@ public class TestInputProcessor {
 			ChatCommander nobelChatCommander = clientNobel.getChatCommander();
 			
 			//Testing successfully send ProcessInvitation
-			if (! chatCommander.isChatRoomExisted("InvitationRoom1"))
+			if (! chatCommander.chatRoomExists("InvitationRoom1"))
 				chatCommander.createChatRoom("InvitationRoom1");
 			
 			try {
@@ -191,7 +191,7 @@ public class TestInputProcessor {
 	
 		try {
 			
-			if (! chatCommander.isChatRoomExisted("chatRoom"))
+			if (! chatCommander.chatRoomExists("chatRoom"))
 				chatCommander.createChatRoom("chatRoom");
 
 			//Invalid Input
