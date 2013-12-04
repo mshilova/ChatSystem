@@ -210,8 +210,8 @@ public class ChatCommanderTest {
 	public void testRequestUsersInChatRoom() throws InterruptedException {
 		assertFalse(chatCommander.requestUsersInChatRoom("Gang"));
 		chatCommander.createChatRoom("Gang");
-		//Thread.sleep(3000);
-		//assertTrue(chatCommander.requestUsersInChatRoom("Gang"));
+		chatCommander.updateAllChatRooms(chatCommander.getChatRooms());
+		assertTrue(chatCommander.requestUsersInChatRoom("Gang"));
 	}
 
 
