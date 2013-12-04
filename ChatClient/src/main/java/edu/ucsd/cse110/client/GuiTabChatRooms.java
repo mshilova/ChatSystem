@@ -154,7 +154,7 @@ public class GuiTabChatRooms extends JPanel {
 	
 	
 	public void updateRoomTextReceive(String room, String sender, String text) {
-		System.out.println("updating");
+		System.out.println("updating: "+room+" "+sender+" "+text);
 		chatRoomTextAreas.get(room).append("\n" + sender + ": " + text);
 		frame.getPanelWest().setSelectedTab("chatrooms");
 		this.revalidate();

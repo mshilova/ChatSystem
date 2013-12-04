@@ -127,4 +127,8 @@ public class GuiPanelEast extends JPanel {
 	public void errorPopUp()  {
 		JOptionPane.showMessageDialog(createChatRoom, "Invalid Input.");
 	}
+	
+	public GuiChatRoomsList getChatRoomsList() {
+		return chatRoomsList;
+	}
 }

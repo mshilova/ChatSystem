@@ -23,7 +23,6 @@ public class ChatCommander {
 	private ArrayList<String> pendingInvitations = new ArrayList<String>();
 	private ArrayList<TopicPublisher> publisherList = new ArrayList<TopicPublisher>();
 	private ArrayList<TopicSubscriber> subscriberList = new ArrayList<TopicSubscriber>();
-	public Map<String, ChatRoom> chatRoomMap = new HashMap<String,ChatRoom>();	//TODO make private
 	private TopicSession topicSession;
 	private ChatClient client;
 
@@ -428,12 +427,14 @@ public boolean requestInvite( String room ) throws JMSException {
 		}
 		
 		if ( chatRoomExists( room ) ) {
+			System.out.println("chatcommander requesting");
 			Topic chatRoom = topicSession.createTopic( room );
 			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
 			String message = client.getUser().getUsername() + " would like to be invited to your chat room: " + room;
 			TextMessage text = topicSession.createTextMessage( message );
-			text.setJMSType(Constants.MESSAGE);
+			text.setJMSType(Constants.ROOMMESSAGE);
 			text.setJMSReplyTo( client.getQueue() );
+			text.setStringProperty( "ROOM", room );
 			text.setStringProperty( "SENDER", client.getUser().getUsername() );
 			publisher.send( text );
 			

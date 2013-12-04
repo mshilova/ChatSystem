@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
@@ -309,6 +310,12 @@ public class ChatClient implements MessageListener {
 	 */
 	@SuppressWarnings("unchecked")
 	public void onMessage(Message message) {
+		try {
+			System.out.println("CHATCLIENT ONMESSAGE"+message.getJMSType());
+		} catch (JMSException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	    try {
 	    	switch (message.getJMSType()){
 	    	
@@ -326,9 +333,10 @@ public class ChatClient implements MessageListener {
 	    		
 	    	case Constants.CREATECHATROOM:
 	    		if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
-	    			chatCommander.setupChatRoomTopic(); // last room name added to list will be created
 	    			if(usingGui) {
 						gui.getPanelWest().getChatRoomsTab().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1), user.getUsername());
+		    		} else {
+		    			chatCommander.setupChatRoomTopic();	// last room name added to list will be created
 		    		}
 	    		} else {
 	    			chatCommander.removeLastRoomAdded();
@@ -344,15 +352,19 @@ public class ChatClient implements MessageListener {
 	    		// TODO import ChatRoom
 	    		System.out.println("in chatroom update");
 	    		ChatRoom room = (ChatRoom) ((ObjectMessage) message).getObject();
-	    		//this.chatCommander.chatRoomMap.put(room.getName(), room);
 	    		if(usingGui) {
 	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(room.getName(), room.getAllUsers() );
 	    		}
 	    		break;
 	    		
 	    	case Constants.UPDATEALLCHATROOMS:
-    			 chatCommander.updateAllChatRooms( (ArrayList<String>) (( (ObjectMessage) message ).getObject()) );
-
+	    		ArrayList<String> list = (ArrayList<String>) (( (ObjectMessage) message ).getObject());
+    			chatCommander.updateAllChatRooms( list );
+    			if(usingGui) {
+    				try {	// GuiChatRoomsList may not have been created yet
+    					gui.getEastPanel().getChatRoomsList().updateList(list);
+    				} catch(NullPointerException e) {}
+    			}
 	    		break;
 	    		
 	    	case Constants.INVITATION:
@@ -378,7 +390,9 @@ public class ChatClient implements MessageListener {
 	    	case Constants.ROOMMESSAGE:
 	    		String sender = message.getStringProperty("SENDER");
 	    		if(!user.getUsername().equals(sender)) {
+	    			System.out.println("client roommessage before");
 					if(usingGui) {
+						System.out.println("client roommessage");
 						gui.updateRoomTextArea(
 								message.getStringProperty("ROOM"),
 								sender,
@@ -392,15 +406,8 @@ public class ChatClient implements MessageListener {
 				break;
 				
 	    	case Constants.USERSINCHATROOM:
-	    		if ( usingGui ) {
-//	    			String chatRoomName = message.getStringProperty("ROOM");
-//	    			Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
-//	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(chatRoomName, usersInChatRoom);
-//	    			System.out.println("received good");
-	    		} else {
-		    		Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
-		    		chatCommander.listUsersInChatRoom( usersInChatRoom );
-	    		}
+		    	Map<String, Destination> usersInChatRoom = (Map<String, Destination>) (( (ObjectMessage) message ).getObject());
+		    	chatCommander.listUsersInChatRoom( usersInChatRoom );
 	    		break;
 	    		
 			default:

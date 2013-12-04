@@ -2,12 +2,19 @@ package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.jms.JMSException;
+import javax.jms.TopicPublisher;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class GuiChatRoomsList extends JPanel {
 
@@ -28,21 +35,22 @@ public class GuiChatRoomsList extends JPanel {
 		listModel = new DefaultListModel<String>();
 		chatRoomsList = new JList<String>(listModel);
 		this.add(new JScrollPane(chatRoomsList), BorderLayout.CENTER);
+		chatRoomsList.addListSelectionListener(selectionListener);
 		
-		updateList();
 	}
 
 	
 	/**
 	 * Update the list as changes are made
 	 */
-	public void updateList() {
+	public void updateList(List<String> list) {
 		// TODO implement
-		/*
-		 * Either update the list as rooms are added/removed from the list in
-		 * ChatCommander, or periodically replace the current list with the list
-		 * in ChatCommander, which will have the latest ChatRoom information.
-		 */
+		listModel.removeAllElements();
+		for(String s : list) {
+			listModel.addElement(s);
+		}
+		this.revalidate();
+		this.repaint();
 	}
 	
 	
@@ -51,7 +59,7 @@ public class GuiChatRoomsList extends JPanel {
 	 * @return	the name of the selected chat room
 	 */
 	public String getSelection() {
-		return null;	// TODO implement
+		return chatRoomsList.getSelectedValue();
 	}
 	
 	
@@ -59,7 +67,28 @@ public class GuiChatRoomsList extends JPanel {
 	 * Deselect all elements in the list
 	 */
 	public void deselectAll() {
-		// TODO implement
+		chatRoomsList.clearSelection();
 	}
 	
+	private ListSelectionListener selectionListener = new ListSelectionListener() {
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			if(getSelection() != null) {
+				String room = getSelection();
+				deselectAll();
+				int reply = JOptionPane.showConfirmDialog(
+						null,
+						"Would you like to join the chat room '" + room + "'?", "Request", JOptionPane.YES_NO_OPTION);
+			    
+		        if (reply == JOptionPane.YES_OPTION) {
+		        	try {
+						frame.getClient().getChatCommander().requestInvite(room);
+						System.out.println("GUICHATROOMS YES OPTION");
+					} catch (JMSException e1) {
+						e1.printStackTrace();
+					}
+		        }
+			}
+		}
+	};
 }
