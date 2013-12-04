@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -157,48 +158,63 @@ public class ChatCommanderTest {
 
 	@Test
 	public void testInviteToChatRoom() {
-		fail("Not yet implemented");
+		
 	}
 
 	@Test
-	public void testAcceptInvite() {
-		fail("Not yet implemented");
+	public void testAcceptInvite() throws JMSException {
+		assertFalse(chatCommander.acceptInvite("InvalidInput"));
+		chatCommander.addPendingInvitation("Boss");
+		assertTrue(chatCommander.acceptInvite("accept Boss"));
 	}
 
 	@Test
 	public void testChatRoomEntered() {
-		fail("Not yet implemented");
+		
+		assertFalse(chatCommander.chatRoomEntered("OneString"));
+		chatCommander.createChatRoom( "Boss" );
+		chatCommander.updateAllChatRooms(chatCommander.getChatRooms());
+		assertTrue(chatCommander.chatRoomEntered("Boss Message"));	
 	}
 
 	@Test
 	public void testSubscribedToChatRoom() {
-		fail("Not yet implemented");
+		chatCommander.createChatRoom( "Boss" );
+		assertTrue(chatCommander.subscribedToChatRoom("Boss"));
 	}
 
 	@Test
 	public void testAddToChatRoomList() {
-		fail("Not yet implemented");
+		String[] str = {"Gang","Gangster","BossLife"};
+		assertTrue(chatCommander.getChatRooms().size()==0);
+		chatCommander.addToChatRoomList(str[0]);
+		assertTrue(chatCommander.getChatRooms().size()==1);
+		chatCommander.addToChatRoomList(str[1]);
+		assertTrue(chatCommander.getChatRooms().size()==2);
+		chatCommander.addToChatRoomList(str[2]);
+		assertTrue(chatCommander.getChatRooms().size()==3);
+		
+		ArrayList<String> list = chatCommander.getChatRooms();
+		Iterator<String> itr=list.iterator();
+		int count = 0;
+		while(itr.hasNext()){
+			assertEquals(itr.next(),str[count]);
+			count++;
+		}
+		
 	}
 
-	@Test
-	public void testPublishMessageToChatRoom() {
-		fail("Not yet implemented");
-	}
+
 
 	@Test
-	public void testListChatRooms() {
-		fail("Not yet implemented");
+	public void testRequestUsersInChatRoom() throws InterruptedException {
+		assertFalse(chatCommander.requestUsersInChatRoom("Gang"));
+		chatCommander.createChatRoom("Gang");
+		//Thread.sleep(3000);
+		//assertTrue(chatCommander.requestUsersInChatRoom("Gang"));
 	}
 
-	@Test
-	public void testRequestUsersInChatRoom() {
-		fail("Not yet implemented");
-	}
 
-	@Test
-	public void testListUsersInChatRoom() {
-		fail("Not yet implemented");
-	}
 	
 	
 	

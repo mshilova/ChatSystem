@@ -32,7 +32,9 @@ public class ChatCommander {
 		this.client = client;
 		this.topicSession = session;
 	}
- 	
+ 	public ArrayList<String> getChatRooms(){
+ 		return chatRooms;
+ 	}
 	
 	/**TODO refactor how the createchatroom gets a username
 	 * 
