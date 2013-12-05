@@ -3,13 +3,16 @@ package edu.ucsd.cse110.server;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
+import javax.jms.TextMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -59,7 +62,6 @@ public class Server {
 		    		send(message.getJMSReplyTo(), update, Constants.REGISTERUSER); 
 		    		update = loginManager.addItem(message);
 		    		send(message.getJMSReplyTo(), update, Constants.VERIFYUSER);
-		    			
 		    		break;
 		    		
 		    	case Constants.CREATECHATROOM:
@@ -69,15 +71,20 @@ public class Server {
 		    		
 		    		break;
 		    		
+		    	case Constants.INVITATION:
+		    		if ( validInvitation( message ) )
+		    			sendInvite( message );
+		    		else
+		    			userIsAlreadyInRoom( message );
+		    		break;
+		    		
 		    	case Constants.ACCEPTEDINVITE:
 		    		updateChatRoom(chatRoomManager.addUser(message));
 		    		break;
 		    	
 		    	case Constants.USERSINCHATROOM:
 		    		ChatRoom room = chatRoomManager.getRoom( message );
-//		    		message.setStringProperty("ROOM", room.getName());
 		    		send( message.getJMSReplyTo(), room.getAllUsers(), Constants.USERSINCHATROOM );
-		    		System.out.println("server received good");
 		    		break;
 		    		
 		    	case Constants.LEAVECHATROOM:  
@@ -89,6 +96,10 @@ public class Server {
 		    		
 		    	case Constants.LOGOFF:
 		    		update = loginManager.removeItem(message);
+		    		break;
+		    		
+		    	case Constants.UPDATEALLCHATROOMS:
+		    		updateChatRoomsForUser( chatRoomManager.getAllItems(), ((TextMessage)message).getText() );
 		    		break;
 		    		
 		    	default:
@@ -105,6 +116,75 @@ public class Server {
 		
 	}
 	
+	
+	public void sendInvite( Message message ) throws JMSException {
+		
+		String userAndRoom[] = ((TextMessage) message).getText().split( " " );
+		Map<String, Destination> recipients = loginManager.getAllItems();
+		Destination dest = recipients.get( userAndRoom[0] );
+		ChatRoom room = chatRoomManager.getRoom( userAndRoom[1] );
+		String user = null; //the user who is sending the invite
+		Set<String> onlineUsers = recipients.keySet();
+		Destination sentFrom = message.getJMSReplyTo();
+		
+		 for ( String key : onlineUsers ) {
+		        if (sentFrom.equals(recipients.get( key ))) 
+		            user = key;
+		        
+		 }
+		 
+		String userRoom = user + " " + userAndRoom[1];
+		
+		sendInvite( dest, Constants.INVITATION, userRoom );
+		
+	}
+	
+	
+	public void sendInvite( Destination recipient, final String type, final String message ) {
+		
+		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
+		
+		MessageCreator messageCreator = new MessageCreator() {
+			public Message createMessage(Session session) throws JMSException {
+				TextMessage ret = session.createTextMessage();
+				ret.setText( message );
+				ret.setJMSType(type);
+				ret.setBooleanProperty( Constants.RESPONSE, true );
+				return ret;
+			}
+		};
+	
+		try {
+			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
+			System.out.println("Server sent a response.0");
+		} catch (JMSException e) { e.printStackTrace(); }
+	}
+	
+	
+	public void userIsAlreadyInRoom( Message message ) throws JMSException {
+		
+		String userAndRoom[] = ((TextMessage) message).getText().split( " " );
+		
+		send( message.getJMSReplyTo(), false, Constants.INVITATION );
+
+	}
+	
+	
+	public boolean validInvitation( Message message ) throws JMSException {
+		
+		String userAndRoom[] = ((TextMessage) message).getText().split( " " );
+		ChatRoom room = chatRoomManager.getRoom( userAndRoom[1] );
+		
+		System.out.println( userAndRoom[0] );
+		System.out.println( room.containsUser(userAndRoom[0]));
+		System.out.println( "Got this far, should be Kacy and true");
+		
+		if ( room.containsUser( userAndRoom[0] ) )
+			return false;
+		
+		return true;
+		
+	}
 	
 	public void updateChatRoom(ChatRoom room){
 		if(room == null)
@@ -130,6 +210,13 @@ public class Server {
 	}
 	
 	
+	public void updateChatRoomsForUser( ArrayList<String> listOfRooms, String user ) {
+		Map<String, Destination> userMap = (Map<String, Destination>) loginManager.getAllItems();
+		
+		send(userMap.get(user), listOfRooms, Constants.UPDATEALLCHATROOMS);
+	}
+	
+	
 	public void updateOnlineUsers(boolean update){
 		if(update){
 	
@@ -140,6 +227,10 @@ public class Server {
 			}
 		}
 	}
+	
+	
+	
+	
 	/**
 	 * Sends to the client a reply to a previously received request
 	 * @param jmsType
@@ -219,7 +310,7 @@ public void send(Destination recipient, final ArrayList<String> chatRooms, final
 		};
 		try {
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
-			System.out.println("Server sent a response.3");
+			System.out.println("Server sent a response.4");
 		} catch (JMSException e) { e.printStackTrace(); }
 	}	
 }

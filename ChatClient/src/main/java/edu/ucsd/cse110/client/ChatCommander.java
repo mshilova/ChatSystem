@@ -177,7 +177,7 @@ public class ChatCommander {
 			
 		} catch (JMSException e) {
 			e.printStackTrace();
-			System.err.println( "There was a problem setting up the chat room" );
+			System.out.println( "There was a problem setting up the chat room" );
 			return false;
 		}
 		
@@ -210,7 +210,7 @@ public class ChatCommander {
 			return false;
 		}
 		
-		System.out.println("USer " + user+ " room " + room);
+		System.out.println("User " + user+ " room " + room);
 		TextMessage message = client.getSession().createTextMessage( client.getUser().getUsername() + " " + room );
 		message.setJMSType( Constants.INVITATION );
 		client.getProducer().send( client.getDestination( user ), message );
@@ -220,27 +220,36 @@ public class ChatCommander {
 		
 	}
 	
-public void inviteToChatRoom( String room, String user ) {
+public boolean inviteToChatRoom( String user, String room ) {
 		
 		if ( null == room  ) {
-			System.err.println( "Please specify a room name." );
-			return;
+			System.out.println( "Please specify a room name." );
+			return false;
 		}
 		
 		if ( null == user ) {
-			System.err.println( "Please specify a user to invite." );
-			return;
+			System.out.println( "Please specify a user to invite." );
+			return false;
+		}
+		
+		if ( ! client.userOnline( user ) ) {
+			System.out.println( "That user is not online." );
+			return false;
 		}
 		
 		if ( room.contains( " " ) ) {
-			System.err.println( "Room name may not contain a space character." );
-			return;
+			System.out.println( "Room name may not contain a space character." );
+			return false;
 		}
 		
 		if ( subscribedToChatRoom( room ) )
 			client.sendServer( Constants.INVITATION, user + " " + room ); // space character is a dilimeter
-		else 
-			return;
+		else {
+			System.out.println( "You're not in that chat room." );
+			return false;
+		}
+		
+		return true;
 		
 	}
 
@@ -258,12 +267,12 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 		  if( 2 == acceptRoom.length )
 			  chatRoom = acceptRoom[1];
 		  else {
-			  System.err.println( "Wrong amout of arguments, use keyword 'accept' followed by a chat room name" );
+			  System.out.println( "Wrong amout of arguments, use keyword 'accept' followed by a chat room name" );
 			  return false;
 		  }
 	} 
 	else {
-		System.err.println( "Invalid input. Use keyword 'accept' followed by a chat room name." );
+		System.out.println( "Invalid input. Use keyword 'accept' followed by a chat room name." );
 		return false;
 	}
 	
@@ -426,7 +435,6 @@ public boolean requestInvite( String room ) throws JMSException {
 		}
 		
 		if ( chatRoomExists( room ) ) {
-			System.out.println("chatcommander requesting");
 			Topic chatRoom = topicSession.createTopic( room );
 			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
 			String message = client.getUser().getUsername() + " would like to be invited to your chat room: " + room;

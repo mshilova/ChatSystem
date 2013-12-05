@@ -332,7 +332,7 @@ public class ChatClient implements MessageListener {
 		    		}
 	    		} else {
 	    			chatCommander.removeLastRoomAdded();
-	    			System.err.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
+	    			System.out.println( "Sorry, that room name already exists or is invalid.  Please choose a different name." );
 	    			if(usingGui) {
 	    				gui.getEastPanel().errorPopUp();
 	    			}
@@ -340,9 +340,6 @@ public class ChatClient implements MessageListener {
 	    		break;
 	    		
 	    	case Constants.CHATROOMUPDATE:
-	    		//TODO set the updated chatroom object somewhere
-	    		// TODO import ChatRoom
-	    		System.out.println("in chatroom update");
 	    		ChatRoom room = (ChatRoom) ((ObjectMessage) message).getObject();
 	    		if(usingGui) {
 	    			gui.getPanelWest().getChatRoomsTab().setRoomMembers(room.getName(), room.getAllUsers() );
@@ -360,15 +357,22 @@ public class ChatClient implements MessageListener {
 	    		break;
 	    		
 	    	case Constants.INVITATION:
-	    		String invite[] = ((TextMessage) message).getText().split( " " );
-	    		if(usingGui) {	
-	    			gui.getPanelWest().getChatRoomsTab().addChatRoomInvite(invite[1]);		
-	    		} else {
-	    		 
-		    		System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
-		    		System.out.println( "Would you like to accept? Enter 'accept chatRoomName'" );
-		    	}
-	    		chatCommander.addPendingInvitation( invite[1] );  // invite[1] is the room name    
+	    		
+	    		if ( ! message.getBooleanProperty( Constants.RESPONSE ) ) // if unsuccessful
+	    			System.out.println( "That user is already in the chat room." );
+	    		else {
+	    			String invite[] = ((TextMessage) message).getText().split( " " );
+	    		
+	    		
+	    			if(usingGui) {	
+	    				gui.getPanelWest().getChatRoomsTab().addChatRoomInvite(invite[1]);		
+	    			} else {
+	    			
+		    			System.out.println( "You've received an invitation from " + invite[0] + " to join the chat room: " + invite[1] );
+		    			System.out.println( "Would you like to accept? Enter 'accept chatRoomName'" );
+		    		}
+	    			chatCommander.addPendingInvitation( invite[1] );  // invite[1] is the room name  
+	    		}
 	    		break;
 	    	
 	    	case Constants.MESSAGE:

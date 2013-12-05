@@ -39,6 +39,10 @@ public class ChatRoomManager implements Manager{
 		return rooms.get( roomName );
 	}
 	
+	public ChatRoom getRoom(String room) throws JMSException{
+		return rooms.get( room );
+	}
+	
 	/**
 	 * removes a room from the map of rooms
 	 * 

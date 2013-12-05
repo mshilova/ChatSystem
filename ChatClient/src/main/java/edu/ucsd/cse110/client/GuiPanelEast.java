@@ -39,6 +39,7 @@ public class GuiPanelEast extends JPanel {
 		chatRoomsList = new GuiChatRoomsList(frame);
 		chatRoomsList.setPreferredSize(new Dimension(200,100));
 		lists.add(chatRoomsList);
+		gui.getClient().sendServer(Constants.UPDATEALLCHATROOMS, gui.getClient().getUser().getUsername());
 		
 		JPanel buttonsPanel = new JPanel();
 		this.add(buttonsPanel, BorderLayout.CENTER);

@@ -156,18 +156,16 @@ public class InputProcessor {
 	public boolean processInvitation(ChatClient client,
 			ChatCommander chatCommander, String inputMessage)
 			throws JMSException {
-		
-		  System.out.println("invite ::: " + inputMessage);
-		  
+				  
 		  String invitation[] = inputMessage.split( " " );
 		  
 		  if ( invitation.length != 3 ) {
-			  System.err.println( "Wrong number of arguments. Must be: invite chatRoom username" );
+			  System.out.println( "Wrong number of arguments. Must be: invite chatRoom username" );
 			  return false;
 		  }
 		  
 		  if ( ! chatCommander.chatRoomEntered( invitation[1] ) ) {
-			  System.err.println( "You entered a chat room name that does not exist or that you are not subscribed to." );
+			  System.out.println( "You entered a chat room name that does not exist or that you are not subscribed to." );
 			  return false;
 		  }
 		  
@@ -176,7 +174,7 @@ public class InputProcessor {
 			  return false;
 		  }
 		  
-		  chatCommander.sendInvitation( invitation[2], invitation[1] ); // passing in the username and the room name
+		  chatCommander.inviteToChatRoom( invitation[2], invitation[1] ); // passing in the username and the room name
 		  
 		  return true;
 	}
@@ -239,7 +237,7 @@ public class InputProcessor {
 			String inputMessage) {
 		if ( inputMessage.length() <= "createChatRoom ".length() ||
 			   inputMessage.substring( "createChatRoom ".length() ).contains( " " ) ) {
-			  System.err.println( "Invalid room name. Please enter another name for your chat room."
+			  System.out.println( "Invalid room name. Please enter another name for your chat room."
 			  		              + "The name may not contain spaces." );
 			  return false;
 		  }
@@ -247,7 +245,7 @@ public class InputProcessor {
 		  String room = "";
 		  room = inputMessage.substring("createChatRoom".length()+1);
 		  if ( room.length() < 1) {
-			System.err.println( "Please give the chat room a name, for example: createChatRoom BossRoom" );
+			System.out.println( "Please give the chat room a name, for example: createChatRoom BossRoom" );
 			return false;
 		  }
 		
