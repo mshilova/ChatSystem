@@ -89,11 +89,7 @@ public class GuiPanelEast extends JPanel {
 				List<String> members = frame.getPanelWest().getChatRoomsTab().getRoomMembers(room);
 				for(String user: users) {
 					if(!members.contains(user)) {
-						try {
-							frame.getClient().getChatCommander().sendInvitation(user, room);
-						} catch (JMSException e1) {
-							e1.printStackTrace();
-						}
+						frame.getClient().getChatCommander().inviteToChatRoom(user, room);
 					} else {
 						JOptionPane.showMessageDialog(
 								invite,

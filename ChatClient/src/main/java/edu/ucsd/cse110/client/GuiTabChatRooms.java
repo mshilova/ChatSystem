@@ -148,6 +148,21 @@ public class GuiTabChatRooms extends JPanel {
 	}
 	
 	
+	public void clearRoomTextArea() {
+		for(Component c: (Component[])this.getComponents())  {
+			if(c instanceof GuiTextArea) {
+				this.remove(c);
+			} else if(c instanceof JComboBox) {
+				if(!"roomList".equals(c.getName())) {
+					this.remove(c);
+				}
+			}
+		}
+		this.revalidate();
+		this.repaint();
+	}
+	
+	
 	public void setRoomMembers(String room, Map<String, Destination> userMap) {
 		membersBoxes.get(room).removeAllItems();
 		membersBoxes.get(room).revalidate();
@@ -187,6 +202,9 @@ public class GuiTabChatRooms extends JPanel {
 	}
 	
 	
+	public GuiTabChatRooms getPanel() {
+		return this;
+	}
 	/*
 	 * When a chat room is selected in the chatRoomList menu, switch to the text
 	 * area of that chat room
@@ -197,7 +215,9 @@ public class GuiTabChatRooms extends JPanel {
 			String room = (String)chatRoomList.getSelectedItem();
 			if(room != null) {
 				setRoomTextArea(room);
-			}	
+			} else {
+				clearRoomTextArea();
+			}
 		}
 		
 	};
