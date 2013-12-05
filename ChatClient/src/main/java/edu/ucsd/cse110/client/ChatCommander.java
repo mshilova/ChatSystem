@@ -52,7 +52,7 @@ public class ChatCommander {
 	public boolean broadcast(String inputMessage) {		
 		
 		if ( "".equals( inputMessage ) ) {
-			System.out.println( "You must enter a message to broadcast" );
+			System.out.println( "You must enter a message to broadcast." );
 			return false;
 		}
 		
@@ -67,7 +67,7 @@ public class ChatCommander {
 			}
 
 		if ( justSpaces ) {
-			System.out.println( "You must enter a message to broadcast" );
+			System.out.println( "You must enter a message to broadcast." );
 			return false;
 		}
 			
@@ -201,24 +201,7 @@ public class ChatCommander {
 	public boolean addPublisher( TopicPublisher publisher ) {
 		return publisherList.add( publisher );
 	}
-	
-	
-	public boolean sendInvitation( String user, String room ) throws JMSException {
-		
-		if ( ! client.userOnline( user ) ) {
-			System.out.println( "That user is not online." );
-			return false;
-		}
-		
-		System.out.println("User " + user+ " room " + room);
-		TextMessage message = client.getSession().createTextMessage( client.getUser().getUsername() + " " + room );
-		message.setJMSType( Constants.INVITATION );
-		client.getProducer().send( client.getDestination( user ), message );
-		System.out.println( "Invitation sent." );
-		
-		return true;
-		
-	}
+
 	
 public boolean inviteToChatRoom( String user, String room ) {
 		
@@ -284,7 +267,6 @@ public boolean acceptInvite( String inputMessage ) throws JMSException {
 	pendingInvitations.remove( chatRoom ); 
 	setupChatRoomTopic( chatRoom );
 	chatRooms.add( chatRoom );
-	System.out.println("accepted invite ");
 	client.sendServer( Constants.ACCEPTEDINVITE, client.getUser().getUsername() + " " + chatRoom ); 
 	
 	return true;
@@ -395,7 +377,6 @@ public boolean requestUsersInChatRoom( String room ) {
 	}
 	
 	client.sendServer( Constants.USERSINCHATROOM, room );
-	System.out.println("request good");
 	return true;
 	
 }
