@@ -85,12 +85,20 @@ public class GuiPanelEast extends JPanel {
 			List<String> users = frame.getEastPanel().getOnlineUsersList().getSelectedUsers();
 			String room = frame.getPanelWest().getChatRoomsTab().getSelectedRoom();
 			if(room != null)  {
+				List<String> members = frame.getPanelWest().getChatRoomsTab().getRoomMembers(room);
 				for(String user: users) {
-					System.out.println(user);
-					try {
-						frame.getClient().getChatCommander().sendInvitation(user, room);
-					} catch (JMSException e1) {
-						e1.printStackTrace();
+					if(!members.contains(user)) {
+						try {
+							frame.getClient().getChatCommander().sendInvitation(user, room);
+						} catch (JMSException e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						JOptionPane.showMessageDialog(
+								invite,
+								"This User is already in the ChatRoom.",
+								"Cannot Invite",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
 				}
 			}

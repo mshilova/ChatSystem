@@ -5,11 +5,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -53,7 +56,6 @@ public class GuiTabChatRooms extends JPanel {
 	public void addChatRoom(String roomName, String creator)  {
 		membersBoxes.put(roomName, new JComboBox<String>());
 		membersBoxes.get(roomName).addItem(creator);
-		System.out.println("added combobox");
 		chatRoomTextAreas.put(roomName, new GuiTextArea());
 		chatRoomList.addItem(roomName);
 		frame.getClient().getChatCommander().setupChatRoomTopic(roomName);
@@ -71,7 +73,6 @@ public class GuiTabChatRooms extends JPanel {
 	    int reply = JOptionPane.showConfirmDialog(null, "Would you like to join the chat room '" + roomName + "'?", "Invitation", JOptionPane.YES_NO_OPTION);
 	    
         if (reply == JOptionPane.YES_OPTION) {
-        	System.out.println("Yes was clicked");
         	membersBoxes.put(roomName, new JComboBox<String>());
         	chatRoomTextAreas.put(roomName, new GuiTextArea());
         	chatRoomList.addItem(roomName);
@@ -83,8 +84,6 @@ public class GuiTabChatRooms extends JPanel {
 				e.printStackTrace();
 			}
         	frame.getPanelWest().setSelectedTab("chatrooms");
-        } else {
-        	System.out.println("No was clicked");
         }
 		
 	}
@@ -98,9 +97,23 @@ public class GuiTabChatRooms extends JPanel {
 	}
 	
 	
+	public void setSelectedRoom(String room) {
+		chatRoomList.setSelectedItem(room);
+	}
+	
 	
 	public JComboBox<String> getChatRooms() {
 		return chatRoomList;
+	}
+	
+	
+	public List<String> myChatRooms() {
+		ComboBoxModel<String> model = chatRoomList.getModel();
+		List<String> members = new ArrayList<String>();
+		for(int i=0; i<model.getSize(); i++) {
+			members.add(model.getElementAt(i));
+		}
+		return members;
 	}
 	
 	
@@ -130,7 +143,6 @@ public class GuiTabChatRooms extends JPanel {
 		}
 		this.add(membersBoxes.get(s));
 		this.add(chatRoomTextAreas.get(s));
-		System.out.println("box size: "+membersBoxes.size());
 		this.revalidate();
 		this.repaint();
 	}
@@ -147,6 +159,17 @@ public class GuiTabChatRooms extends JPanel {
 		membersBoxes.get(room).repaint();
 	}
 	
+	
+	public List<String> getRoomMembers(String room) {
+		ComboBoxModel<String> model = membersBoxes.get(room).getModel();
+		List<String> members = new ArrayList<String>();
+		for(int i=0; i<model.getSize(); i++) {
+			members.add(model.getElementAt(i));
+		}
+		return members;
+	}
+	
+	
 	public void updateRoomTextSend(String text) {
 		String currentRoom = getSelectedRoom();
 		chatRoomTextAreas.get(currentRoom).append("\nMe: " + text);
@@ -154,9 +177,11 @@ public class GuiTabChatRooms extends JPanel {
 	
 	
 	public void updateRoomTextReceive(String room, String sender, String text) {
-		System.out.println("updating: "+room+" "+sender+" "+text);
 		chatRoomTextAreas.get(room).append("\n" + sender + ": " + text);
-		frame.getPanelWest().setSelectedTab("chatrooms");
+		if("".equals(frame.getPanelSouth().getInputBox().getText())) {
+			frame.getPanelWest().setSelectedTab("chatrooms");
+			this.setSelectedRoom(room);
+		}
 		this.revalidate();
 		this.repaint();
 	}
@@ -172,7 +197,6 @@ public class GuiTabChatRooms extends JPanel {
 			String room = (String)chatRoomList.getSelectedItem();
 			if(room != null) {
 				setRoomTextArea(room);
-				System.out.println("Entered room: " + room);
 			}	
 		}
 		
@@ -181,7 +205,6 @@ public class GuiTabChatRooms extends JPanel {
 	private ActionListener leaveRoomAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("inside leave action.");
 			String room = ((GuiTabChatRooms)((JButton)e.getSource()).getParent()).getSelectedRoom();
 			if(room != null) {
 				try {

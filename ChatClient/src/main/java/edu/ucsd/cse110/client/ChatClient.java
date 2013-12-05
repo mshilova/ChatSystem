@@ -1,9 +1,8 @@
 package edu.ucsd.cse110.client;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -107,9 +106,8 @@ public class ChatClient implements MessageListener {
 	private boolean useGui() {	// yesNoPrompt is in InputProcessor
 		if(processor.yesNoPrompt("Would you like to use the GUI? (yes/no)")){
 			usingGui = true;
-			gui = SkipGuiLogin.skip(this); // TODO remove this when done testing
-//		    gui = new ChatClientGUI(this);
-//		    gui.start();
+		    gui = new ChatClientGUI(this);
+		    gui.start();
 		    return true;
 		}
 		return false;
@@ -310,12 +308,6 @@ public class ChatClient implements MessageListener {
 	 */
 	@SuppressWarnings("unchecked")
 	public void onMessage(Message message) {
-		try {
-			System.out.println("CHATCLIENT ONMESSAGE"+message.getJMSType());
-		} catch (JMSException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 	    try {
 	    	switch (message.getJMSType()){
 	    	

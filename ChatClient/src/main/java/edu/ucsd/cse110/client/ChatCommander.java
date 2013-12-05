@@ -1,7 +1,6 @@
 package edu.ucsd.cse110.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,8 +12,6 @@ import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
-
-import edu.ucsd.cse110.server.ChatRoom;
 
 public class ChatCommander {
 	

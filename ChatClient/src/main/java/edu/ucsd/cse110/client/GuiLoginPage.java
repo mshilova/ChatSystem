@@ -147,11 +147,9 @@ public class GuiLoginPage extends JPanel {
 			if(frame.getClient().getUser().getVerified()) {
 				failLabel.setVisible(false);
 				frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-				System.out.println("Registration verified");
 				frame.remove(this);
 				frame.setChatPage();
 			} else {
-				System.out.println("Registration not verified");
 				failLabel.setVisible(true);
 			} 
 		} else{
@@ -164,11 +162,9 @@ public class GuiLoginPage extends JPanel {
 			if(frame.getClient().getUser().getVerified()) {
 				failLabel.setVisible(false);
 				frame.getClient().setUser(new User(userField.getText(), passField.getPassword().toString(),true));
-				System.out.println("Login verified");
 				frame.remove(this);
 				frame.setChatPage();
 			} else {
-				System.out.println("Login not verified");
 				failLabel.setVisible(true);
 			} 
 		}

@@ -76,7 +76,6 @@ public class ChatClientGUI extends JFrame {
 		    	}
 		    	
 		        client.sendServer(Constants.LOGOFF, client.getUser().getUsername());
-		        System.out.println("Closing behavior set");
 		    }
 		});
 	}

@@ -74,7 +74,6 @@ public class GuiInputBox extends JPanel {
 				try {
 					// getting the room name
 					String room = frame.getPanelWest().getChatRoomsTab().getSelectedRoom();
-					System.out.println("Room: " + room);
 					if(room != null)  {
 						String message = field.getText();
 						if("".equals(field.getText()))  {
@@ -109,7 +108,6 @@ public class GuiInputBox extends JPanel {
 					} else {
 						// printing the list of users, testing
 						for(String s: sendList) {
-							System.out.println(s);
 							// sending a message to a user
 							frame.getPanelWest().getGeneralTab().updateTextSend(s, field.getText());
 							frame.getClient().send(s, field.getText());
@@ -117,8 +115,6 @@ public class GuiInputBox extends JPanel {
 						output.setText("Sending messages to Users.");
 						output.setForeground(Color.black);
 						field.setText("");
-						
-						System.out.println("Sending message");
 					}
 					
 				}
@@ -143,7 +139,6 @@ public class GuiInputBox extends JPanel {
 					output.setVisible(true);
 					frame.getClient().getChatCommander().broadcast(field.getText());
 					field.setText("");
-					System.out.println("Broadcasting message");
 				}
 			}
 	};

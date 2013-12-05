@@ -2,11 +2,9 @@ package edu.ucsd.cse110.client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jms.JMSException;
-import javax.jms.TopicPublisher;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -76,18 +74,19 @@ public class GuiChatRoomsList extends JPanel {
 			if(getSelection() != null) {
 				String room = getSelection();
 				deselectAll();
-				int reply = JOptionPane.showConfirmDialog(
-						null,
-						"Would you like to join the chat room '" + room + "'?", "Request", JOptionPane.YES_NO_OPTION);
-			    
-		        if (reply == JOptionPane.YES_OPTION) {
-		        	try {
-						frame.getClient().getChatCommander().requestInvite(room);
-						System.out.println("GUICHATROOMS YES OPTION");
-					} catch (JMSException e1) {
-						e1.printStackTrace();
-					}
-		        }
+				if(!frame.getPanelWest().getChatRoomsTab().myChatRooms().contains(room)) {
+					int reply = JOptionPane.showConfirmDialog(
+							null,
+							"Would you like to join the chat room '" + room + "'?", "Request", JOptionPane.YES_NO_OPTION);
+				    
+			        if (reply == JOptionPane.YES_OPTION) {
+			        	try {
+							frame.getClient().getChatCommander().requestInvite(room);
+						} catch (JMSException e1) {
+							e1.printStackTrace();
+						}
+			        }
+				}
 			}
 		}
 	};
