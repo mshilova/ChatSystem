@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jms.TextMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -121,7 +120,6 @@ public class Server implements IServer{
 		String userAndRoom[] = ((TextMessage) message).getText().split( " " );
 		Map<String, Destination> recipients = loginManager.getAllItems();
 		Destination dest = recipients.get( userAndRoom[0] );
-		ChatRoom room = chatRoomManager.getRoom( userAndRoom[1] );
 		String user = null; //the user who is sending the invite
 		Set<String> onlineUsers = recipients.keySet();
 		Destination sentFrom = message.getJMSReplyTo();
@@ -161,8 +159,6 @@ public class Server implements IServer{
 	
 	
 	public void userIsAlreadyInRoom( Message message ) throws JMSException {
-		
-		String userAndRoom[] = ((TextMessage) message).getText().split( " " );
 		
 		send( message.getJMSReplyTo(), false, Constants.INVITATION );
 
@@ -285,7 +281,7 @@ public class Server implements IServer{
 	
 	
 
-public void send(Destination recipient, final ArrayList<String> chatRooms, final String type) {
+	public void send(Destination recipient, final ArrayList<String> chatRooms, final String type) {
 		
 		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);	
 		MessageCreator messageCreator = new MessageCreator() {

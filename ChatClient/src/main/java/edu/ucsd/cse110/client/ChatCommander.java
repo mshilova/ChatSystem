@@ -196,7 +196,7 @@ public class ChatCommander {
 	}
 
 	
-public boolean inviteToChatRoom( String user, String room ) {
+	public boolean inviteToChatRoom( String user, String room ) {
 		
 		if ( null == room  ) {
 			System.out.println( "Please specify a room name." );
@@ -230,204 +230,204 @@ public boolean inviteToChatRoom( String user, String room ) {
 	}
 
 
-public boolean acceptInvite( String inputMessage ) throws JMSException {
-	
-	String acceptRoom[] = null;
-	String chatRoom = null;
-	
-	if( inputMessage.equals("accept") && 1 == pendingInvitations.size() ) 
-		chatRoom = pendingInvitations.get( 0 );
-	
-	else if( inputMessage.contains(" ") ){
-		  acceptRoom = inputMessage.split(" ");
-		  if( 2 == acceptRoom.length )
-			  chatRoom = acceptRoom[1];
-		  else {
-			  System.out.println( "Wrong amout of arguments, use keyword 'accept' followed by a chat room name" );
-			  return false;
-		  }
-	} 
-	else {
-		System.out.println( "Invalid input. Use keyword 'accept' followed by a chat room name." );
-		return false;
-	}
-	
-	if ( ! pendingInvitations.contains( chatRoom ) ) {
-		System.out.println( "You don't have any pending invitations for the chat room: " + chatRoom );
-		return false;
-	}
-	
-	pendingInvitations.remove( chatRoom ); 
-	setupChatRoomTopic( chatRoom );
-	chatRooms.add( chatRoom );
-	client.sendServer( Constants.ACCEPTEDINVITE, client.getUser().getUsername() + " " + chatRoom ); 
-	
-	return true;
-	
-}
-
-
-
-/* This method checks if the user is in the chat room passed in 
- * Checks if input starts with a chat room name and then returns that name, 
- * else return false */
-
-public boolean chatRoomEntered(String inputMessage ) {
-	
-	String roomAndMessage[] = null;
-	String name = null;
-	
-	if ( ! inputMessage.contains( " " ) ) // input must be roomName + " " + message
-		name = inputMessage;
-	else {
-		roomAndMessage = inputMessage.split( " " );
-		if ( 2 > roomAndMessage.length )
-			return false;
+	public boolean acceptInvite( String inputMessage ) throws JMSException {
 		
-		name = roomAndMessage[0];
-	}
-	
-	for ( String room : chatRooms ) {
-		if ( room.equals( name ) ) 
-			return true;
- 	}
-	
-	return false;
+		String acceptRoom[] = null;
+		String chatRoom = null;
 		
-}
-
-public boolean chatRoomEntered( String room, boolean fromRequestUsersInChatRoom ) {
-	
-	if ( ! fromRequestUsersInChatRoom )
-		return false;
-	
-	return allChatRooms.contains( room );
+		if( inputMessage.equals("accept") && 1 == pendingInvitations.size() ) 
+			chatRoom = pendingInvitations.get( 0 );
 		
-}
-
-
-
-public boolean subscribedToChatRoom( String room ) {
-	
-	return chatRoomEntered( room );
-	
-}	
-
-public void addToChatRoomList( String name ) {
-	chatRooms.add( name );
-}
-
-public void publishMessageToChatRoom( String room, String message ) throws JMSException {
-	for ( TopicPublisher publisher : publisherList ) {
-		if ( publisher.getTopic().getTopicName().equals( room ) ) {
-			TextMessage text = topicSession.createTextMessage( message );
-			text.setJMSType(Constants.ROOMMESSAGE);
-			text.setStringProperty("ROOM", room);
-			text.setStringProperty("SENDER", client.getUser().getUsername());
-			text.setJMSReplyTo( client.getQueue() );
-			publisher.publish( text );
-			return;
-		}
-	}
-	
-}
-
-/**
- * Contact the server and print to request a list of all chat rooms
- */
-public void listChatRooms() {
-		
-	if ( 0 == chatRooms.size() )
-		System.out.println( "You're not currently in any chat rooms." );
-	
-	for ( String room : chatRooms ) {
-	  System.out.println( room );	
-	}
-	
-}
-
-public void updateAllChatRooms( ArrayList<String> allRooms ) {
-	allChatRooms = allRooms;
-}
-
-
-public void listAllChatRooms() {
-	
-	System.out.println( "There are currently " + allChatRooms.size()  + " running chat rooms." );
-	
-	for ( String room : allChatRooms ) {
-		System.out.println( room );
-	}
-
-}
-
-
-public boolean requestUsersInChatRoom( String room ) {
-	
-	if ( ! chatRoomEntered( room, true ) ) {
-		System.out.println( "Sorry, that chat room doesn't exist." );
-		return false;
-	}
-	
-	client.sendServer( Constants.USERSINCHATROOM, room );
-	return true;
-	
-}
-
-public void listUsersInChatRoom( Map<String, Destination> usersInChatRoom ) {
-	
-	Set<String> users = usersInChatRoom.keySet();
-	
-	for ( String user : users ) {
-		System.out.println( user );
-	}
-	
-	
-}
-
-public void leaveAllChatRooms() {
-	for(int i=chatRooms.size()-1; i>=0; i--) {
-		try {
-			this.leaveChatRoom(chatRooms.get(i));
-		} catch (JMSException e) {
-			e.printStackTrace();
-		}
-	}
-}
-
-
-public boolean chatRoomExists( String room ) {
-	return allChatRooms.contains( room );
-}
-
-
-public boolean requestInvite( String room ) throws JMSException {
-
-		if ( chatRoomEntered( room ) ) {
-			System.out.println( "You're already in that chatroom." );
-			return false;
-		}
-		
-		if ( chatRoomExists( room ) ) {
-			Topic chatRoom = topicSession.createTopic( room );
-			TopicPublisher publisher = topicSession.createPublisher( chatRoom );
-			String message = client.getUser().getUsername() + " would like to be invited to your chat room: " + room;
-			TextMessage text = topicSession.createTextMessage( message );
-			text.setJMSType(Constants.ROOMMESSAGE);
-			text.setJMSReplyTo( client.getQueue() );
-			text.setStringProperty( "ROOM", room );
-			text.setStringProperty( "SENDER", client.getUser().getUsername() );
-			publisher.send( text );
-			
-			return true;
-		}
+		else if( inputMessage.contains(" ") ){
+			  acceptRoom = inputMessage.split(" ");
+			  if( 2 == acceptRoom.length )
+				  chatRoom = acceptRoom[1];
+			  else {
+				  System.out.println( "Wrong amout of arguments, use keyword 'accept' followed by a chat room name" );
+				  return false;
+			  }
+		} 
 		else {
-			System.out.println( "That chat room doesn't exist." );
+			System.out.println( "Invalid input. Use keyword 'accept' followed by a chat room name." );
 			return false;
 		}
-			
-			
+		
+		if ( ! pendingInvitations.contains( chatRoom ) ) {
+			System.out.println( "You don't have any pending invitations for the chat room: " + chatRoom );
+			return false;
+		}
+		
+		pendingInvitations.remove( chatRoom ); 
+		setupChatRoomTopic( chatRoom );
+		chatRooms.add( chatRoom );
+		client.sendServer( Constants.ACCEPTEDINVITE, client.getUser().getUsername() + " " + chatRoom ); 
+		
+		return true;
+		
+	}
+
+
+
+	/* This method checks if the user is in the chat room passed in 
+	 * Checks if input starts with a chat room name and then returns that name, 
+	 * else return false */
 	
-}
+	public boolean chatRoomEntered(String inputMessage ) {
+		
+		String roomAndMessage[] = null;
+		String name = null;
+		
+		if ( ! inputMessage.contains( " " ) ) // input must be roomName + " " + message
+			name = inputMessage;
+		else {
+			roomAndMessage = inputMessage.split( " " );
+			if ( 2 > roomAndMessage.length )
+				return false;
+			
+			name = roomAndMessage[0];
+		}
+		
+		for ( String room : chatRooms ) {
+			if ( room.equals( name ) ) 
+				return true;
+	 	}
+		
+		return false;
+			
+	}
+	
+	public boolean chatRoomEntered( String room, boolean fromRequestUsersInChatRoom ) {
+		
+		if ( ! fromRequestUsersInChatRoom )
+			return false;
+		
+		return allChatRooms.contains( room );
+			
+	}
+	
+	
+	
+	public boolean subscribedToChatRoom( String room ) {
+		
+		return chatRoomEntered( room );
+		
+	}	
+	
+	public void addToChatRoomList( String name ) {
+		chatRooms.add( name );
+	}
+	
+	public void publishMessageToChatRoom( String room, String message ) throws JMSException {
+		for ( TopicPublisher publisher : publisherList ) {
+			if ( publisher.getTopic().getTopicName().equals( room ) ) {
+				TextMessage text = topicSession.createTextMessage( message );
+				text.setJMSType(Constants.ROOMMESSAGE);
+				text.setStringProperty("ROOM", room);
+				text.setStringProperty("SENDER", client.getUser().getUsername());
+				text.setJMSReplyTo( client.getQueue() );
+				publisher.publish( text );
+				return;
+			}
+		}
+		
+	}
+	
+	/**
+	 * Contact the server and print to request a list of all chat rooms
+	 */
+	public void listChatRooms() {
+			
+		if ( 0 == chatRooms.size() )
+			System.out.println( "You're not currently in any chat rooms." );
+		
+		for ( String room : chatRooms ) {
+		  System.out.println( room );	
+		}
+		
+	}
+	
+	public void updateAllChatRooms( ArrayList<String> allRooms ) {
+		allChatRooms = allRooms;
+	}
+	
+	
+	public void listAllChatRooms() {
+		
+		System.out.println( "There are currently " + allChatRooms.size()  + " running chat rooms." );
+		
+		for ( String room : allChatRooms ) {
+			System.out.println( room );
+		}
+	
+	}
+	
+	
+	public boolean requestUsersInChatRoom( String room ) {
+		
+		if ( ! chatRoomEntered( room, true ) ) {
+			System.out.println( "Sorry, that chat room doesn't exist." );
+			return false;
+		}
+		
+		client.sendServer( Constants.USERSINCHATROOM, room );
+		return true;
+		
+	}
+	
+	public void listUsersInChatRoom( Map<String, Destination> usersInChatRoom ) {
+		
+		Set<String> users = usersInChatRoom.keySet();
+		
+		for ( String user : users ) {
+			System.out.println( user );
+		}
+		
+		
+	}
+	
+	public void leaveAllChatRooms() {
+		for(int i=chatRooms.size()-1; i>=0; i--) {
+			try {
+				this.leaveChatRoom(chatRooms.get(i));
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public boolean chatRoomExists( String room ) {
+		return allChatRooms.contains( room );
+	}
+	
+	
+	public boolean requestInvite( String room ) throws JMSException {
+	
+			if ( chatRoomEntered( room ) ) {
+				System.out.println( "You're already in that chatroom." );
+				return false;
+			}
+			
+			if ( chatRoomExists( room ) ) {
+				Topic chatRoom = topicSession.createTopic( room );
+				TopicPublisher publisher = topicSession.createPublisher( chatRoom );
+				String message = client.getUser().getUsername() + " would like to be invited to your chat room: " + room;
+				TextMessage text = topicSession.createTextMessage( message );
+				text.setJMSType(Constants.ROOMMESSAGE);
+				text.setJMSReplyTo( client.getQueue() );
+				text.setStringProperty( "ROOM", room );
+				text.setStringProperty( "SENDER", client.getUser().getUsername() );
+				publisher.send( text );
+				
+				return true;
+			}
+			else {
+				System.out.println( "That chat room doesn't exist." );
+				return false;
+			}
+				
+				
+		
+	}
 
 }
