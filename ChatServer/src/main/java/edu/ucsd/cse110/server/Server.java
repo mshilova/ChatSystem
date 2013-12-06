@@ -17,7 +17,7 @@ import javax.jms.TextMessage;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-public class Server {
+public class Server implements IServer{
 
 	private LoginManager loginManager;
 	private ChatRoomManager chatRoomManager;
@@ -106,13 +106,12 @@ public class Server {
 		    		throw new Exception("Server received a message " 
 		    						   +"with unrecognized jms type.");	    
 		    }
-		}catch(JMSException e){ e.printStackTrace(); }
+		}catch(JMSException e){ e.printStackTrace();}
 		
 		updateOnlineUsers( update );
 		
 		if ( update ) 
     		updateChatRooms( chatRoomManager.getAllItems() );
-
 		
 	}
 	
@@ -186,26 +185,27 @@ public class Server {
 		
 	}
 	
-	public void updateChatRoom(ChatRoom room){
+	public boolean updateChatRoom(ChatRoom room){
 		if(room == null)
-			return;	
+			return false;	
 		
 		Map<String, Destination> recipients = room.getAllUsers();
 		
 		for(String user : recipients.keySet()){
 			send(recipients.get(user), room, Constants.CHATROOMUPDATE);
 		}
-		
+		return true;
 	}
 	
 	
-	public void updateChatRooms( ArrayList<String> listOfRooms ){
+	public boolean updateChatRooms( ArrayList<String> listOfRooms ){
 		
 		Map<String, Destination> userMap = (Map<String, Destination>) loginManager.getAllItems();
 	    
 		for(String key : loginManager.getAllItems().keySet()){
 			send(userMap.get(key), listOfRooms, Constants.UPDATEALLCHATROOMS );
 		}
+		return true;
 		
 	}
 	
@@ -217,7 +217,7 @@ public class Server {
 	}
 	
 	
-	public void updateOnlineUsers(boolean update){
+	public boolean updateOnlineUsers(boolean update){
 		if(update){
 	
 			Map<String, Destination> userMap = (Map<String, Destination>) loginManager.getAllItems();
@@ -225,7 +225,9 @@ public class Server {
 			for(String key : loginManager.getAllItems().keySet()){
 				send(userMap.get(key), userMap, Constants.ONLINEUSERS);
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	
@@ -237,7 +239,7 @@ public class Server {
 	 * @param message
 	 */
 
-	public void send(Destination recipient, final ChatRoom room, final String type) {
+	public boolean send(Destination recipient, final ChatRoom room, final String type) {
 		
 		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
 		
@@ -252,6 +254,7 @@ public class Server {
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
 			System.out.println("Server sent a response.1");
 		} catch (JMSException e) { e.printStackTrace(); }
+		return true;
 	}
 		
 	
@@ -262,7 +265,7 @@ public class Server {
 	 * @param message
 	 */
 
-	public void send(Destination recipient, final boolean success, final String type) {
+	public boolean send(Destination recipient, final boolean success, final String type) {
 			
 		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);
 		MessageCreator messageCreator = new MessageCreator() {
@@ -277,6 +280,7 @@ public class Server {
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
 			System.out.println("Server sent a response.2");
 		} catch (JMSException e) { e.printStackTrace(); }
+		return true;
 	}
 	
 	
@@ -298,7 +302,7 @@ public void send(Destination recipient, final ArrayList<String> chatRooms, final
 	}	
 	
 	
-	public void send(Destination recipient, final Map<String, Destination> onlineUsers, final String type) {
+	public boolean send(Destination recipient, final Map<String, Destination> onlineUsers, final String type) {
 		
 		JmsTemplate jmsTemplate = ChatServerApplication.context.getBean(JmsTemplate.class);	
 		MessageCreator messageCreator = new MessageCreator() {
@@ -312,5 +316,30 @@ public void send(Destination recipient, final ArrayList<String> chatRooms, final
 			jmsTemplate.send(((Queue)recipient).getQueueName(), messageCreator);
 			System.out.println("Server sent a response.4");
 		} catch (JMSException e) { e.printStackTrace(); }
+		return true;
+	}
+
+
+	public LoginManager getLoginManager() {
+		// TODO Auto-generated method stub
+		return loginManager;
+	}
+
+
+	public ChatRoomManager getChatRoomManager() {
+		// TODO Auto-generated method stub
+		return chatRoomManager;
+	}
+
+
+	public Authenticator getAuthenticator() {
+		// TODO Auto-generated method stub
+		return authenticator;
+	}
+
+
+	public String getMessageType() {
+		// TODO Auto-generated method stub
+		return messageType;
 	}	
 }
