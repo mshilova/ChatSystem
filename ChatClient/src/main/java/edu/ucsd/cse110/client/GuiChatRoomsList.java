@@ -73,7 +73,7 @@ public class GuiChatRoomsList extends JPanel {
 			if(getSelection() != null) {
 				String room = getSelection();
 				deselectAll();
-				if(!frame.getPanelWest().getChatRoomsTab().myChatRooms().contains(room)) {
+				if(!frame.getClient().getChatCommander().chatRoomEntered(room)) {
 					int reply = JOptionPane.showConfirmDialog(
 							null,
 							"Would you like to join the chat room '" + room + "'?", "Request", JOptionPane.YES_NO_OPTION);
