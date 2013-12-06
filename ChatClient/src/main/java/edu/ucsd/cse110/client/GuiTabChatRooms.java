@@ -205,6 +205,8 @@ public class GuiTabChatRooms extends JPanel {
 	public GuiTabChatRooms getPanel() {
 		return this;
 	}
+	
+	
 	/*
 	 * When a chat room is selected in the chatRoomList menu, switch to the text
 	 * area of that chat room
@@ -222,14 +224,18 @@ public class GuiTabChatRooms extends JPanel {
 		
 	};
 	
+	/*
+	 * When you click to leave a chat room, remove that chat room from the list
+	 * of chat rooms you are in
+	 */
 	private ActionListener leaveRoomAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String room = ((GuiTabChatRooms)((JButton)e.getSource()).getParent()).getSelectedRoom();
+			String room = getPanel().getSelectedRoom();
 			if(room != null) {
 				try {
 					frame.getClient().getChatCommander().leaveChatRoom(room);
-					((GuiTabChatRooms)((JButton)e.getSource()).getParent()).removeRoom(room);
+					getPanel().removeRoom(room);
 				} catch (JMSException e1) {
 					e1.printStackTrace();
 				}

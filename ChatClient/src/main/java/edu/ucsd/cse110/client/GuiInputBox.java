@@ -24,10 +24,7 @@ public class GuiInputBox extends JPanel {
 	
 	public GuiInputBox(ChatClientGUI gui) {
 		this.frame = gui;
-		
 		output = new JLabel();
-		
-		
 		field = new JTextField(50);
 		
 		JButton send = new JButton("Send");
@@ -43,7 +40,6 @@ public class GuiInputBox extends JPanel {
 		this.setLayout(groupLayout);
 		groupLayout.setAutoCreateGaps(true);
 		groupLayout.setAutoCreateContainerGaps(true);
-		       
 		// aligning along horizontal axis
 		GroupLayout.SequentialGroup hGroup = groupLayout.createSequentialGroup();
 		hGroup.addGroup(groupLayout.createParallelGroup().addComponent(output).addComponent(field));
@@ -66,6 +62,27 @@ public class GuiInputBox extends JPanel {
 		return field.getText();
 	}
 
+	
+	/**
+	 * Set the text of label on top of the input field
+	 * @param s	the text
+	 */
+	public void setLabel(String s)  {
+		output.setText(s);
+		output.setForeground(Color.black);
+		output.setVisible(true);
+	}
+	
+	
+	/**
+	 * 
+	 * @return	the currently selected tab
+	 */
+	public Component getCurrentTab() {
+		return frame.getPanelWest().getSelectedTab();
+		
+	}
+	
 	
 	private ActionListener sendAction = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -143,15 +160,4 @@ public class GuiInputBox extends JPanel {
 			}
 	};
 	
-	public void setLabel(String s)  {
-		output.setText(s);
-		output.setForeground(Color.black);
-		output.setVisible(true);
-	}
-	
-	
-	public Component getCurrentTab() {
-		return frame.getPanelWest().getSelectedTab();
-		
-	}
 }

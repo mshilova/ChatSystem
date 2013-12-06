@@ -42,7 +42,6 @@ public class GuiChatRoomsList extends JPanel {
 	 * Update the list as changes are made
 	 */
 	public void updateList(List<String> list) {
-		// TODO implement
 		listModel.removeAllElements();
 		for(String s : list) {
 			listModel.addElement(s);

@@ -19,6 +19,11 @@ public class GuiTextArea extends JPanel{
 		scrollPane.setVisible(true);
 	}
 	
+	
+	/**
+	 * Append text to the JTextArea textArea
+	 * @param s	the text to append
+	 */
 	public void append(String s)  {
 		textArea.append(s);
 	}

@@ -59,6 +59,6 @@ public class GuiPanelWest extends JPanel {
 		} else if(type.equals("chatrooms")) {
 			tabbedPane.setSelectedComponent(chatRoomsTab);
 		}
-		
 	}
+	
 }

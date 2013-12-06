@@ -17,4 +17,5 @@ public class GuiPanelSouth extends JPanel {
 	public GuiInputBox getInputBox()  {
 		 return this.inputBox;
 	}
+	
 }

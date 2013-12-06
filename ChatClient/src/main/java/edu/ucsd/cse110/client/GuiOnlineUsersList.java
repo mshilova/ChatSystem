@@ -56,9 +56,10 @@ public class GuiOnlineUsersList extends JPanel {
         		//Remove off-line users
         		for(int i = 0; i < listModel.size();i++)
         		{
-        			if (!onlineUsers.containsKey(listModel.get(i)))
+        			if (!onlineUsers.containsKey(listModel.get(i))) {
         				listModel.remove(i);
-        			// TODO remove text area for logged off user
+        				userText.remove(i);
+        			}
            		}
             }
         };

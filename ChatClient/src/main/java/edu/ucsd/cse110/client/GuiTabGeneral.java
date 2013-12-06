@@ -16,6 +16,7 @@ public class GuiTabGeneral extends JPanel {
 		this.setLayout(new FlowLayout(FlowLayout.LEADING));
 	}
 
+	
 	/**
 	 * Update your text area from a sender
 	 * @param sender	the sender
