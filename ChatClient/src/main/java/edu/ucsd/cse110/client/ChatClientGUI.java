@@ -66,14 +66,18 @@ public class ChatClientGUI extends JFrame {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		    	JComboBox<String> rooms = guiPanelWest.getChatRoomsTab().getChatRooms();
-		    	for(int i=0; i<rooms.getItemCount(); i++) {
-		    		try {
-						client.getChatCommander().leaveChatRoom(rooms.getItemAt(i));
-					} catch (JMSException e) {
-						e.printStackTrace();
-					}
+		    	try {
+			    	JComboBox<String> rooms = guiPanelWest.getChatRoomsTab().getChatRooms();
+			    	for(int i=0; i<rooms.getItemCount(); i++) {
+			    		try {
+							client.getChatCommander().leaveChatRoom(rooms.getItemAt(i));
+						} catch (JMSException e) {
+							e.printStackTrace();
+						}
+			    	}
 		    	}
+		    	catch(NullPointerException e)  { }
+		    	
 		    	
 		        client.sendServer(Constants.LOGOFF, client.getUser().getUsername());
 		    }
