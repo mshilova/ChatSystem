@@ -73,7 +73,6 @@ public class GuiPanelEast extends JPanel {
 				response = response.trim();
 				if(!response.contains(" ")) {	// room name cannot be more than 1 word
 					frame.getClient().getChatCommander().createChatRoom(response);
-			  		frame.getClient().getChatCommander().add(response);
 			  		frame.getPanelWest().setSelectedTab("chatrooms");
 				}
 			}

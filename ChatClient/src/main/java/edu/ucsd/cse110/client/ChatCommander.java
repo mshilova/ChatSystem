@@ -15,7 +15,7 @@ import javax.jms.TopicSubscriber;
 
 public class ChatCommander {
 	
-	protected ArrayList<String> chatRooms = new ArrayList<String>();  //list of rooms the user is subscribed to
+	private ArrayList<String> chatRooms = new ArrayList<String>();  //list of rooms the user is subscribed to
 	private ArrayList<String> allChatRooms = new ArrayList<String>();
 	private ArrayList<String> pendingInvitations = new ArrayList<String>();
 	private ArrayList<TopicPublisher> publisherList = new ArrayList<TopicPublisher>();
@@ -29,17 +29,11 @@ public class ChatCommander {
 		this.client = client;
 		this.topicSession = session;
 	}
+	
  	public ArrayList<String> getChatRooms(){
  		return chatRooms;
  	}
 	
-	/**TODO refactor how the createchatroom gets a username
-	 * 
-	 * this was added to make the sendserver createchatroom 
-	 * method send a user name w/ the room name.
-	 *  
-	 * @return
-	 */
 	public ChatClient getClient(){
 		return client;
 	}
@@ -112,7 +106,6 @@ public class ChatCommander {
 	 * @param chatRoom	the name of the chat room the user is trying to leave
 	 */
 	public boolean leaveChatRoom(String chatRoom) throws JMSException {
-	    // TODO leave the chat room user is in
 
 	    if ( ! chatRoomEntered( chatRoom ) ) {
 	      System.out.println( "You're not in that chat room." );

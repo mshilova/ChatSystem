@@ -1,17 +1,9 @@
 package edu.ucsd.cse110.server;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import javax.jms.Destination;
-import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.Session;
-
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 
 public interface IServer {		

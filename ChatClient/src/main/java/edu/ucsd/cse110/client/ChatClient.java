@@ -202,15 +202,6 @@ public class ChatClient implements MessageListener {
 	
 	
 	public void sendServer(String jmsType, String inputMessage) {
-		
-		/**
-		 * TODO removed this and added line to input processor.
-		 * 		so that the right room name is added to the client
-		 * 		room list.
-		 */
-		//if ( Constants.CREATECHATROOM.equals( jmsType ) )
-		//	chatCommander.add( inputMessage );
-		
 		try {
 			Message message = session.createTextMessage(inputMessage);
 			message.setJMSType(jmsType);
@@ -326,7 +317,10 @@ public class ChatClient implements MessageListener {
 	    	case Constants.CREATECHATROOM:
 	    		if ( message.getBooleanProperty( Constants.RESPONSE ) ) {
 	    			if(usingGui) {
-						gui.getPanelWest().getChatRoomsTab().addChatRoom(chatCommander.chatRooms.get(chatCommander.chatRooms.size() - 1), user.getUsername());
+						gui.getPanelWest().getChatRoomsTab().addChatRoom(
+								chatCommander.getChatRooms().get(
+										chatCommander.getChatRooms().size() - 1),
+										user.getUsername());
 		    		} else {
 		    			chatCommander.setupChatRoomTopic();	// last room name added to list will be created
 		    		}

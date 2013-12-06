@@ -321,25 +321,21 @@ public void send(Destination recipient, final ArrayList<String> chatRooms, final
 
 
 	public LoginManager getLoginManager() {
-		// TODO Auto-generated method stub
 		return loginManager;
 	}
 
 
 	public ChatRoomManager getChatRoomManager() {
-		// TODO Auto-generated method stub
 		return chatRoomManager;
 	}
 
 
 	public Authenticator getAuthenticator() {
-		// TODO Auto-generated method stub
 		return authenticator;
 	}
 
 
 	public String getMessageType() {
-		// TODO Auto-generated method stub
 		return messageType;
 	}	
 }

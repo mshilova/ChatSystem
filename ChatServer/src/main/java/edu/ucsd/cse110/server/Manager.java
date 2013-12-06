@@ -1,7 +1,5 @@
 package edu.ucsd.cse110.server;
 
-import java.util.Map;
-
 import javax.jms.Message;
 
 public interface Manager {
