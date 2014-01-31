@@ -1,0 +1,24 @@
+ Chat System project for a Software Engineering class. Work was done
+ in a team of 8 people using pair programming.
+
+ Some of the technical constraints:
+   -- use Spring to structure the server
+   -- use ActiveMQ for communication between client and the server
+
+Basic Requirements list :
+1. Client connects to a specified server 
+2. User signs on to the server the client is connected to 
+3. User signs off from the server the client is connected to 
+4. User sends a message to all currently signed-on users (Broadcast) 
+5. Client quits. The Client application is terminated. 
+6. Sending text to a specific subset of signed on users (instead of a 
+   broadcast message.) 
+7. Listing all users signed on to your server. 
+8. User joins chat room and can send text messages to the chat room, which 
+   causes all other users joined to the chat room to receive the message. 
+9. User leaves chat room, which removes user from list of users receiving 
+   messages for the chat  room. 
+10. User lists all chat rooms that exist. 
+11. User joined to a chat room lists all users also joined to the chat room. 
+12. Provide both a textual interface and a graphical interface for your client. 
+
